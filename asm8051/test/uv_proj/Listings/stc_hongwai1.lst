@@ -1,0 +1,771 @@
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\stc_hongwai1.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\stc_hongwai1.a51 SET(SMALL) DEBUG PRINT(.\Listings\stc_hongwai1.lst)
+                       OBJECT(.\Objects\stc_hongwai1.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     
+                       2     ;/*---------------------------------------------------------------------*/
+                       3     ;/* --- STC MCU Limited ------------------------------------------------*/
+                       4     ;/* --- Mobile: (86)13922805190 ----------------------------------------*/
+                       5     ;/* --- Fax: 86-0513-55012956,55012947,55012969 ------------------------*/
+                       6     ;/* --- Tel: 86-0513-55012928,55012929,55012966-------------------------*/
+                       7     ;/* --- Web: www.STCMCU.com --------------------------------------------*/
+                       8     ;/* --- Web: www.GXWMCU.com --------------------------------------------*/
+                       9     ;/* 如果要在文章中应用此代码,请在文章中注明使用了STC的资料及程�
+                             �        */
+                      10     ;/*---------------------------------------------------------------------*/
+                      11     
+                      12     ;/************* 功能说明    **************
+                      13     
+                      14     ;用户可以在宏定义中改变MCU主时钟频率. 范围 8MHZ ~ 33MHZ.
+                      15     
+                      16     ;红外接收程序。模拟市场上用量最大的NEC的编码。
+                      17     
+                      18     ;用户可以在宏定义中指定用户码.
+                      19     
+                      20     ;使用PCA2高速输出产生38KHZ载波, 1/3占空比, 每个38KHZ周期发射管发射9us
+                             ,关闭16.3us.
+                      21     
+                      22     ;使用开发板上的16个IO扫描按键, MCU不睡眠, 连续扫描按键.
+                      23     
+                      24     ;当键按下, 第一帧为数据, 后面的帧为重复争,不带数据, 具体定义请�
+                             �行参考NEC的编码资料.
+                      25     
+                      26     ;键释放后, 停止发送.
+                      27     
+                      28     ;******************************************/
+                      29     
+                      30     ;/****************************** 用户定义宏 ***********************************/
+                      31     
+  00D0                32     STACK_POIRTER   EQU     0D0H    ;堆栈开始地址
+  2B33                33     Fosc_KHZ        EQU     11059   ;11059KHZ
+                      34     
+                      35     
+  0245                36     D_38K_DUTY  EQU 581                         ;=(Fosc(MHZ) * 26.3)    /*  38KHZ周期时间  
+                              26.3us */
+  00C7                37     D_38K_ON    EQU 199                         ;=(Fosc(MHZ) * 9)       /* 发射管导通时�
+                             �   9us */
+  017E                38     D_38K_OFF   EQU (D_38K_DUTY - D_38K_ON)     ;=(Fosc(MHZ) * 17.3)    /* 发射管关闭时�
+                             �   17.3us */
+                      39     
+                      40     ;*******************************************************************
+                      41     ;*******************************************************************
+                      42     
+                      43     
+  00F2                44     PCA_PWM0 DATA 0F2H  ;   //PCA模块0 PWM寄存器。
+  00F3                45     PCA_PWM1 DATA 0F3H  ;   //PCA模块1 PWM寄存器。
+  00F4                46     PCA_PWM2 DATA 0F4H  ;   //PCA模块2 PWM寄存器。
+                      47     
+  00A2                48     AUXR1  DATA 0xA2
+  00D8                49     CCON   DATA 0xD8
+  00D9                50     CMOD   DATA 0xD9
+  00DA                51     CCAPM0 DATA 0xDA    ; PCA模块0的工作模式寄存器。
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE     2
+
+  00DB                52     CCAPM1 DATA 0xDB    ; PCA模块1的工作模式寄存器。
+  00DC                53     CCAPM2 DATA 0xDC    ; PCA模块2的工作模式寄存器。
+                      54     
+  00E9                55     CL     DATA 0xE9
+  00EA                56     CCAP0L DATA 0xEA    ; PCA模块0的捕捉/比较寄存器低8位。
+  00EB                57     CCAP1L DATA 0xEB    ; PCA模块1的捕捉/比较寄存器低8位。
+  00EC                58     CCAP2L DATA 0xEC    ; PCA模块2的捕捉/比较寄存器低8位。
+                      59     
+  00F9                60     CH     DATA 0xF9
+  00FA                61     CCAP0H DATA 0xFA    ; PCA模块0的捕捉/比较寄存器高8位。
+  00FB                62     CCAP1H DATA 0xFB    ; PCA模块1的捕捉/比较寄存器高8位。
+  00FC                63     CCAP2H DATA 0xFC    ; PCA模块2的捕捉/比较寄存器高8位。
+                      64     
+  00D8                65     CCF0  BIT CCON.0    ; PCA 模块0中断标志，由硬件置位，必须由软件清0。
+  00D9                66     CCF1  BIT CCON.1    ; PCA 模块1中断标志，由硬件置位，必须由软件清0。
+  00DA                67     CCF2  BIT CCON.2    ; PCA 模块2中断标志，由硬件置位，必须由软件清0。
+  00DE                68     CR    BIT CCON.6    ; 1: 允许PCA计数器计数，0: 禁止计数。
+  00DF                69     CF    BIT CCON.7    ; PCA计数器溢出（CH，CL由FFFFH变为0000H）标志。PCA计数�
+                             ��溢出后由硬件置位，必须由软件清0。
+  00BF                70     PPCA  BIT IP.7      ; PCA 中断 优先级设定位
+                      71     
+                      72     ;*******************************************************************
+  008E                73     AUXR        DATA 08EH
+  00C0                74     P4          DATA 0C0H
+  00C8                75     P5          DATA 0C8H
+  00BC                76     ADC_CONTR   DATA 0BCH   ;带AD系列
+  00BD                77     ADC_RES     DATA 0BDH   ;带AD系列
+  00BE                78     ADC_RESL    DATA 0BEH   ;带AD系列
+  009D                79     P1ASF       DATA 09DH
+  0097                80     PCON2       DATA 097H
+                      81     
+  00A2                82     P_SW1       DATA    0A2H
+  00D6                83     T2H         DATA    0D6H
+  00D7                84     T2L         DATA    0D7H
+                      85     
+  0093                86     P0M1    DATA    0x93    ; P0M1.n,P0M0.n     =00--->Standard,    01--->push-pull
+  0094                87     P0M0    DATA    0x94    ;                   =10--->pure input,  11--->open drain
+  0091                88     P1M1    DATA    0x91    ; P1M1.n,P1M0.n     =00--->Standard,    01--->push-pull
+  0092                89     P1M0    DATA    0x92    ;                   =10--->pure input,  11--->open drain
+  0095                90     P2M1    DATA    0x95    ; P2M1.n,P2M0.n     =00--->Standard,    01--->push-pull
+  0096                91     P2M0    DATA    0x96    ;                   =10--->pure input,  11--->open drain
+  00B1                92     P3M1    DATA    0xB1    ; P3M1.n,P3M0.n     =00--->Standard,    01--->push-pull
+  00B2                93     P3M0    DATA    0xB2    ;                   =10--->pure input,  11--->open drain
+  00B3                94     P4M1    DATA    0xB3    ; P4M1.n,P4M0.n     =00--->Standard,    01--->push-pull
+  00B4                95     P4M0    DATA    0xB4    ;                   =10--->pure input,  11--->open drain
+  00C9                96     P5M1    DATA    0xC9    ; P5M1.n,P5M0.n     =00--->Standard,    01--->push-pull
+  00CA                97     P5M0    DATA    0xCA    ;                   =10--->pure input,  11--->open drain
+  00CB                98     P6M1    DATA    0xCB    ; P6M1.n,P6M0.n     =00--->Standard,    01--->push-pull
+  00CC                99     P6M0    DATA    0xCC    ;                   =10--->pure input,  11--->open drain
+  00E1               100     P7M1    DATA    0xE1    ;
+  00E2               101     P7M0    DATA    0xE2    ;
+                     102     
+                     103     ;*************  IO口定义    **************/
+  00C0               104     P_HC595_SER   BIT P4.0  ;   //pin 14    SER     data input
+  00CC               105     P_HC595_RCLK  BIT P5.4  ;   //pin 12    RCLk    store (latch) clock
+  00C3               106     P_HC595_SRCLK BIT P4.3  ;   //pin 11    SRCLK   Shift data clock
+                     107     
+                     108     ;*************  本地变量声明    **************/
+                     109     
+  0030               110     IO_KeyState     DATA    30H ; IO行列键状态变量
+  0031               111     IO_KeyState1    DATA    31H
+  0032               112     IO_KeyHoldCnt   DATA    32H ; IO键按下计时
+  0033               113     KeyCode         DATA    33H ; 给用户使用的键码, 1~16为ADC键， 17~32为IO键
+                     114     
+                     115     
+                     116     
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE     3
+
+                     117     
+                     118     
+  00B7               119     P_IR_TX   BIT P3.7  ;定义红外发送端口
+                     120     
+  0020               121     FLAG0   DATA    0x20
+  0000               122     B_Space BIT FLAG0.0 ;发送空闲(延时)标志
+                     123     
+  0034               124     PCA_Timer0H DATA    0x34    ;PCA2软件定时器变量
+  0035               125     PCA_Timer0L DATA    0x35
+  0036               126     tx_cntH     DATA    0x36    ;发送或空闲的脉冲计数(等于38KHZ的脉冲数，对�
+                             �时间), 红外频率为38KHZ, 周期26.3us
+  0037               127     tx_cntL     DATA    0x37    
+  0038               128     TxTime      DATA    0x38    ;发送时间
+                     129     
+                     130     
+                     131     ;*******************************************************************
+                     132     ;*******************************************************************
+0000                 133             ORG     0000H               ;reset
+0000 020100          134             LJMP    F_Main
+                     135     
+003B                 136             ORG     003BH               ;7  PCA interrupt
+003B 0202F9          137             LJMP    F_PCA_Interrupt
+                     138     
+                     139     
+                     140     ;******************** 主程序 **************************/
+0100                 141             ORG     0100H       ;reset
+0100                 142     F_Main:
+0100 E4              143         CLR     A
+0101 F593            144         MOV     P0M1, A     ;设置为准双向口
+0103 F594            145         MOV     P0M0, A
+0105 F591            146         MOV     P1M1, A     ;设置为准双向口
+0107 F592            147         MOV     P1M0, A
+0109 F595            148         MOV     P2M1, A     ;设置为准双向口
+010B F596            149         MOV     P2M0, A
+010D F5B1            150         MOV     P3M1, A     ;设置为准双向口
+010F F5B2            151         MOV     P3M0, A
+0111 F5B3            152         MOV     P4M1, A     ;设置为准双向口
+0113 F5B4            153         MOV     P4M0, A
+0115 F5C9            154         MOV     P5M1, A     ;设置为准双向口
+0117 F5CA            155         MOV     P5M0, A
+0119 F5CB            156         MOV     P6M1, A     ;设置为准双向口
+011B F5CC            157         MOV     P6M0, A
+011D F5E1            158         MOV     P7M1, A     ;设置为准双向口
+011F F5E2            159         MOV     P7M0, A
+                     160     
+                     161         
+0121 7581D0          162         MOV     SP, #STACK_POIRTER
+0124 75D000          163         MOV     PSW, #0
+                     164         USING   0       ;选择第0组R0~R7
+                     165     
+                     166     ;================= 用户初始化程序 ====================================
+                     167     
+0127 1202D0          168         LCALL   F_PCA_Init      ;初始化PCA2
+012A D2B7            169         SETB    P_IR_TX
+                     170         
+012C D2AF            171         SETB    EA              ;打开总中断
+                     172         
+012E 1201BF          173         LCALL   F_DisableHC595  ;禁止掉学习板上的HC595显示，省电
+                     174     
+0131 753300          175         MOV     KeyCode, #0
+                     176     
+                     177     ;=================== 主循环 ==================================
+0134                 178     L_Main_Loop:
+0134 741E            179         MOV     A, #30
+0136 1201DA          180         LCALL   F_delay_ms      ;延时30ms
+0139 120210          181         LCALL   F_IO_KeyScan    ;扫描键盘
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE     4
+
+                     182     
+013C E533            183         MOV     A, KeyCode
+013E 60F4            184         JZ      L_Main_Loop     ;无键循环
+0140 753800          185         MOV     TxTime, #0      ;
+                     186                                 ;一帧数据最小长度 = 9 + 4.5 + 0.5625 + 24 * 1.125 + 8 *
+                              2.25 = 59.0625 ms
+                     187                                 ;一帧数据最大长度 = 9 + 4.5 + 0.5625 + 8 * 1.125 + 24 *
+                              2.25 = 77.0625 ms
+0143 753601          188         MOV     tx_cntH, #HIGH 342      ;对应9ms，同步头        9ms
+0146 753756          189         MOV     tx_cntL, #LOW  342
+0149 12027E          190         LCALL   F_IR_TxPulse
+                     191     
+014C 753600          192         MOV     tx_cntH, #HIGH 171      ;对应4.5ms，同步头间隔  4.5ms
+014F 7537AB          193         MOV     tx_cntL, #LOW  171
+0152 12028B          194         LCALL   F_IR_TxSpace
+                     195     
+0155 753600          196         MOV     tx_cntH, #HIGH 21       ;发送脉冲           0.5625ms
+0158 753715          197         MOV     tx_cntL, #LOW  21
+015B 12027E          198         LCALL   F_IR_TxPulse
+                     199     
+015E 7400            200         MOV     A, #LOW  0xFF00  ;发用户码低字节
+0160 120298          201         LCALL   F_IR_TxByte
+0163 74FF            202         MOV     A, #HIGH 0xFF00  ;发用户码高字节
+0165 120298          203         LCALL   F_IR_TxByte
+0168 E533            204         MOV     A, KeyCode          ;发数据
+016A 120298          205         LCALL   F_IR_TxByte
+016D E533            206         MOV     A, KeyCode          ;发数据反码
+016F F4              207         CPL     A
+0170 120298          208         LCALL   F_IR_TxByte
+                     209     
+0173 E538            210         MOV     A, TxTime
+0175 C3              211         CLR     C
+0176 9438            212         SUBB    A, #56      ;一帧按最大77ms发送, 不够的话,补偿时间      108ms
+0178 5011            213         JNC     L_ADJ_Time
+                     214     
+017A C3              215         CLR     c
+017B 7438            216         MOV     A, #56
+017D 9538            217         SUBB    A, TxTime
+017F F538            218         MOV     TxTime, A
+0181 13              219         RRC     A
+0182 13              220         RRC     A
+0183 13              221         RRC     A
+0184 541F            222         ANL     A, #0x1F
+0186 2538            223         ADD     A, TxTime
+0188 1201DA          224         LCALL   F_delay_ms      ;TxTime = 56 - TxTime;  TxTime = TxTime + TxTime / 8;   delay_m
+                             s(TxTime);
+018B                 225     L_ADJ_Time:
+018B 741F            226         MOV     A, #31          ;delay_ms(31)
+018D 1201DA          227         LCALL   F_delay_ms
+                     228             
+0190                 229     L_WaitKeyRelease:
+0190 E530            230         MOV     A, IO_KeyState
+0192 6025            231         JZ      L_ClearKeyCode
+                     232     
+                     233                                 ;键未释放, 发送重复帧(无数据)
+0194 753601          234         MOV     tx_cntH, #HIGH 342      ;对应9ms，同步头        9ms
+0197 753756          235         MOV     tx_cntL, #LOW  342
+019A 12027E          236         LCALL   F_IR_TxPulse
+                     237     
+019D 753600          238         MOV     tx_cntH, #HIGH 86       ;对应2.25ms，同步头间隔 2.25ms
+01A0 753756          239         MOV     tx_cntL, #LOW  86
+01A3 12028B          240         LCALL   F_IR_TxSpace
+                     241     
+01A6 753600          242         MOV     tx_cntH, #HIGH 21       ;发送脉冲           0.5625ms
+01A9 753715          243         MOV     tx_cntL, #LOW  21
+01AC 12027E          244         LCALL   F_IR_TxPulse
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE     5
+
+                     245     
+01AF 7460            246         MOV     A, #96          ;delay_ms(96)
+01B1 1201DA          247         LCALL   F_delay_ms
+01B4 120210          248         LCALL   F_IO_KeyScan    ;扫描键盘
+01B7 80D7            249         SJMP    L_WaitKeyRelease
+                     250     
+01B9                 251     L_ClearKeyCode:
+01B9 753300          252         MOV KeyCode, #0
+                     253     
+01BC 020134          254         LJMP    L_Main_Loop
+                     255     ;===================================================================
+                     256     
+                     257     
+                     258     ;========================================================================
+                     259     ; 函数: F_DisableHC595
+                     260     ; 描述: 禁止HC595显示.
+                     261     ; 参数: none.
+                     262     ; 返回: none.
+                     263     ; 版本: VER1.0
+                     264     ; 日期: 2013-4-1
+                     265     ; 备注: 所用到的通用寄存器都入栈保护, 退出时恢复原来数据不改变.
+                     266     ;========================================================================
+01BF                 267     F_DisableHC595:
+01BF C007            268         PUSH    AR7
+01C1 D2C0            269         SETB    P_HC595_SER
+01C3 7F14            270         MOV     R7, #20
+01C5                 271     L_DisableHC595_Loop:
+01C5 D2C3            272         SETB    P_HC595_SRCLK
+01C7 00              273         NOP
+01C8 C2C3            274         CLR     P_HC595_SRCLK
+01CA 00              275         NOP
+01CB DFF8            276         DJNZ    R7, L_DisableHC595_Loop
+01CD D200            277         SETB    P_HC595_RCLK = 1;
+01CF 00              278         NOP
+01D0 C200            279         CLR     P_HC595_RCLK = 0;                           //锁存输出数据
+01D2 D200            280         SETB    P_HC595_RCLK = 1;
+01D4 00              281         NOP
+01D5 C200            282         CLR     P_HC595_RCLK = 0;                           //锁存输出数据
+01D7 D007            283         POP     AR7
+01D9 22              284         RET
+                     285     
+                     286     
+                     287     ;========================================================================
+                     288     ; 函数: F_delay_ms
+                     289     ; 描述: 延时子程序。
+                     290     ; 参数: ACC: 延时ms数.
+                     291     ; 返回: none.
+                     292     ; 版本: VER1.0
+                     293     ; 日期: 2013-4-1
+                     294     ; 备注: 除了ACCC和PSW外, 所用到的通用寄存器都入栈保护, 退出时恢复�
+                             ��来数据不改变.
+                     295     ;========================================================================
+01DA                 296     F_delay_ms:
+01DA C002            297         PUSH    02H     ;入栈R2
+01DC C003            298         PUSH    03H     ;入栈R3
+01DE C004            299         PUSH    04H     ;入栈R4
+                     300     
+01E0 FA              301         MOV     R2,A
+                     302     
+01E1                 303     L_delay_ms_1:
+01E1 7B03            304         MOV     R3, #HIGH (Fosc_KHZ / 13)
+01E3 7C52            305         MOV     R4, #LOW (Fosc_KHZ / 13)
+                     306         
+01E5                 307     L_delay_ms_2:
+01E5 EC              308         MOV     A, R4           ;1T     Total 13T/loop
+01E6 1C              309         DEC     R4              ;2T
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE     6
+
+01E7 7001            310         JNZ     L_delay_ms_3    ;4T
+01E9 1B              311         DEC     R3
+01EA                 312     L_delay_ms_3:
+01EA 14              313         DEC     A               ;1T
+01EB 4B              314         ORL     A, R3           ;1T
+01EC 70F7            315         JNZ     L_delay_ms_2    ;4T
+                     316         
+01EE DAF1            317         DJNZ    R2, L_delay_ms_1
+                     318     
+01F0 D004            319         POP     04H     ;出栈R2
+01F2 D003            320         POP     03H     ;出栈R3
+01F4 D002            321         POP     02H     ;出栈R4
+01F6 22              322         RET
+                     323     
+                     324     
+                     325     ;========================================================================
+                     326     ; 函数: F_IO_KeyDelay
+                     327     ; 描述: 行列键扫描程序.
+                     328     ; 参数: none
+                     329     ; 返回: 读到按键, KeyCode为非0键码.
+                     330     ; 版本: V1.0, 2013-11-22
+                     331     ;========================================================================
+                     332     ;/*****************************************************
+                     333     ;   行列键扫描程序
+                     334     ;   使用XY查找4x4键的方法，只能单键，速度快
+                     335     ;
+                     336     ;   Y     P04      P05      P06      P07
+                     337     ;          |        |        |        |
+                     338     ;X         |        |        |        |
+                     339     ;P00 ---- K00 ---- K01 ---- K02 ---- K03 ----
+                     340     ;          |        |        |        |
+                     341     ;P01 ---- K04 ---- K05 ---- K06 ---- K07 ----
+                     342     ;          |        |        |        |
+                     343     ;P02 ---- K08 ---- K09 ---- K10 ---- K11 ----
+                     344     ;          |        |        |        |
+                     345     ;P03 ---- K12 ---- K13 ---- K14 ---- K15 ----
+                     346     ;          |        |        |        |
+                     347     ;******************************************************/
+                     348     
+                     349     
+01F7 00010200        350     T_KeyTable:  DB 0,1,2,0,3,0,0,0,4,0,0,0,0,0,0,0
+01FB 03000000                
+01FF 04000000                
+0203 00000000                
+                     351     
+0207                 352     F_IO_KeyDelay:
+0207 C003            353         PUSH    03H     ;R3入栈
+0209 7B3C            354         MOV     R3, #60
+020B DBFE            355         DJNZ    R3, $   ; (n * 4) T
+020D D003            356         POP     03H     ;R3出栈
+020F 22              357         RET
+                     358     
+0210                 359     F_IO_KeyScan:
+0210 C006            360         PUSH    06H     ;R6入栈
+0212 C007            361         PUSH    07H     ;R7入栈
+                     362     
+0214 AE31            363         MOV     R6, IO_KeyState1    ; 保存上一次状态
+                     364     
+0216 7580F0          365         MOV     P0, #0F0H       ;X低，读Y
+0219 120207          366         LCALL   F_IO_KeyDelay       ;delay about 250T
+021C E580            367         MOV     A, P0
+021E 54F0            368         ANL     A, #0F0H
+0220 F531            369         MOV     IO_KeyState1, A     ; IO_KeyState1 = P0 & 0xf0
+                     370     
+0222 75800F          371         MOV     P0, #0FH        ;Y低，读X
+0225 120207          372         LCALL   F_IO_KeyDelay       ;delay about 250T
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE     7
+
+0228 E580            373         MOV     A, P0
+022A 540F            374         ANL     A, #0FH
+022C 4531            375         ORL     A, IO_KeyState1         ; IO_KeyState1 |= (P0 & 0x0f)
+022E F531            376         MOV     IO_KeyState1, A
+0230 6331FF          377         XRL     IO_KeyState1, #0FFH     ; IO_KeyState1 ^= 0xff; 取反
+                     378     
+0233 EE              379         MOV     A, R6                   ;if(j == IO_KeyState1), 连续两次读相等
+0234 B5313F          380         CJNE    A, IO_KeyState1, L_QuitCheckIoKey   ;不相等, jmp
+                     381         
+0237 AE30            382         MOV     R6, IO_KeyState     ;暂存IO_KeyState
+0239 853130          383         MOV     IO_KeyState, IO_KeyState1
+023C E530            384         MOV     A, IO_KeyState
+023E 6033            385         JZ      L_NoIoKeyPress      ; if(IO_KeyState != 0), 有键按下
+                     386     
+0240 EE              387         MOV     A, R6   
+0241 600E            388         JZ      L_CalculateIoKey    ;if(R6 == 0)    F0 = 1; 第一次按下
+0243 EE              389         MOV     A, R6   
+0244 B5302F          390         CJNE    A, IO_KeyState, L_QuitCheckIoKey    ; if(j != IO_KeyState), jmp
+                     391         
+0247 0532            392         INC     IO_KeyHoldCnt   ; if(++IO_KeyHoldCnt >= 20),    1秒后重键
+0249 E532            393         MOV     A, IO_KeyHoldCnt
+024B B41428          394         CJNE    A, #20, L_QuitCheckIoKey
+024E 753212          395         MOV     IO_KeyHoldCnt, #18;
+0251                 396     L_CalculateIoKey:
+0251 E530            397         MOV     A, IO_KeyState
+0253 C4              398         SWAP    A       ;R6 = T_KeyTable[IO_KeyState >> 4];
+0254 540F            399         ANL     A, #0x0F
+0256 9001F7          400         MOV     DPTR, #T_KeyTable
+0259 93              401         MOVC    A, @A+DPTR
+025A FE              402         MOV     R6, A
+                     403         
+025B 6019            404         JZ      L_QuitCheckIoKey    ; if(R6 == 0)
+025D E530            405         MOV     A, IO_KeyState
+025F 540F            406         ANL     A, #0x0F
+0261 93              407         MOVC    A, @A+DPTR
+0262 FF              408         MOV     R7, A
+0263 6011            409         JZ      L_QuitCheckIoKey    ; if(T_KeyTable[IO_KeyState& 0x0f] == 0)
+                     410         
+0265 EE              411         MOV     A, R6       ;KeyCode = (j - 1) * 4 + T_KeyTable[IO_KeyState & 0x0f] + 16;   //�
+                             ��算键码，17~32
+0266 25E0            412         ADD     A, ACC
+0268 25E0            413         ADD     A, ACC
+026A FE              414         MOV     R6, A
+026B EF              415         MOV     A, R7
+026C 2E              416         ADD     A, R6
+026D 240C            417         ADD     A, #12
+026F F533            418         MOV     KeyCode, A
+0271 8003            419         SJMP    L_QuitCheckIoKey
+                     420         
+0273                 421     L_NoIoKeyPress:
+0273 753200          422         MOV     IO_KeyHoldCnt, #0
+                     423     
+0276                 424     L_QuitCheckIoKey:
+0276 7580FF          425         MOV     P0, #0xFF
+0279 D007            426         POP     07H     ;R7出栈
+027B D006            427         POP     06H     ;R6出栈
+027D 22              428         RET
+                     429     
+                     430     ;========================================================================
+                     431     ; 函数: F_IR_TxPulse
+                     432     ; 描述: 发送脉冲函数.
+                     433     ; 参数: tx_cntH, tx_cntL: 要发送的38K周期数
+                     434     ; 返回: none.
+                     435     ; 版本: V1.0, 2013-11-22
+                     436     ;========================================================================
+027E                 437     F_IR_TxPulse:
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE     8
+
+027E C200            438         CLR     B_Space ;标志发脉冲
+0280 75DC4D          439         MOV     CCAPM2, #(0x48 + 0x04 + 0x01)   ; 工作模式 0x00: PCA_Mode_Capture,  0x42: P
+                             CA_Mode_PWM,  0x48: PCA_Mode_SoftTimer
+0283 D2DE            440         SETB    CR      ;启动
+0285 20DEFD          441         JB      CR, $   ;等待结束
+0288 D2B7            442         SETB    P_IR_TX
+028A 22              443         RET
+                     444     
+                     445     ;========================================================================
+                     446     ; 函数: F_IR_TxSpace
+                     447     ; 描述: 发送空闲函数.
+                     448     ; 参数: tx_cntH, tx_cntL: 要发送的38K周期数
+                     449     ; 返回: none.
+                     450     ; 版本: V1.0, 2013-11-22
+                     451     ;========================================================================
+028B                 452     F_IR_TxSpace:
+028B D200            453         SETB    B_Space ;标志空闲
+028D 75DC49          454         MOV     CCAPM2, #(0x48 + 0x01)  ; 工作模式 0x00: PCA_Mode_Capture,  0x42: PCA_Mode_
+                             PWM,  0x48: PCA_Mode_SoftTimer
+0290 D2DE            455         SETB    CR      ;启动
+0292 20DEFD          456         JB      CR, $   ;等待结束
+0295 D2B7            457         SETB    P_IR_TX
+0297 22              458         RET
+                     459     
+                     460     
+                     461     ;========================================================================
+                     462     ; 函数: F_IR_TxByte
+                     463     ; 描述: 发送一个字节函数.
+                     464     ; 参数: ACC: 要发送的字节
+                     465     ; 返回: none.
+                     466     ; 版本: V1.0, 2013-11-22
+                     467     ;========================================================================
+0298                 468     F_IR_TxByte:
+0298 C004            469         PUSH    AR4
+029A C005            470         PUSH    AR5
+                     471     
+029C 7C08            472         MOV     R4, #8
+029E FD              473         MOV     R5, A
+029F                 474     L_IR_TxByteLoop:
+029F ED              475         MOV     A, R5
+02A0 30E00F          476         JNB     ACC.0, L_IR_TxByte_0
+02A3 753600          477         MOV     tx_cntH, #HIGH 63       ;发送数据1
+02A6 75373F          478         MOV     tx_cntL, #LOW  63
+02A9 12028B          479         LCALL   F_IR_TxSpace
+02AC 0538            480         INC     TxTime          ;TxTime += 2;   //数据1对应 1.6875 + 0.5625 ms
+02AE 0538            481         INC     TxTime
+02B0 800B            482         SJMP    L_IR_TxByte_Pause
+02B2                 483     L_IR_TxByte_0:
+02B2 753600          484         MOV     tx_cntH, #HIGH 21       ;发送数据0
+02B5 753715          485         MOV     tx_cntL, #LOW  21
+02B8 12028B          486         LCALL   F_IR_TxSpace
+02BB 0538            487         INC     TxTime          ;数据0对应 0.5625 + 0.5625 ms
+02BD                 488     L_IR_TxByte_Pause:
+02BD 753600          489         MOV     tx_cntH, #HIGH 21       ;发送脉冲
+02C0 753715          490         MOV     tx_cntL, #LOW  21
+02C3 12027E          491         LCALL   F_IR_TxPulse        ;脉冲都是0.5625ms
+02C6 ED              492         MOV     A, R5
+02C7 03              493         RR      A               ;下一个位
+02C8 FD              494         MOV     R5, A
+02C9 DCD4            495         DJNZ    R4, L_IR_TxByteLoop
+02CB D005            496         POP     AR5
+02CD D004            497         POP     AR4
+                     498         
+02CF 22              499         RET
+                     500     
+                     501     ;========================================================================
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE     9
+
+                     502     ; 函数: F_PCA_Init
+                     503     ; 描述: PCA初始化程序.
+                     504     ; 参数: none
+                     505     ; 返回: none.
+                     506     ; 版本: V1.0, 2013-11-22
+                     507     ;========================================================================
+02D0                 508     F_PCA_Init:
+02D0 C2DE            509         CLR     CR
+02D2 75F900          510         MOV     CH, #0
+02D5 75E900          511         MOV     CL, #0
+02D8 75D800          512         MOV     CCON, #0x00;    //清除所有中断标志
+02DB 753600          513         MOV     tx_cntH, #0
+02DE 753702          514         MOV     tx_cntL, #2
+                     515     
+02E1 75DA49          516         MOV     CCAPM0, #(0x48 + 1) ;工作模式 + 中断允许 0x00: PCA_Mode_Capture,  0x42:
+                              PCA_Mode_PWM,  0x48: PCA_Mode_SoftTimer
+02E4 753400          517         MOV     PCA_Timer0H, #HIGH 100  ;随便给一个小的初值
+02E7 753564          518         MOV     PCA_Timer0L, #LOW  100
+02EA 8535EA          519         MOV     CCAP0L, PCA_Timer0L ;将影射寄存器写入捕获寄存器，先写CCAPxL
+02ED 8534FA          520         MOV     CCAP0H, PCA_Timer0H ;后写CCAPxH
+                     521     
+02F0 D2BF            522         SETB    PPCA            ;高优先级中断
+02F2 53D91F          523         ANL     CMOD, #NOT 0xe0
+02F5 43D908          524         ORL     CMOD, #0x08     ;选择时钟源, 0x00: 12T, 0x02: 2T, 0x04: Timer0溢出, 0x06
+                             : ECI, 0x08: 1T, 0x0A: 4T, 0x0C: 6T, 0x0E: 8T
+02F8 22              525         RET
+                     526     
+                     527     
+                     528     
+                     529     ;========================================================================
+                     530     ; 函数: F_PCA_Interrupt
+                     531     ; 描述: PCA中断处理程序.
+                     532     ; 参数: None
+                     533     ; 返回: none.
+                     534     ; 版本: V1.0, 2012-11-22
+                     535     ;========================================================================
+                     536     
+02F9                 537     F_PCA_Interrupt:
+02F9 C0D0            538         PUSH    PSW
+02FB C0E0            539         PUSH    ACC
+02FD 75D840          540         MOV     CCON, #0x40;    //清除所有中断标志,但不关CR
+0300 200030          541         JB      B_Space, L_PCA0_TxPause
+                     542     
+                     543                         ;发送脉冲，交替装载TH0值，溢出时自动重装
+0303 B2B7            544         CPL     P_IR_TX
+0305 30B71D          545         JNB     P_IR_TX, L_PCA0_LoadLow
+                     546     
+0308 E535            547         MOV     A, PCA_Timer0L
+030A 247E            548         ADD     A, #LOW D_38K_OFF   ;装载高电平时间 17.3us
+030C F535            549         MOV     PCA_Timer0L, A
+030E E534            550         MOV     A, PCA_Timer0H
+0310 3401            551         ADDC    A, #HIGH D_38K_OFF
+0312 F534            552         MOV     PCA_Timer0H, A
+                     553         
+0314 E537            554         MOV     A, tx_cntL  ;if(--tx_cnt == 0)  CR = 0; //pulse has sent,   stop
+0316 1537            555         DEC     tx_cntL
+0318 7002            556         JNZ     $+4
+031A 1536            557         DEC     tx_cntH
+031C 14              558         DEC     A
+031D 4536            559         ORL     A, tx_cntH
+031F 702D            560         JNZ     L_PCA0_Reload
+0321 C2DE            561         CLR     CR
+0323 8029            562         SJMP    L_PCA0_Reload
+                     563     
+0325                 564     L_PCA0_LoadLow:
+0325 E535            565         MOV     A, PCA_Timer0L
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE    10
+
+0327 24C7            566         ADD     A, #LOW D_38K_ON    ;PCA_Timer0 += D_38K_ON, 装载低电平时间 9us
+0329 F535            567         MOV     PCA_Timer0L, A
+032B E534            568         MOV     A, PCA_Timer0H
+032D 3400            569         ADDC    A, #HIGH D_38K_ON
+032F F534            570         MOV     PCA_Timer0H, A
+0331 801B            571         SJMP    L_PCA0_Reload
+                     572         
+0333                 573     L_PCA0_TxPause:     ;发送暂停时间
+0333 E535            574         MOV     A, PCA_Timer0L
+0335 2445            575         ADD     A, #LOW D_38K_DUTY  ;PCA_Timer0 += D_38K_DUTY;  //装载周期时间  26.3us
+0337 F535            576         MOV     PCA_Timer0L, A
+0339 E534            577         MOV     A, PCA_Timer0H
+033B 3402            578         ADDC    A, #HIGH D_38K_DUTY
+033D F534            579         MOV     PCA_Timer0H, A
+                     580     
+033F E537            581         MOV     A, tx_cntL  ;if(--tx_cnt == 0)  CR = 0; //空闲时间
+0341 1537            582         DEC     tx_cntL
+0343 7002            583         JNZ     $+4
+0345 1536            584         DEC     tx_cntH
+0347 14              585         DEC     A
+0348 4536            586         ORL     A, tx_cntH
+034A 7002            587         JNZ     L_PCA0_Reload
+034C C2DE            588         CLR     CR
+                     589     
+034E                 590     L_PCA0_Reload:
+034E 8535EA          591         MOV     CCAP0L, PCA_Timer0L ;将影射寄存器写入捕获寄存器，先写CCAP0L
+0351 8534FA          592         MOV     CCAP0H, PCA_Timer0H ;后写CCAP0H
+                     593     
+0354 D0E0            594         POP ACC
+0356 D0D0            595         POP PSW
+0358 32              596         RETI
+                     597     
+                     598         END
+                             
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE    11
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E              T Y P E  V A L U E   ATTRIBUTES
+
+ACC . . . . . . . .  D ADDR   00E0H   A   
+ADC_CONTR . . . . .  D ADDR   00BCH   A   
+ADC_RES . . . . . .  D ADDR   00BDH   A   
+ADC_RESL. . . . . .  D ADDR   00BEH   A   
+AR4 . . . . . . . .  D ADDR   0004H   A   
+AR5 . . . . . . . .  D ADDR   0005H   A   
+AR7 . . . . . . . .  D ADDR   0007H   A   
+AUXR. . . . . . . .  D ADDR   008EH   A   
+AUXR1 . . . . . . .  D ADDR   00A2H   A   
+B_SPACE . . . . . .  B ADDR   0020H.0 A   
+CCAP0H. . . . . . .  D ADDR   00FAH   A   
+CCAP0L. . . . . . .  D ADDR   00EAH   A   
+CCAP1H. . . . . . .  D ADDR   00FBH   A   
+CCAP1L. . . . . . .  D ADDR   00EBH   A   
+CCAP2H. . . . . . .  D ADDR   00FCH   A   
+CCAP2L. . . . . . .  D ADDR   00ECH   A   
+CCAPM0. . . . . . .  D ADDR   00DAH   A   
+CCAPM1. . . . . . .  D ADDR   00DBH   A   
+CCAPM2. . . . . . .  D ADDR   00DCH   A   
+CCF0. . . . . . . .  B ADDR   00D8H.0 A   
+CCF1. . . . . . . .  B ADDR   00D8H.1 A   
+CCF2. . . . . . . .  B ADDR   00D8H.2 A   
+CCON. . . . . . . .  D ADDR   00D8H   A   
+CF. . . . . . . . .  B ADDR   00D8H.7 A   
+CH. . . . . . . . .  D ADDR   00F9H   A   
+CL. . . . . . . . .  D ADDR   00E9H   A   
+CMOD. . . . . . . .  D ADDR   00D9H   A   
+CR. . . . . . . . .  B ADDR   00D8H.6 A   
+D_38K_DUTY. . . . .  N NUMB   0245H   A   
+D_38K_OFF . . . . .  N NUMB   017EH   A   
+D_38K_ON. . . . . .  N NUMB   00C7H   A   
+EA. . . . . . . . .  B ADDR   00A8H.7 A   
+FLAG0 . . . . . . .  D ADDR   0020H   A   
+FOSC_KHZ. . . . . .  N NUMB   2B33H   A   
+F_DELAY_MS. . . . .  C ADDR   01DAH   A   
+F_DISABLEHC595. . .  C ADDR   01BFH   A   
+F_IO_KEYDELAY . . .  C ADDR   0207H   A   
+F_IO_KEYSCAN. . . .  C ADDR   0210H   A   
+F_IR_TXBYTE . . . .  C ADDR   0298H   A   
+F_IR_TXPULSE. . . .  C ADDR   027EH   A   
+F_IR_TXSPACE. . . .  C ADDR   028BH   A   
+F_MAIN. . . . . . .  C ADDR   0100H   A   
+F_PCA_INIT. . . . .  C ADDR   02D0H   A   
+F_PCA_INTERRUPT . .  C ADDR   02F9H   A   
+IO_KEYHOLDCNT . . .  D ADDR   0032H   A   
+IO_KEYSTATE . . . .  D ADDR   0030H   A   
+IO_KEYSTATE1. . . .  D ADDR   0031H   A   
+IP. . . . . . . . .  D ADDR   00B8H   A   
+KEYCODE . . . . . .  D ADDR   0033H   A   
+L_ADJ_TIME. . . . .  C ADDR   018BH   A   
+L_CALCULATEIOKEY. .  C ADDR   0251H   A   
+L_CLEARKEYCODE. . .  C ADDR   01B9H   A   
+L_DELAY_MS_1. . . .  C ADDR   01E1H   A   
+L_DELAY_MS_2. . . .  C ADDR   01E5H   A   
+L_DELAY_MS_3. . . .  C ADDR   01EAH   A   
+L_DISABLEHC595_LOOP  C ADDR   01C5H   A   
+L_IR_TXBYTELOOP . .  C ADDR   029FH   A   
+L_IR_TXBYTE_0 . . .  C ADDR   02B2H   A   
+L_IR_TXBYTE_PAUSE .  C ADDR   02BDH   A   
+L_MAIN_LOOP . . . .  C ADDR   0134H   A   
+A51 MACRO ASSEMBLER  STC_HONGWAI1                                                         07/02/2020 09:23:52 PAGE    12
+
+L_NOIOKEYPRESS. . .  C ADDR   0273H   A   
+L_PCA0_LOADLOW. . .  C ADDR   0325H   A   
+L_PCA0_RELOAD . . .  C ADDR   034EH   A   
+L_PCA0_TXPAUSE. . .  C ADDR   0333H   A   
+L_QUITCHECKIOKEY. .  C ADDR   0276H   A   
+L_WAITKEYRELEASE. .  C ADDR   0190H   A   
+P0. . . . . . . . .  D ADDR   0080H   A   
+P0M0. . . . . . . .  D ADDR   0094H   A   
+P0M1. . . . . . . .  D ADDR   0093H   A   
+P1ASF . . . . . . .  D ADDR   009DH   A   
+P1M0. . . . . . . .  D ADDR   0092H   A   
+P1M1. . . . . . . .  D ADDR   0091H   A   
+P2M0. . . . . . . .  D ADDR   0096H   A   
+P2M1. . . . . . . .  D ADDR   0095H   A   
+P3. . . . . . . . .  D ADDR   00B0H   A   
+P3M0. . . . . . . .  D ADDR   00B2H   A   
+P3M1. . . . . . . .  D ADDR   00B1H   A   
+P4. . . . . . . . .  D ADDR   00C0H   A   
+P4M0. . . . . . . .  D ADDR   00B4H   A   
+P4M1. . . . . . . .  D ADDR   00B3H   A   
+P5. . . . . . . . .  D ADDR   00C8H   A   
+P5M0. . . . . . . .  D ADDR   00CAH   A   
+P5M1. . . . . . . .  D ADDR   00C9H   A   
+P6M0. . . . . . . .  D ADDR   00CCH   A   
+P6M1. . . . . . . .  D ADDR   00CBH   A   
+P7M0. . . . . . . .  D ADDR   00E2H   A   
+P7M1. . . . . . . .  D ADDR   00E1H   A   
+PCA_PWM0. . . . . .  D ADDR   00F2H   A   
+PCA_PWM1. . . . . .  D ADDR   00F3H   A   
+PCA_PWM2. . . . . .  D ADDR   00F4H   A   
+PCA_TIMER0H . . . .  D ADDR   0034H   A   
+PCA_TIMER0L . . . .  D ADDR   0035H   A   
+PCON2 . . . . . . .  D ADDR   0097H   A   
+PPCA. . . . . . . .  B ADDR   00B8H.7 A   
+PSW . . . . . . . .  D ADDR   00D0H   A   
+P_HC595_RCLK. . . .  B ADDR   00C8H.4 A   
+P_HC595_SER . . . .  B ADDR   00C0H.0 A   
+P_HC595_SRCLK . . .  B ADDR   00C0H.3 A   
+P_IR_TX . . . . . .  B ADDR   00B0H.7 A   
+P_SW1 . . . . . . .  D ADDR   00A2H   A   
+SP. . . . . . . . .  D ADDR   0081H   A   
+STACK_POIRTER . . .  N NUMB   00D0H   A   
+T2H . . . . . . . .  D ADDR   00D6H   A   
+T2L . . . . . . . .  D ADDR   00D7H   A   
+TXTIME. . . . . . .  D ADDR   0038H   A   
+TX_CNTH . . . . . .  D ADDR   0036H   A   
+TX_CNTL . . . . . .  D ADDR   0037H   A   
+T_KEYTABLE. . . . .  C ADDR   01F7H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

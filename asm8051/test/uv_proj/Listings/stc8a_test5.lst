@@ -1,0 +1,226 @@
+A51 MACRO ASSEMBLER  STC8A_TEST5                                                          06/02/2020 14:09:42 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\stc8a_test5.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\stc8a_test5.a51 SET(SMALL) DEBUG PRINT(.\Listings\stc8a_test5.lst) O
+                      BJECT(.\Objects\stc8a_test5.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+  00BA                 1     P_SW2       DATA    0BAH
+                       2     
+  FE80                 3     I2CCFG      XDATA   0FE80H
+  FE81                 4     I2CMSCR     XDATA   0FE81H
+  FE82                 5     I2CMSST     XDATA   0FE82H
+  FE83                 6     I2CSLCR     XDATA   0FE83H
+  FE84                 7     I2CSLST     XDATA   0FE84H
+  FE85                 8     I2CSLADR    XDATA   0FE85H
+  FE86                 9     I2CTXD      XDATA   0FE86H
+  FE87                10     I2CRXD      XDATA   0FE87H
+                      11     
+  0094                12     SDA         BIT     P1.4
+  0095                13     SCL         BIT     P1.5
+                      14     
+  0000                15     BUSY        BIT     20H.0
+                      16     
+0000                  17                 ORG     0000H
+0000 020185           18                 LJMP    MAIN
+00C3                  19                 ORG     00C3H
+00C3 020100           20                 LJMP    I2CISR
+                      21                 
+0100                  22                 ORG     0100H
+0100                  23     I2CISR:
+0100 C0E0             24                 PUSH    ACC
+0102 C082             25                 PUSH    DPL
+0104 C083             26                 PUSH    DPH
+                      27     
+0106 90FE82           28                 MOV     DPTR,#I2CMSST               ;清中断标志
+0109 E0               29                 MOVX    A,@DPTR
+010A 54BF             30                 ANL     A,#NOT 40H
+010C 90FE82           31                 MOV     DPTR,#I2CMSST
+010F F0               32                 MOVX    @DPTR,A
+0110 C200             33                 CLR     BUSY                        ;复位忙标志
+                      34     
+0112 D083             35                 POP     DPH
+0114 D082             36                 POP     DPL
+0116 D0E0             37                 POP     ACC
+0118 32               38                 RETI
+                      39     
+0119                  40     START:
+0119 D200             41                 SETB    BUSY
+011B 7481             42                 MOV     A,#10000001B                ;发送START命令
+011D 90FE81           43                 MOV     DPTR,#I2CMSCR
+0120 F0               44                 MOVX    @DPTR,A
+0121 8051             45                 JMP     WAIT
+0123                  46     SENDDATA:
+0123 90FE86           47                 MOV     DPTR,#I2CTXD                ;写数据到数据缓冲区
+0126 F0               48                 MOVX    @DPTR,A
+0127 D200             49                 SETB    BUSY
+0129 7482             50                 MOV     A,#10000010B                ;发送SEND命令
+012B 90FE81           51                 MOV     DPTR,#I2CMSCR
+012E F0               52                 MOVX    @DPTR,A
+012F 8043             53                 JMP     WAIT
+0131                  54     RECVACK:
+0131 D200             55                 SETB    BUSY
+0133 7483             56                 MOV     A,#10000011B                ;发送读ACK命令
+0135 90FE81           57                 MOV     DPTR,#I2CMSCR
+A51 MACRO ASSEMBLER  STC8A_TEST5                                                          06/02/2020 14:09:42 PAGE     2
+
+0138 F0               58                 MOVX    @DPTR,A
+0139 8039             59                 JMP     WAIT
+013B                  60     RECVDATA:
+013B D200             61                 SETB    BUSY
+013D 7484             62                 MOV     A,#10000100B                ;发送RECV命令
+013F 90FE81           63                 MOV     DPTR,#I2CMSCR
+0142 F0               64                 MOVX    @DPTR,A
+0143 3174             65                 CALL    WAIT
+0145 90FE87           66                 MOV     DPTR,#I2CRXD                ;从数据缓冲区读取数据
+0148 E0               67                 MOVX    A,@DPTR
+0149 22               68                 RET
+014A                  69     SENDACK:
+014A 7400             70                 MOV     A,#00000000B                ;设置ACK信号
+014C 90FE82           71                 MOV     DPTR,#I2CMSST
+014F F0               72                 MOVX    @DPTR,A
+0150 D200             73                 SETB    BUSY
+0152 7485             74                 MOV     A,#10000101B                ;发送ACK命令
+0154 90FE81           75                 MOV     DPTR,#I2CMSCR
+0157 F0               76                 MOVX    @DPTR,A
+0158 801A             77                 JMP     WAIT
+015A                  78     SENDNAK:
+015A 7401             79                 MOV     A,#00000001B                ;设置NAK信号
+015C 90FE82           80                 MOV     DPTR,#I2CMSST
+015F F0               81                 MOVX    @DPTR,A
+0160 D200             82                 SETB    BUSY
+0162 7485             83                 MOV     A,#10000101B                ;发送ACK命令
+0164 90FE81           84                 MOV     DPTR,#I2CMSCR
+0167 F0               85                 MOVX    @DPTR,A
+0168 800A             86                 JMP     WAIT
+016A                  87     STOP:
+016A D200             88                 SETB    BUSY
+016C 7486             89                 MOV     A,#10000110B                ;发送STOP命令
+016E 90FE81           90                 MOV     DPTR,#I2CMSCR
+0171 F0               91                 MOVX    @DPTR,A
+0172 8000             92                 JMP     WAIT
+0174                  93     WAIT:
+0174 2000FD           94                 JB      BUSY,$                      ;等待命令发送完成
+0177 22               95                 RET
+                      96     
+0178                  97     DELAY:
+0178 7800             98                 MOV     R0,#0
+017A 7900             99                 MOV     R1,#0
+017C                 100     DELAY1:
+017C 00              101                 NOP
+017D 00              102                 NOP
+017E 00              103                 NOP
+017F 00              104                 NOP
+0180 D9FA            105                 DJNZ    R1,DELAY1
+0182 D8F8            106                 DJNZ    R0,DELAY1
+0184 22              107                 RET
+                     108                 
+0185                 109     MAIN:
+0185 75813F          110                 MOV     SP,#3FH
+0188 75BA80          111                 MOV     P_SW2,#80H
+                     112                 
+018B 74E0            113                 MOV     A,#11100000B                ;设置I2C模块为主机模式
+018D 90FE80          114                 MOV     DPTR,#I2CCFG
+0190 F0              115                 MOVX    @DPTR,A
+0191 7400            116                 MOV     A,#00000000B
+0193 90FE82          117                 MOV     DPTR,#I2CMSST
+0196 F0              118                 MOVX    @DPTR,A
+0197 D2AF            119                 SETB    EA
+                     120     
+0199 3119            121                 CALL    START                       ;发送起始命令
+019B 74A0            122                 MOV     A,#0A0H
+019D 3123            123                 CALL    SENDDATA                    ;发送设备地址+写命令
+A51 MACRO ASSEMBLER  STC8A_TEST5                                                          06/02/2020 14:09:42 PAGE     3
+
+019F 3131            124                 CALL    RECVACK
+01A1 7400            125                 MOV     A,#000H                     ;发送存储地址高字节
+01A3 3123            126                 CALL    SENDDATA
+01A5 3131            127                 CALL    RECVACK
+01A7 7400            128                 MOV     A,#000H                     ;发送存储地址低字节
+01A9 3123            129                 CALL    SENDDATA
+01AB 3131            130                 CALL    RECVACK
+01AD 7412            131                 MOV     A,#12H                      ;写测试数据1
+01AF 3123            132                 CALL    SENDDATA
+01B1 3131            133                 CALL    RECVACK
+01B3 7478            134                 MOV     A,#78H                      ;写测试数据2
+01B5 3123            135                 CALL    SENDDATA
+01B7 3131            136                 CALL    RECVACK
+01B9 316A            137                 CALL    STOP                        ;发送停止命令
+                     138                 
+01BB 3178            139                 CALL    DELAY                       ;等待设备写数据
+                     140                 
+01BD 3119            141                 CALL    START                       ;发送起始命令
+01BF 74A0            142                 MOV     A,#0A0H                     ;发送设备地址+写命令
+01C1 3123            143                 CALL    SENDDATA
+01C3 3131            144                 CALL    RECVACK
+01C5 7400            145                 MOV     A,#000H                     ;发送存储地址高字节
+01C7 3123            146                 CALL    SENDDATA
+01C9 3131            147                 CALL    RECVACK
+01CB 7400            148                 MOV     A,#000H                     ;发送存储地址低字节
+01CD 3123            149                 CALL    SENDDATA
+01CF 3131            150                 CALL    RECVACK
+01D1 3119            151                 CALL    START                       ;发送起始命令
+01D3 74A1            152                 MOV     A,#0A1H                     ;发送设备地址+读命令
+01D5 3123            153                 CALL    SENDDATA
+01D7 3131            154                 CALL    RECVACK
+01D9 313B            155                 CALL    RECVDATA                    ;读取数据1
+01DB F580            156                 MOV     P0,A
+01DD 314A            157                 CALL    SENDACK
+01DF 313B            158                 CALL    RECVDATA                    ;读取数据2
+01E1 F5A0            159                 MOV     P2,A
+01E3 315A            160                 CALL    SENDNAK
+01E5 316A            161                 CALL    STOP                        ;发送停止命令
+                     162                 
+01E7 80FE            163                 JMP     $
+                     164                 
+                     165                 END
+                             
+A51 MACRO ASSEMBLER  STC8A_TEST5                                                          06/02/2020 14:09:42 PAGE     4
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ACC. . . . . . . .  D ADDR   00E0H   A   
+BUSY . . . . . . .  B ADDR   0020H.0 A   
+DELAY. . . . . . .  C ADDR   0178H   A   
+DELAY1 . . . . . .  C ADDR   017CH   A   
+DPH. . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . .  D ADDR   0082H   A   
+EA . . . . . . . .  B ADDR   00A8H.7 A   
+I2CCFG . . . . . .  X ADDR   FE80H   A   
+I2CISR . . . . . .  C ADDR   0100H   A   
+I2CMSCR. . . . . .  X ADDR   FE81H   A   
+I2CMSST. . . . . .  X ADDR   FE82H   A   
+I2CRXD . . . . . .  X ADDR   FE87H   A   
+I2CSLADR . . . . .  X ADDR   FE85H   A   
+I2CSLCR. . . . . .  X ADDR   FE83H   A   
+I2CSLST. . . . . .  X ADDR   FE84H   A   
+I2CTXD . . . . . .  X ADDR   FE86H   A   
+MAIN . . . . . . .  C ADDR   0185H   A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P_SW2. . . . . . .  D ADDR   00BAH   A   
+RECVACK. . . . . .  C ADDR   0131H   A   
+RECVDATA . . . . .  C ADDR   013BH   A   
+SCL. . . . . . . .  B ADDR   0090H.5 A   
+SDA. . . . . . . .  B ADDR   0090H.4 A   
+SENDACK. . . . . .  C ADDR   014AH   A   
+SENDDATA . . . . .  C ADDR   0123H   A   
+SENDNAK. . . . . .  C ADDR   015AH   A   
+SP . . . . . . . .  D ADDR   0081H   A   
+START. . . . . . .  C ADDR   0119H   A   
+STOP . . . . . . .  C ADDR   016AH   A   
+WAIT . . . . . . .  C ADDR   0174H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

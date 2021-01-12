@@ -1,0 +1,102 @@
+A51 MACRO ASSEMBLER  STC8A_TEST2                                                          06/02/2020 13:12:56 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\stc8a_test2.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\stc8a_test2.a51 SET(SMALL) DEBUG PRINT(.\Listings\stc8a_test2.lst) O
+                      BJECT(.\Objects\stc8a_test2.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+  008E                 1     AUXR    DATA    8EH
+  00EF                 2     BGV     DATA    0EFH
+                       3     
+  0000                 4     BUSY    BIT     20H.0
+                       5     
+0000                   6             ORG     0000H
+0000 020129            7             LJMP    MAIN
+0023                   8             ORG     0023H
+0023 020100            9             LJMP    UART_ISR
+                      10     
+0100                  11             ORG     0100H
+                      12     
+0100                  13     UART_ISR:
+0100 309904           14             JNB     TI,CHKRI
+0103 C299             15             CLR     TI
+0105 C200             16             CLR     BUSY
+0107                  17     CHKRI:
+0107 309802           18             JNB     RI,UARTISR_EXIT
+010A C298             19             CLR     RI
+010C                  20     UARTISR_EXIT:
+010C 32               21             RETI
+                      22     
+010D                  23     UART_INIT:
+010D 759850           24             MOV     SCON,#50H
+0110 758900           25             MOV     TMOD,#00H
+0113 758BE8           26             MOV     TL1,#0E8H       ;65536-11059200/115200/4=0FFE8H
+0116 758DFF           27             MOV     TH1,#0FFH
+0119 D28E             28             SETB    TR1
+011B 758E40           29             MOV     AUXR,#40H
+011E C200             30             CLR     BUSY
+0120 22               31             RET
+                      32     
+0121                  33     UART_SEND:
+0121 2000FD           34             JB      BUSY,$
+0124 D200             35             SETB    BUSY
+0126 F599             36             MOV     SBUF,A
+0128 22               37             RET
+                      38     
+0129                  39     MAIN:
+0129 75813F           40             MOV     SP,#3FH
+                      41     
+012C 12010D           42             LCALL   UART_INIT
+012F D2AC             43             SETB    ES
+0131 D2AF             44             SETB    EA
+                      45     
+0133 78EF             46             MOV     R0,#BGV
+0135 E6               47             MOV     A,@R0   ;读取Bandgap电压的高字节
+0136 120121           48             LCALL   UART_SEND
+0139 08               49             INC     R0
+013A E6               50             MOV     A,@R0   ;读取Bandgap电压的低字节
+013B 120121           51             LCALL   UART_SEND
+                      52     
+013E                  53     LOOP:
+013E 80FE             54             JMP     LOOP
+                      55     
+                      56             END
+                             
+A51 MACRO ASSEMBLER  STC8A_TEST2                                                          06/02/2020 13:12:56 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+AUXR . . . . . . .  D ADDR   008EH   A   
+BGV. . . . . . . .  D ADDR   00EFH   A   
+BUSY . . . . . . .  B ADDR   0020H.0 A   
+CHKRI. . . . . . .  C ADDR   0107H   A   
+EA . . . . . . . .  B ADDR   00A8H.7 A   
+ES . . . . . . . .  B ADDR   00A8H.4 A   
+LOOP . . . . . . .  C ADDR   013EH   A   
+MAIN . . . . . . .  C ADDR   0129H   A   
+RI . . . . . . . .  B ADDR   0098H.0 A   
+SBUF . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . .  D ADDR   0098H   A   
+SP . . . . . . . .  D ADDR   0081H   A   
+TH1. . . . . . . .  D ADDR   008DH   A   
+TI . . . . . . . .  B ADDR   0098H.1 A   
+TL1. . . . . . . .  D ADDR   008BH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TR1. . . . . . . .  B ADDR   0088H.6 A   
+UARTISR_EXIT . . .  C ADDR   010CH   A   
+UART_INIT. . . . .  C ADDR   010DH   A   
+UART_ISR . . . . .  C ADDR   0100H   A   
+UART_SEND. . . . .  C ADDR   0121H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

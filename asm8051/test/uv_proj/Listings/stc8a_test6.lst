@@ -1,0 +1,82 @@
+A51 MACRO ASSEMBLER  STC8A_TEST6                                                          06/02/2020 15:25:29 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\stc8a_test6.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\stc8a_test6.a51 SET(SMALL) DEBUG PRINT(.\Listings\stc8a_test6.lst) O
+                      BJECT(.\Objects\stc8a_test6.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+  00CD                 1     SPSTAT      DATA    0CDH
+  00CE                 2     SPCTL       DATA    0CEH
+  00CF                 3     SPDAT       DATA    0CFH
+  00AF                 4     IE2         DATA    0AFH
+  0002                 5     ESPI        EQU     02H
+                       6     
+  0000                 7     BUSY        BIT     20H.0
+  0090                 8     SS          BIT     P1.0
+  0091                 9     LED         BIT     P1.1
+                      10     
+0000                  11                 ORG     0000H
+0000 02010A           12                 LJMP    MAIN
+004B                  13                 ORG     004BH
+004B 020100           14                 LJMP    SPIISR
+                      15     
+0100                  16                 ORG     0100H
+0100                  17     SPIISR:
+0100 75CDC0           18                 MOV     SPSTAT,#0C0H                ;清中断标志
+0103 D290             19                 SETB    SS                          ;拉高从机的SS管脚
+0105 C200             20                 CLR     BUSY
+0107 B291             21                 CPL     LED
+0109 32               22                 RETI
+                      23     
+010A                  24     MAIN:
+010A 75813F           25                 MOV     SP,#3FH
+                      26     
+010D D291             27                 SETB    LED
+010F D290             28                 SETB    SS
+0111 C200             29                 CLR     BUSY
+                      30     
+0113 75CE50           31                 MOV     SPCTL,#50H                  ;使能SPI主机模式
+0116 75CDC0           32                 MOV     SPSTAT,#0C0H                ;清中断标志
+0119 75AF02           33                 MOV     IE2,#ESPI                   ;使能SPI中断
+011C D2AF             34                 SETB    EA
+                      35     
+011E                  36     LOOP:
+011E 2000FD           37                 JB      BUSY,$
+0121 D200             38                 SETB    BUSY
+0123 C290             39                 CLR     SS                          ;拉低从机SS管脚
+0125 75CF5A           40                 MOV     SPDAT,#5AH                  ;发送测试数据
+0128 80F4             41                 JMP     LOOP
+                      42     
+                      43                 END
+                             
+A51 MACRO ASSEMBLER  STC8A_TEST6                                                          06/02/2020 15:25:29 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+BUSY . . . . . . .  B ADDR   0020H.0 A   
+EA . . . . . . . .  B ADDR   00A8H.7 A   
+ESPI . . . . . . .  N NUMB   0002H   A   
+IE2. . . . . . . .  D ADDR   00AFH   A   
+LED. . . . . . . .  B ADDR   0090H.1 A   
+LOOP . . . . . . .  C ADDR   011EH   A   
+MAIN . . . . . . .  C ADDR   010AH   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+SP . . . . . . . .  D ADDR   0081H   A   
+SPCTL. . . . . . .  D ADDR   00CEH   A   
+SPDAT. . . . . . .  D ADDR   00CFH   A   
+SPIISR . . . . . .  C ADDR   0100H   A   
+SPSTAT . . . . . .  D ADDR   00CDH   A   
+SS . . . . . . . .  B ADDR   0090H.0 A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

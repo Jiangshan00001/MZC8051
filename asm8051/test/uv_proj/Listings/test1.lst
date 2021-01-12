@@ -1,0 +1,112 @@
+A51 MACRO ASSEMBLER  TEST1                                                                05/31/2020 20:13:34 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\test1.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\test1.a51 SET(SMALL) DEBUG PRINT(.\Listings\test1.lst) OBJECT(.\Obje
+                      cts\test1.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;----------------------------------------------
+                       2     ;ÐèÒªÊ¹ÄÜ¡°ÔÚ³ÌÐòÇøµÄ½áÊø´¦Ìí¼ÓÖØÒª²âÊÔ²ÎÊ¡±Ñ¡Ïî
+                       3     ;----------------------------------------------
+                       4     
+  008E                 5     AUXR    DATA    8EH
+  FDF7                 6     BGV     EQU     0FDF7H  ;STC8A8K64S4A10
+                       7     ;BGV    EQU     0EFF7H  ;STC8A8K60S4A10
+                       8     ;BGV    EQU     07FF7H  ;STC8A8K32S4A10
+                       9     ;BGV    EQU     03FF7H  ;STC8A8K16S4A10
+                      10     
+  0000                11     BUSY    BIT     20H.0
+                      12     
+0000                  13             ORG     0000H
+0000 020129           14             LJMP    MAIN
+0023                  15             ORG     0023H
+0023 020100           16             LJMP    UART_ISR
+                      17     
+0100                  18             ORG     0100H
+                      19     
+0100                  20     UART_ISR:
+0100 309904           21             JNB     TI,CHKRI
+0103 C299             22             CLR     TI
+0105 C200             23             CLR     BUSY
+0107                  24     CHKRI:
+0107 309802           25             JNB     RI,UARTISR_EXIT
+010A C298             26             CLR     RI
+010C                  27     UARTISR_EXIT:
+010C 32               28             RETI
+                      29     
+010D                  30     UART_INIT:
+010D 759850           31             MOV     SCON,#50H
+0110 758900           32             MOV     TMOD,#00H
+0113 758BE8           33             MOV     TL1,#0E8H       ;65536-11059200/115200/4=0FFE8H
+0116 758DFF           34             MOV     TH1,#0FFH
+0119 D28E             35             SETB    TR1
+011B 758E40           36             MOV     AUXR,#40H
+011E C200             37             CLR     BUSY
+0120 22               38             RET
+                      39     
+0121                  40     UART_SEND:
+0121 2000FD           41             JB      BUSY,$
+0124 D200             42             SETB    BUSY
+0126 F599             43             MOV     SBUF,A
+0128 22               44             RET
+                      45     
+0129                  46     MAIN:
+0129 75813F           47             MOV     SP,#3FH
+                      48     
+012C 12010D           49             LCALL   UART_INIT
+012F D2AC             50             SETB    ES
+0131 D2AF             51             SETB    EA
+                      52     
+0133 90FDF7           53             MOV     DPTR,#BGV
+0136 E4               54             CLR     A
+0137 93               55             MOVC    A,@A+DPTR       ;¶ÁÈ¡BandgapµçÑ¹µÄ¸ß×Ö½Ú
+0138 120121           56             LCALL   UART_SEND
+013B 7401             57             MOV     A,#1
+A51 MACRO ASSEMBLER  TEST1                                                                05/31/2020 20:13:34 PAGE     2
+
+013D 93               58             MOVC    A,@A+DPTR       ;¶ÁÈ¡BandgapµçÑ¹µÄµÍ×Ö½Ú
+013E 120121           59             LCALL   UART_SEND
+                      60     
+0141                  61     LOOP:
+0141 80FE             62             JMP     LOOP
+                      63     
+                      64             END
+                             
+A51 MACRO ASSEMBLER  TEST1                                                                05/31/2020 20:13:34 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+AUXR . . . . . . .  D ADDR   008EH   A   
+BGV. . . . . . . .  N NUMB   FDF7H   A   
+BUSY . . . . . . .  B ADDR   0020H.0 A   
+CHKRI. . . . . . .  C ADDR   0107H   A   
+EA . . . . . . . .  B ADDR   00A8H.7 A   
+ES . . . . . . . .  B ADDR   00A8H.4 A   
+LOOP . . . . . . .  C ADDR   0141H   A   
+MAIN . . . . . . .  C ADDR   0129H   A   
+RI . . . . . . . .  B ADDR   0098H.0 A   
+SBUF . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . .  D ADDR   0098H   A   
+SP . . . . . . . .  D ADDR   0081H   A   
+TH1. . . . . . . .  D ADDR   008DH   A   
+TI . . . . . . . .  B ADDR   0098H.1 A   
+TL1. . . . . . . .  D ADDR   008BH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TR1. . . . . . . .  B ADDR   0088H.6 A   
+UARTISR_EXIT . . .  C ADDR   010CH   A   
+UART_INIT. . . . .  C ADDR   010DH   A   
+UART_ISR . . . . .  C ADDR   0100H   A   
+UART_SEND. . . . .  C ADDR   0121H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

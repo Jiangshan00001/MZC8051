@@ -1,0 +1,75 @@
+======================
+2020-07-29 20:41:01
+d:\tsdx\compiler\editor8051\src\ide_one\build\MZC8051.exe -x sim8051 -i ../../asm8051/test/stc8a_test5_keil.hex 
+================
+cmd_str:sim8051
+is_debug_flag:0
+input_file:1
+0:../../asm8051/test/stc8a_test5_keil.hex
+output_file:
+parse_str:
+make_cmd:
+include_file:0
+defined_sym:0
+include_path:0
+================
+======================
+2020-07-29 20:45:19
+d:\tsdx\compiler\editor8051\src\ide_one\build\MZC8051.exe -x sim8051 -i ../../asm8051/test/stc8a_test5_keil.hex 
+================
+cmd_str:sim8051
+is_debug_flag:0
+input_file:1
+0:../../asm8051/test/stc8a_test5_keil.hex
+output_file:
+parse_str:
+make_cmd:
+include_file:0
+defined_sym:0
+include_path:0
+================
+======================
+2020-07-29 20:45:43
+d:\tsdx\compiler\editor8051\src\ide_one\build\MZC8051.exe -x sim8051 -i ../../asm8051/test/stc8a_test1_keil.hex 
+================
+cmd_str:sim8051
+is_debug_flag:0
+input_file:1
+0:../../asm8051/test/stc8a_test1_keil.hex
+output_file:
+parse_str:
+make_cmd:
+include_file:0
+defined_sym:0
+include_path:0
+================
+======================
+2020-07-30 07:00:30
+d:\tsdx\compiler\editor8051\src\ide_one\build\MZC8051.exe -x sim8051 -i ./asm8051/test/stc8a_test1.hex 
+================
+cmd_str:sim8051
+is_debug_flag:0
+input_file:1
+0:./asm8051/test/stc8a_test1.hex
+output_file:
+parse_str:
+make_cmd:
+include_file:0
+defined_sym:0
+include_path:0
+================
+======================
+2020-07-30 07:12:53
+d:\tsdx\compiler\editor8051\src\ide_one\build\MZC8051.exe -x sim8051 -i ./asm8051/test/test_simtrap1.hex 
+================
+cmd_str:sim8051
+is_debug_flag:0
+input_file:1
+0:./asm8051/test/test_simtrap1.hex
+output_file:
+parse_str:
+make_cmd:
+include_file:0
+defined_sym:0
+include_path:0
+================

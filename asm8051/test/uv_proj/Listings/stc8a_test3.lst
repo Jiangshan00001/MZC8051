@@ -1,0 +1,110 @@
+A51 MACRO ASSEMBLER  STC8A_TEST3                                                          06/02/2020 13:15:49 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\stc8a_test3.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\stc8a_test3.a51 SET(SMALL) DEBUG PRINT(.\Listings\stc8a_test3.lst) O
+                      BJECT(.\Objects\stc8a_test3.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     
+  008E                 2     AUXR    DATA    8EH
+  FDF9                 3     ID      EQU     0FDF9H  ; STC8A8K64S4A10
+                       4     ;ID     EQU     0EFF9H  ; STC8A8K60S4A10
+                       5     ;ID     EQU     07FF9H  ; STC8A8K32S4A10
+                       6     ;ID     EQU     03FF9H  ; STC8A8K16S4A10
+                       7     
+  0000                 8     BUSY    BIT     20H.0
+                       9     
+0000                  10             ORG     0000H
+0000 020129           11             LJMP    MAIN
+0023                  12             ORG     0023H
+0023 020100           13             LJMP    UART_ISR
+                      14     
+0100                  15             ORG     0100H
+                      16     
+0100                  17     UART_ISR:
+0100 309904           18             JNB     TI,CHKRI
+0103 C299             19             CLR     TI
+0105 C200             20             CLR     BUSY
+0107                  21     CHKRI:
+0107 309802           22             JNB     RI,UARTISR_EXIT
+010A C298             23             CLR     RI
+010C                  24     UARTISR_EXIT:
+010C 32               25             RETI
+                      26     
+010D                  27     UART_INIT:
+010D 759850           28             MOV     SCON,#50H
+0110 758900           29             MOV     TMOD,#00H
+0113 758BE8           30             MOV     TL1,#0E8H       ;65536-11059200/115200/4=0FFE8H
+0116 758DFF           31             MOV     TH1,#0FFH
+0119 D28E             32             SETB    TR1
+011B 758E40           33             MOV     AUXR,#40H
+011E C200             34             CLR     BUSY
+0120 22               35             RET
+                      36     
+0121                  37     UART_SEND:
+0121 2000FD           38             JB      BUSY,$
+0124 D200             39             SETB    BUSY
+0126 F599             40             MOV     SBUF,A
+0128 22               41             RET
+                      42     
+0129                  43     MAIN:
+0129 75813F           44             MOV     SP,#3FH
+                      45     
+012C 12010D           46             LCALL   UART_INIT
+012F D2AC             47             SETB    ES
+0131 D2AF             48             SETB    EA
+                      49     
+0133 90FDF9           50             MOV     DPTR,#ID
+0136 7907             51             MOV     R1,#7
+0138 E4               52     NEXT:   CLR     A
+0139 93               53             MOVC    A,@A+DPTR
+013A 120121           54             LCALL   UART_SEND
+013D A3               55             INC     DPTR
+013E D9F8             56             DJNZ    R1,NEXT
+                      57     
+A51 MACRO ASSEMBLER  STC8A_TEST3                                                          06/02/2020 13:15:49 PAGE     2
+
+0140                  58     LOOP:
+0140 80FE             59             JMP     LOOP
+                      60     
+                      61             END
+                             
+A51 MACRO ASSEMBLER  STC8A_TEST3                                                          06/02/2020 13:15:49 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+AUXR . . . . . . .  D ADDR   008EH   A   
+BUSY . . . . . . .  B ADDR   0020H.0 A   
+CHKRI. . . . . . .  C ADDR   0107H   A   
+EA . . . . . . . .  B ADDR   00A8H.7 A   
+ES . . . . . . . .  B ADDR   00A8H.4 A   
+ID . . . . . . . .  N NUMB   FDF9H   A   
+LOOP . . . . . . .  C ADDR   0140H   A   
+MAIN . . . . . . .  C ADDR   0129H   A   
+NEXT . . . . . . .  C ADDR   0138H   A   
+RI . . . . . . . .  B ADDR   0098H.0 A   
+SBUF . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . .  D ADDR   0098H   A   
+SP . . . . . . . .  D ADDR   0081H   A   
+TH1. . . . . . . .  D ADDR   008DH   A   
+TI . . . . . . . .  B ADDR   0098H.1 A   
+TL1. . . . . . . .  D ADDR   008BH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TR1. . . . . . . .  B ADDR   0088H.6 A   
+UARTISR_EXIT . . .  C ADDR   010CH   A   
+UART_INIT. . . . .  C ADDR   010DH   A   
+UART_ISR . . . . .  C ADDR   0100H   A   
+UART_SEND. . . . .  C ADDR   0121H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

@@ -1,0 +1,349 @@
+A51 MACRO ASSEMBLER  ASM_TEST2                                                            06/10/2020 17:10:04 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\asm_test2.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\asm_test2.a51 SET(SMALL) DEBUG PRINT(.\Listings\asm_test2.lst) OBJEC
+                      T(.\Objects\asm_test2.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+2000                   1             ORG 2000H;size=271H     
+2000                   2     CODE_2000H: 
+2000 40FE              3             JC CODE_2000H;  2000H: 40 FE
+2002 50FC              4             JNC CODE_2000H; 2002H: 50 FC
+2004 2063F9            5             JB 063H, CODE_2000H;    2004H: 20 63 F9
+2007 2054F6            6             JB 054H, CODE_2000H;    2007H: 20 54 F6
+200A 2023F3            7             JB 023H, CODE_2000H;    200aH: 20 23 F3
+200D 3063F0            8             JNB 063H, CODE_2000H;   200dH: 30 63 F0
+2010 3054ED            9             JNB 054H, CODE_2000H;   2010H: 30 54 ED
+2013 3023EA           10             JNB 023H, CODE_2000H;   2013H: 30 23 EA
+2016 1063E7           11             JBC 063H, CODE_2000H;   2016H: 10 63 E7
+2019 1054E4           12             JBC 054H, CODE_2000H;   2019H: 10 54 E4
+201C 1023E1           13             JBC 023H, CODE_2000H;   201cH: 10 23 E1
+201F 1100             14             ACALL CODE_2000H;       201fH: 11 00
+2021 122000           15             LCALL CODE_2000H;       2021H: 12 20 00
+2024 22               16             RET ;   2024H: 22
+2025 022000           17             LJMP CODE_2000H;        2025H: 02 20 00
+2028 80D6             18             SJMP CODE_2000H;        2028H: 80 D6
+202A 73               19             JMP @A+DPTR;    202aH: 73
+202B 60D3             20             JZ CODE_2000H;  202bH: 60 D3
+202D 70D1             21             JNZ CODE_2000H; 202dH: 70 D1
+202F B563CE           22             CJNE A, 063H, CODE_2000H;       202fH: B5 63 CE
+2032 B554CB           23             CJNE A, 054H, CODE_2000H;       2032H: B5 54 CB
+2035 B523C8           24             CJNE A, 023H, CODE_2000H;       2035H: B5 23 C8
+2038 B434C5           25             CJNE A, #034H, CODE_2000H;      2038H: B4 34 C5
+203B B412C2           26             CJNE A, #012H, CODE_2000H;      203bH: B4 12 C2
+203E B478BF           27             CJNE A, #078H, CODE_2000H;      203eH: B4 78 BF
+2041 B834BC           28             CJNE R0, #034H, CODE_2000H;     2041H: B8 34 BC
+2044 B812B9           29             CJNE R0, #012H, CODE_2000H;     2044H: B8 12 B9
+2047 B878B6           30             CJNE R0, #078H, CODE_2000H;     2047H: B8 78 B6
+204A BF34B3           31             CJNE R7, #034H, CODE_2000H;     204aH: BF 34 B3
+204D BF12B0           32             CJNE R7, #012H, CODE_2000H;     204dH: BF 12 B0
+2050 BF78AD           33             CJNE R7, #078H, CODE_2000H;     2050H: BF 78 AD
+2053 BB34AA           34             CJNE R3, #034H, CODE_2000H;     2053H: BB 34 AA
+2056 BB12A7           35             CJNE R3, #012H, CODE_2000H;     2056H: BB 12 A7
+2059 BB78A4           36             CJNE R3, #078H, CODE_2000H;     2059H: BB 78 A4
+205C B634A1           37             CJNE @R0, #034H, CODE_2000H;    205cH: B6 34 A1
+205F B6129E           38             CJNE @R0, #012H, CODE_2000H;    205fH: B6 12 9E
+2062 B6789B           39             CJNE @R0, #078H, CODE_2000H;    2062H: B6 78 9B
+2065 B73498           40             CJNE @R1, #034H, CODE_2000H;    2065H: B7 34 98
+2068 B71295           41             CJNE @R1, #012H, CODE_2000H;    2068H: B7 12 95
+206B B77892           42             CJNE @R1, #078H, CODE_2000H;    206bH: B7 78 92
+206E D890             43             DJNZ R0, CODE_2000H;    206eH: D8 90
+2070 DF8E             44             DJNZ R7, CODE_2000H;    2070H: DF 8E
+2072 DB8C             45             DJNZ R3, CODE_2000H;    2072H: DB 8C
+2074 D56389           46             DJNZ 063H, CODE_2000H;  2074H: D5 63 89
+2077 D55486           47             DJNZ 054H, CODE_2000H;  2077H: D5 54 86
+207A D52383           48             DJNZ 023H, CODE_2000H;  207aH: D5 23 83
+207D 28               49             ADD A,R0;       207dH: 28
+207E 2F               50             ADD A,R7;       207eH: 2F
+207F 2B               51             ADD A,R3;       207fH: 2B
+2080 2563             52             ADD A, 063H;    2080H: 25 63
+2082 2554             53             ADD A, 054H;    2082H: 25 54
+2084 2523             54             ADD A, 023H;    2084H: 25 23
+2086 26               55             ADD A,@R0;      2086H: 26
+2087 27               56             ADD A,@R1;      2087H: 27
+2088 2434             57             ADD A, #034H;   2088H: 24 34
+A51 MACRO ASSEMBLER  ASM_TEST2                                                            06/10/2020 17:10:04 PAGE     2
+
+208A 2412             58             ADD A, #012H;   208aH: 24 12
+208C 2478             59             ADD A, #078H;   208cH: 24 78
+208E 38               60             ADDC A,R0;      208eH: 38
+208F 3F               61             ADDC A,R7;      208fH: 3F
+2090 3B               62             ADDC A,R3;      2090H: 3B
+2091 3563             63             ADDC A, 063H;   2091H: 35 63
+2093 3554             64             ADDC A, 054H;   2093H: 35 54
+2095 3523             65             ADDC A, 023H;   2095H: 35 23
+2097 36               66             ADDC A,@R0;     2097H: 36
+2098 37               67             ADDC A,@R1;     2098H: 37
+2099 3434             68             ADDC A, #034H;  2099H: 34 34
+209B 3412             69             ADDC A, #012H;  209bH: 34 12
+209D 3478             70             ADDC A, #078H;  209dH: 34 78
+209F 98               71             SUBB A,R0;      209fH: 98
+20A0 9F               72             SUBB A,R7;      20a0H: 9F
+20A1 9B               73             SUBB A,R3;      20a1H: 9B
+20A2 9563             74             SUBB A, 063H;   20a2H: 95 63
+20A4 9554             75             SUBB A, 054H;   20a4H: 95 54
+20A6 9523             76             SUBB A, 023H;   20a6H: 95 23
+20A8 96               77             SUBB A,@R0;     20a8H: 96
+20A9 97               78             SUBB A,@R1;     20a9H: 97
+20AA 9434             79             SUBB A, #034H;  20aaH: 94 34
+20AC 9412             80             SUBB A, #012H;  20acH: 94 12
+20AE 9478             81             SUBB A, #078H;  20aeH: 94 78
+20B0 04               82             INC A;  20b0H: 04
+20B1 08               83             INC R0; 20b1H: 08
+20B2 0F               84             INC R7; 20b2H: 0F
+20B3 0B               85             INC R3; 20b3H: 0B
+20B4 0563             86             INC 063H;       20b4H: 05 63
+20B6 0554             87             INC 054H;       20b6H: 05 54
+20B8 0523             88             INC 023H;       20b8H: 05 23
+20BA 06               89             INC @R0;        20baH: 06
+20BB 07               90             INC @R1;        20bbH: 07
+20BC 14               91             DEC A;  20bcH: 14
+20BD 18               92             DEC R0; 20bdH: 18
+20BE 1F               93             DEC R7; 20beH: 1F
+20BF 1B               94             DEC R3; 20bfH: 1B
+20C0 1563             95             DEC 063H;       20c0H: 15 63
+20C2 1554             96             DEC 054H;       20c2H: 15 54
+20C4 1523             97             DEC 023H;       20c4H: 15 23
+20C6 16               98             DEC @R0;        20c6H: 16
+20C7 17               99             DEC @R1;        20c7H: 17
+20C8 A3              100             INC DPTR;       20c8H: A3
+20C9 A4              101             MUL AB; 20c9H: A4
+20CA 84              102             DIV AB; 20caH: 84
+20CB D4              103             DA A;   20cbH: D4
+20CC C3              104             CLR C;  20ccH: C3
+20CD C263            105             CLR 063H;       20cdH: C2 63
+20CF C254            106             CLR 054H;       20cfH: C2 54
+20D1 C223            107             CLR 023H;       20d1H: C2 23
+20D3 D3              108             SETB C; 20d3H: D3
+20D4 D263            109             SETB 063H;      20d4H: D2 63
+20D6 D254            110             SETB 054H;      20d6H: D2 54
+20D8 D223            111             SETB 023H;      20d8H: D2 23
+20DA B3              112             CPL C;  20daH: B3
+20DB B263            113             CPL 063H;       20dbH: B2 63
+20DD B254            114             CPL 054H;       20ddH: B2 54
+20DF B223            115             CPL 023H;       20dfH: B2 23
+20E1 8263            116             ANL C, 063H;    20e1H: 82 63
+20E3 8254            117             ANL C, 054H;    20e3H: 82 54
+20E5 8223            118             ANL C, 023H;    20e5H: 82 23
+20E7 B023            119             ANL C, /023H;   20e7H: B0 23
+20E9 7263            120             ORL C, 063H;    20e9H: 72 63
+20EB 7254            121             ORL C, 054H;    20ebH: 72 54
+20ED 7223            122             ORL C, 023H;    20edH: 72 23
+20EF A023            123             ORL C, /023H;   20efH: A0 23
+A51 MACRO ASSEMBLER  ASM_TEST2                                                            06/10/2020 17:10:04 PAGE     3
+
+20F1 A263            124             MOV C, 063H;    20f1H: A2 63
+20F3 A254            125             MOV C, 054H;    20f3H: A2 54
+20F5 A223            126             MOV C, 023H;    20f5H: A2 23
+20F7 9263            127             MOV 063H, C;    20f7H: 92 63
+20F9 9254            128             MOV 054H, C;    20f9H: 92 54
+20FB 9223            129             MOV 023H, C;    20fbH: 92 23
+20FD E8              130             MOV A,R0;       20fdH: E8
+20FE EF              131             MOV A,R7;       20feH: EF
+20FF EB              132             MOV A,R3;       20ffH: EB
+2100 E563            133             MOV A, 063H;    2100H: E5 63
+2102 E554            134             MOV A, 054H;    2102H: E5 54
+2104 E523            135             MOV A, 023H;    2104H: E5 23
+2106 E6              136             MOV A,@R0;      2106H: E6
+2107 E7              137             MOV A,@R1;      2107H: E7
+2108 7434            138             MOV A, #034H;   2108H: 74 34
+210A 7412            139             MOV A, #012H;   210aH: 74 12
+210C 7478            140             MOV A, #078H;   210cH: 74 78
+210E F8              141             MOV R0,A;       210eH: F8
+210F FF              142             MOV R7,A;       210fH: FF
+2110 FB              143             MOV R3,A;       2110H: FB
+2111 A863            144             MOV R0, 063H;   2111H: A8 63
+2113 A854            145             MOV R0, 054H;   2113H: A8 54
+2115 A823            146             MOV R0, 023H;   2115H: A8 23
+2117 AF63            147             MOV R7, 063H;   2117H: AF 63
+2119 AF54            148             MOV R7, 054H;   2119H: AF 54
+211B AF23            149             MOV R7, 023H;   211bH: AF 23
+211D AB63            150             MOV R3, 063H;   211dH: AB 63
+211F AB54            151             MOV R3, 054H;   211fH: AB 54
+2121 AB23            152             MOV R3, 023H;   2121H: AB 23
+2123 7834            153             MOV R0, #034H;  2123H: 78 34
+2125 7812            154             MOV R0, #012H;  2125H: 78 12
+2127 7878            155             MOV R0, #078H;  2127H: 78 78
+2129 7F34            156             MOV R7, #034H;  2129H: 7F 34
+212B 7F12            157             MOV R7, #012H;  212bH: 7F 12
+212D 7F78            158             MOV R7, #078H;  212dH: 7F 78
+212F 7B34            159             MOV R3, #034H;  212fH: 7B 34
+2131 7B12            160             MOV R3, #012H;  2131H: 7B 12
+2133 7B78            161             MOV R3, #078H;  2133H: 7B 78
+2135 F563            162             MOV 063H, A;    2135H: F5 63
+2137 F554            163             MOV 054H, A;    2137H: F5 54
+2139 F523            164             MOV 023H, A;    2139H: F5 23
+213B 8863            165             MOV 063H, R0;   213bH: 88 63
+213D 8F63            166             MOV 063H, R7;   213dH: 8F 63
+213F 8B63            167             MOV 063H, R3;   213fH: 8B 63
+2141 8854            168             MOV 054H, R0;   2141H: 88 54
+2143 8F54            169             MOV 054H, R7;   2143H: 8F 54
+2145 8B54            170             MOV 054H, R3;   2145H: 8B 54
+2147 8823            171             MOV 023H, R0;   2147H: 88 23
+2149 8F23            172             MOV 023H, R7;   2149H: 8F 23
+214B 8B23            173             MOV 023H, R3;   214bH: 8B 23
+214D 856363          174             MOV 063H, 063H; 214dH: 85 63 63
+2150 856354          175             MOV 054H, 063H; 2150H: 85 54 63
+2153 856323          176             MOV 023H, 063H; 2153H: 85 23 63
+2156 855463          177             MOV 063H, 054H; 2156H: 85 63 54
+2159 855454          178             MOV 054H, 054H; 2159H: 85 54 54
+215C 855423          179             MOV 023H, 054H; 215cH: 85 23 54
+215F 852363          180             MOV 063H, 023H; 215fH: 85 63 23
+2162 852354          181             MOV 054H, 023H; 2162H: 85 54 23
+2165 852323          182             MOV 023H, 023H; 2165H: 85 23 23
+2168 8663            183             MOV 063H, @R0;  2168H: 86 63
+216A 8763            184             MOV 063H, @R1;  216aH: 87 63
+216C 8654            185             MOV 054H, @R0;  216cH: 86 54
+216E 8754            186             MOV 054H, @R1;  216eH: 87 54
+2170 8623            187             MOV 023H, @R0;  2170H: 86 23
+2172 8723            188             MOV 023H, @R1;  2172H: 87 23
+2174 756334          189             MOV 063H, #034H;        2174H: 75 63 34
+A51 MACRO ASSEMBLER  ASM_TEST2                                                            06/10/2020 17:10:04 PAGE     4
+
+2177 756312          190             MOV 063H, #012H;        2177H: 75 63 12
+217A 756378          191             MOV 063H, #078H;        217aH: 75 63 78
+217D 755434          192             MOV 054H, #034H;        217dH: 75 54 34
+2180 755412          193             MOV 054H, #012H;        2180H: 75 54 12
+2183 755478          194             MOV 054H, #078H;        2183H: 75 54 78
+2186 752334          195             MOV 023H, #034H;        2186H: 75 23 34
+2189 752312          196             MOV 023H, #012H;        2189H: 75 23 12
+218C 752378          197             MOV 023H, #078H;        218cH: 75 23 78
+218F F6              198             MOV @R0,A;      218fH: F6
+2190 F7              199             MOV @R1,A;      2190H: F7
+2191 A663            200             MOV @R0, 063H;  2191H: A6 63
+2193 A654            201             MOV @R0, 054H;  2193H: A6 54
+2195 A623            202             MOV @R0, 023H;  2195H: A6 23
+2197 A763            203             MOV @R1, 063H;  2197H: A7 63
+2199 A754            204             MOV @R1, 054H;  2199H: A7 54
+219B A723            205             MOV @R1, 023H;  219bH: A7 23
+219D 7634            206             MOV @R0, #034H; 219dH: 76 34
+219F 7612            207             MOV @R0, #012H; 219fH: 76 12
+21A1 7678            208             MOV @R0, #078H; 21a1H: 76 78
+21A3 7734            209             MOV @R1, #034H; 21a3H: 77 34
+21A5 7712            210             MOV @R1, #012H; 21a5H: 77 12
+21A7 7778            211             MOV @R1, #078H; 21a7H: 77 78
+21A9 901234          212             MOV DPTR, #01234H;      21a9H: 90 12 34
+21AC 900012          213             MOV DPTR, #012H;        21acH: 90 00 12
+21AF 900078          214             MOV DPTR, #078H;        21afH: 90 00 78
+21B2 93              215             MOVC A,@A+DPTR; 21b2H: 93
+21B3 83              216             MOVC A,@A+PC;   21b3H: 83
+21B4 E2              217             MOVX A,@R0;     21b4H: E2
+21B5 E3              218             MOVX A,@R1;     21b5H: E3
+21B6 E0              219             MOVX A,@DPTR;   21b6H: E0
+21B7 F2              220             MOVX @R0,A;     21b7H: F2
+21B8 F3              221             MOVX @R1,A;     21b8H: F3
+21B9 F0              222             MOVX @DPTR,A;   21b9H: F0
+21BA C063            223             PUSH 063H;      21baH: C0 63
+21BC C054            224             PUSH 054H;      21bcH: C0 54
+21BE C023            225             PUSH 023H;      21beH: C0 23
+21C0 D063            226             POP 063H;       21c0H: D0 63
+21C2 D054            227             POP 054H;       21c2H: D0 54
+21C4 D023            228             POP 023H;       21c4H: D0 23
+21C6 C8              229             XCH A,R0;       21c6H: C8
+21C7 CF              230             XCH A,R7;       21c7H: CF
+21C8 CB              231             XCH A,R3;       21c8H: CB
+21C9 C563            232             XCH A, 063H;    21c9H: C5 63
+21CB C554            233             XCH A, 054H;    21cbH: C5 54
+21CD C523            234             XCH A, 023H;    21cdH: C5 23
+21CF C6              235             XCH A,@R0;      21cfH: C6
+21D0 C7              236             XCH A,@R1;      21d0H: C7
+21D1 D6              237             XCHD A,@R0;     21d1H: D6
+21D2 D7              238             XCHD A,@R1;     21d2H: D7
+21D3 58              239             ANL A,R0;       21d3H: 58
+21D4 5F              240             ANL A,R7;       21d4H: 5F
+21D5 5B              241             ANL A,R3;       21d5H: 5B
+21D6 5563            242             ANL A, 063H;    21d6H: 55 63
+21D8 5554            243             ANL A, 054H;    21d8H: 55 54
+21DA 5523            244             ANL A, 023H;    21daH: 55 23
+21DC 56              245             ANL A,@R0;      21dcH: 56
+21DD 57              246             ANL A,@R1;      21ddH: 57
+21DE 5434            247             ANL A, #034H;   21deH: 54 34
+21E0 5412            248             ANL A, #012H;   21e0H: 54 12
+21E2 5478            249             ANL A, #078H;   21e2H: 54 78
+21E4 5263            250             ANL 063H, A;    21e4H: 52 63
+21E6 5254            251             ANL 054H, A;    21e6H: 52 54
+21E8 5223            252             ANL 023H, A;    21e8H: 52 23
+21EA 536334          253             ANL 063H, #034H;        21eaH: 53 63 34
+21ED 536312          254             ANL 063H, #012H;        21edH: 53 63 12
+21F0 536378          255             ANL 063H, #078H;        21f0H: 53 63 78
+A51 MACRO ASSEMBLER  ASM_TEST2                                                            06/10/2020 17:10:04 PAGE     5
+
+21F3 535434          256             ANL 054H, #034H;        21f3H: 53 54 34
+21F6 535412          257             ANL 054H, #012H;        21f6H: 53 54 12
+21F9 535478          258             ANL 054H, #078H;        21f9H: 53 54 78
+21FC 532334          259             ANL 023H, #034H;        21fcH: 53 23 34
+21FF 532312          260             ANL 023H, #012H;        21ffH: 53 23 12
+2202 532378          261             ANL 023H, #078H;        2202H: 53 23 78
+2205 48              262             ORL A,R0;       2205H: 48
+2206 4F              263             ORL A,R7;       2206H: 4F
+2207 4B              264             ORL A,R3;       2207H: 4B
+2208 4563            265             ORL A, 063H;    2208H: 45 63
+220A 4554            266             ORL A, 054H;    220aH: 45 54
+220C 4523            267             ORL A, 023H;    220cH: 45 23
+220E 46              268             ORL A,@R0;      220eH: 46
+220F 47              269             ORL A,@R1;      220fH: 47
+2210 4434            270             ORL A, #034H;   2210H: 44 34
+2212 4412            271             ORL A, #012H;   2212H: 44 12
+2214 4478            272             ORL A, #078H;   2214H: 44 78
+2216 4263            273             ORL 063H, A;    2216H: 42 63
+2218 4254            274             ORL 054H, A;    2218H: 42 54
+221A 4223            275             ORL 023H, A;    221aH: 42 23
+221C 436334          276             ORL 063H, #034H;        221cH: 43 63 34
+221F 436312          277             ORL 063H, #012H;        221fH: 43 63 12
+2222 436378          278             ORL 063H, #078H;        2222H: 43 63 78
+2225 435434          279             ORL 054H, #034H;        2225H: 43 54 34
+2228 435412          280             ORL 054H, #012H;        2228H: 43 54 12
+222B 435478          281             ORL 054H, #078H;        222bH: 43 54 78
+222E 432334          282             ORL 023H, #034H;        222eH: 43 23 34
+2231 432312          283             ORL 023H, #012H;        2231H: 43 23 12
+2234 432378          284             ORL 023H, #078H;        2234H: 43 23 78
+2237 68              285             XRL A,R0;       2237H: 68
+2238 6F              286             XRL A,R7;       2238H: 6F
+2239 6B              287             XRL A,R3;       2239H: 6B
+223A 6563            288             XRL A, 063H;    223aH: 65 63
+223C 6554            289             XRL A, 054H;    223cH: 65 54
+223E 6523            290             XRL A, 023H;    223eH: 65 23
+2240 66              291             XRL A,@R0;      2240H: 66
+2241 67              292             XRL A,@R1;      2241H: 67
+2242 6434            293             XRL A, #034H;   2242H: 64 34
+2244 6412            294             XRL A, #012H;   2244H: 64 12
+2246 6478            295             XRL A, #078H;   2246H: 64 78
+2248 6263            296             XRL 063H, A;    2248H: 62 63
+224A 6254            297             XRL 054H, A;    224aH: 62 54
+224C 6223            298             XRL 023H, A;    224cH: 62 23
+224E 636334          299             XRL 063H, #034H;        224eH: 63 63 34
+2251 636312          300             XRL 063H, #012H;        2251H: 63 63 12
+2254 636378          301             XRL 063H, #078H;        2254H: 63 63 78
+2257 635434          302             XRL 054H, #034H;        2257H: 63 54 34
+225A 635412          303             XRL 054H, #012H;        225aH: 63 54 12
+225D 635478          304             XRL 054H, #078H;        225dH: 63 54 78
+2260 632334          305             XRL 023H, #034H;        2260H: 63 23 34
+2263 632312          306             XRL 023H, #012H;        2263H: 63 23 12
+2266 632378          307             XRL 023H, #078H;        2266H: 63 23 78
+2269 E4              308             CLR A;  2269H: E4
+226A F4              309             CPL A;  226aH: F4
+226B 23              310             RL A;   226bH: 23
+226C 33              311             RLC A;  226cH: 33
+226D 03              312             RR A;   226dH: 03
+226E 13              313             RRC A;  226eH: 13
+226F C4              314             SWAP A; 226fH: C4
+2270 00              315             NOP ;   2270H: 00
+                     316     END
+A51 MACRO ASSEMBLER  ASM_TEST2                                                            06/10/2020 17:10:04 PAGE     6
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+CODE_2000H . . . .  C ADDR   2000H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

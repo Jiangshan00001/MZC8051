@@ -1,0 +1,143 @@
+A51 MACRO ASSEMBLER  ASM_TEST1                                                            06/03/2020 19:07:54 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\asm_test1.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\asm_test1.asm SET(SMALL) DEBUG PRINT(.\Listings\asm_test1.lst) OBJEC
+                      T(.\Objects\asm_test1.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+1234                   1     org 1234H 
+1234 021234            2     START: LJMP START
+1237 513F              3     ACALL TMP1
+1239 29                4     ADD A,R1
+123A 2510              5     ADD A,10H
+123C 27                6     ADD A, @R1
+123D 2412              7     ADD A,#12H
+123F 39                8     TMP1:ADDC A, R1
+1240 3514              9     ADDC A,14H
+1242 37               10     ADDC A,@R1
+1243 3447             11     ADDC A,#47H
+1245 413F             12     AJMP TMP1
+1247 5E               13     ANL A,R6
+1248 5556             14     ANL A, 56H
+124A 57               15     ANL A,@R1
+124B 5487             16     ANL A,#87H
+124D 5209             17     ANL 09H,A
+124F 537843           18     ANL 78H,#43H
+1252 8281             19     ANL C,81H
+1254 B081             20     ANL C,/81H
+1256 B534FD           21     TMP2:CJNE A,34H,TMP2
+1259 B443E3           22     CJNE A,#43H,TMP1
+125C BE54E0           23     CJNE R6,#54H,TMP1
+125F B654DD           24     CJNE @R0,#54H,TMP1
+1262 E4               25     CLR A
+1263 C3               26     CLR C
+1264 C282             27     CLR 82H
+1266 F4               28     CPL A
+1267 B3               29     CPL C
+1268 B282             30     CPL 82H
+126A D4               31     DA A
+126B 14               32     DEC A
+126C 1C               33     DEC R4
+126D 1523             34     DEC 23H
+126F 17               35     DEC @R1
+1270 84               36     DIV AB
+1271 DACC             37     DJNZ R2,TMP1
+1273 D543E0           38     DJNZ 43H,TMP2
+1276 04               39     INC A
+1277 0B               40     INC R3
+1278 0556             41     INC 56H
+127A 07               42     INC @R1
+127B A3               43     INC DPTR
+127C 2034C0           44     JB 34H,TMP1
+127F 1032D4           45     JBC 32H,TMP2
+1282 40BB             46     JC TMP1
+1284 73               47     JMP @A+DPTR
+1285 3034B7           48     JNB 34H,TMP1
+1288 50CC             49     JNC TMP2
+128A 70B3             50     JNZ TMP1
+128C 60C8             51     JZ TMP2
+128E 12123F           52     LCALL TMP1
+1291 021256           53     LJMP TMP2
+1294 ED               54     MOV A,R5
+1295 E534             55     MOV A,34H
+1297 E6               56     MOV A,@R0
+1298 7432             57     MOV A,#32H
+A51 MACRO ASSEMBLER  ASM_TEST1                                                            06/03/2020 19:07:54 PAGE     2
+
+129A FD               58     MOV R5,A
+129B AA34             59     MOV R2,34H
+129D 7C32             60     MOV R4,#32H
+129F F543             61     MOV 43H,A
+12A1 8A32             62     MOV 32H,R2
+12A3 855432           63     MOV 32H,54H
+12A6 8732             64     MOV 32H,@R1
+12A8 756732           65     MOV 67H,#32H
+12AB F7               66     MOV @R1,A
+12AC A687             67     MOV @R0,87H
+12AE 7723             68     MOV @R1,#23H
+12B0 A282             69     MOV C,82H
+12B2 9283             70     MOV 83H,C
+12B4 901234           71     MOV DPTR,#1234H
+12B7 93               72     MOVC A,@A+DPTR
+12B8 83               73     MOVC A,@A+PC
+12B9 E2               74     MOVX A,@R0
+12BA E0               75     MOVX A,@DPTR
+12BB F3               76     MOVX @R1,A
+12BC F0               77     MOVX @DPTR,A
+12BD A4               78     MUL AB
+12BE 00               79     NOP
+12BF 4E               80     ORL A,R6
+12C0 4587             81     ORL A,87H
+12C2 46               82     ORL A,@R0
+12C3 4432             83     ORL A,#32H
+12C5 4298             84     ORL 98H,A
+12C7 434323           85     ORL 43H,#23H
+12CA 7298             86     ORL C,98H
+12CC A023             87     ORL C,/23H
+12CE D034             88     POP 34H
+12D0 C034             89     PUSH 34H
+12D2 22               90     RET
+12D3 32               91     RETI
+12D4 23               92     TMP3:RL A
+12D5 33               93     RLC A
+12D6 03               94     RR A
+12D7 13               95     RRC A
+12D8 D293             96     SETB 93H
+12DA D3               97     SETB C
+12DB 80F7             98     SJMP TMP3
+12DD 9D               99     SUBB A,R5
+12DE 9543            100     SUBB A,43H
+12E0 96              101     SUBB A,@R0
+12E1 9421            102     SUBB A,#21H
+12E3 C4              103     SWAP A
+12E4 CC              104     XCH A,R4
+12E5 C512            105     XCH A,12H
+12E7 C6              106     XCH A,@R0
+12E8 D7              107     XCHD A,@R1
+12E9 6A              108     XRL A,R2
+                     109     
+                     110     
+                     111     
+                     112     
+                     113     end
+A51 MACRO ASSEMBLER  ASM_TEST1                                                            06/03/2020 19:07:54 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+START. . . . . . .  C ADDR   1234H   A   
+TMP1 . . . . . . .  C ADDR   123FH   A   
+TMP2 . . . . . . .  C ADDR   1256H   A   
+TMP3 . . . . . . .  C ADDR   12D4H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

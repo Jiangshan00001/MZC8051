@@ -1,0 +1,446 @@
+A51 MACRO ASSEMBLER  STC_HC595                                                            07/01/2020 20:41:09 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\stc_hc595.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\stc_hc595.a51 SET(SMALL) DEBUG PRINT(.\Listings\stc_hc595.lst) OBJEC
+                      T(.\Objects\stc_hc595.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;/*---------------------------------------------------------------------*/
+                       2     ;/* --- STC MCU Limited ------------------------------------------------*/
+                       3     ;/* --- STC 1T Series MCU Demo Programme -------------------------------*/
+                       4     ;/* --- Mobile: (86)13922805190 ----------------------------------------*/
+                       5     ;/* --- Fax: 86-0513-55012956,55012947,55012969 -----------------------*/
+                       6     ;/* --- Tel: 86-0513-55012928,55012929,55012966 ------------------------*/
+                       7     ;/* --- Web: www.STCMCU.com --------------------------------------------*/
+                       8     ;/* --- Web: www.GXWMCU.com --------------------------------------------*/
+                       9     ;/* --- QQ:  800003751 -------------------------------------------------*/
+                      10     ;/* 如果要在程序中使用此代码,请在程序中注明使用了STC的资料及程�
+                             �        */
+                      11     ;/*---------------------------------------------------------------------*/
+                      12     
+                      13     
+                      14     ;*************  功能说明    **************
+                      15     
+                      16     ;用STC的MCU的IO方式控制74HC595驱动8位数码管。
+                      17     
+                      18     ;显示效果为: 数码时钟.
+                      19     
+                      20     ;使用Timer0的16位自动重装来产生1ms节拍,程序运行于这个节拍下, 用户�
+                             ��改MCU主时钟频率时,自动定时于1ms.
+                      21     
+                      22     ;******************************************/
+                      23     
+                      24     ;/****************************** 用户定义宏 ***********************************/
+                      25     
+  2B33                26     Fosc_KHZ    EQU 11059   ;11059KHZ
+                      27     
+  00D0                28     STACK_POIRTER   EQU     0D0H    ;堆栈开始地址
+                      29     
+  D4CD                30     Timer0_Reload   EQU     (65536 - Fosc_KHZ)  ; Timer 0 中断频率, 1000次/秒
+                      31     
+  0020                32     DIS_DOT         EQU     020H
+  0010                33     DIS_BLACK       EQU     010H
+  0011                34     DIS_            EQU     011H
+                      35     
+                      36     ;*******************************************************************
+                      37     ;*******************************************************************
+  0093                38     P0M1    DATA    0x93    ; P0M1.n,P0M0.n     =00--->Standard,    01--->push-pull
+  0094                39     P0M0    DATA    0x94    ;                   =10--->pure input,  11--->open drain
+  0091                40     P1M1    DATA    0x91    ; P1M1.n,P1M0.n     =00--->Standard,    01--->push-pull
+  0092                41     P1M0    DATA    0x92    ;                   =10--->pure input,  11--->open drain
+  0095                42     P2M1    DATA    0x95    ; P2M1.n,P2M0.n     =00--->Standard,    01--->push-pull
+  0096                43     P2M0    DATA    0x96    ;                   =10--->pure input,  11--->open drain
+  00B1                44     P3M1    DATA    0xB1    ; P3M1.n,P3M0.n     =00--->Standard,    01--->push-pull
+  00B2                45     P3M0    DATA    0xB2    ;                   =10--->pure input,  11--->open drain
+  00B3                46     P4M1    DATA    0xB3    ; P4M1.n,P4M0.n     =00--->Standard,    01--->push-pull
+  00B4                47     P4M0    DATA    0xB4    ;                   =10--->pure input,  11--->open drain
+  00C9                48     P5M1    DATA    0xC9    ; P5M1.n,P5M0.n     =00--->Standard,    01--->push-pull
+  00CA                49     P5M0    DATA    0xCA    ;                   =10--->pure input,  11--->open drain
+  00CB                50     P6M1    DATA    0xCB    ; P6M1.n,P6M0.n     =00--->Standard,    01--->push-pull
+  00CC                51     P6M0    DATA    0xCC    ;                   =10--->pure input,  11--->open drain
+  00E1                52     P7M1    DATA    0xE1    ;
+  00E2                53     P7M0    DATA    0xE2    ;
+                      54     
+  008E                55     AUXR      DATA 08EH
+A51 MACRO ASSEMBLER  STC_HC595                                                            07/01/2020 20:41:09 PAGE     2
+
+  00C0                56     P4        DATA 0C0H
+  00C8                57     P5        DATA 0C8H
+                      58     
+                      59             
+                      60     ;*************  IO口定义    **************/
+  00C0                61     P_HC595_SER   BIT P4.0  ;   //pin 14    SER     data input
+  00CC                62     P_HC595_RCLK  BIT P5.4  ;   //pin 12    RCLk    store (latch) clock
+  00C3                63     P_HC595_SRCLK BIT P4.3  ;   //pin 11    SRCLK   Shift data clock
+                      64     
+                      65     ;*************  本地变量声明    **************/
+  0020                66     Flag0           DATA    20H
+  0000                67     B_1ms           BIT     Flag0.0 ;   1ms标志
+                      68     
+  0030                69     LED8            DATA    30H     ;   显示缓冲 30H ~ 37H
+  0038                70     display_index   DATA    38H     ;   显示位索引
+                      71     
+  0039                72     hour            DATA    39H     ;
+  003A                73     minute          DATA    3AH
+  003B                74     second          DATA    3BH     ;
+  003C                75     msecond_H       DATA    3CH     ;
+  003D                76     msecond_L       DATA    3DH     ;
+                      77     
+                      78     
+                      79     ;*******************************************************************
+                      80     ;*******************************************************************
+0000                  81             ORG     0000H               ;reset
+0000 020100           82             LJMP    F_Main
+                      83     
+000B                  84             ORG     000BH               ;1  Timer0 interrupt
+000B 020244           85             LJMP    F_Timer0_Interrupt
+                      86     
+                      87     ;*******************************************************************
+                      88     ;*******************************************************************
+                      89     
+                      90     
+                      91     
+                      92     
+                      93     ;******************** 主程序 **************************/
+0100                  94             ORG     0100H       ;reset
+0100                  95     F_Main:
+0100 E4               96         CLR     A
+0101 F593             97         MOV     P0M1, A     ;设置为准双向口
+0103 F594             98         MOV     P0M0, A
+0105 F591             99         MOV     P1M1, A     ;设置为准双向口
+0107 F592            100         MOV     P1M0, A
+0109 F595            101         MOV     P2M1, A     ;设置为准双向口
+010B F596            102         MOV     P2M0, A
+010D F5B1            103         MOV     P3M1, A     ;设置为准双向口
+010F F5B2            104         MOV     P3M0, A
+0111 F5B3            105         MOV     P4M1, A     ;设置为准双向口
+0113 F5B4            106         MOV     P4M0, A
+0115 F5C9            107         MOV     P5M1, A     ;设置为准双向口
+0117 F5CA            108         MOV     P5M0, A
+0119 F5CB            109         MOV     P6M1, A     ;设置为准双向口
+011B F5CC            110         MOV     P6M0, A
+011D F5E1            111         MOV     P7M1, A     ;设置为准双向口
+011F F5E2            112         MOV     P7M0, A
+                     113     
+                     114         
+0121 7581D0          115         MOV     SP, #STACK_POIRTER
+0124 75D000          116         MOV     PSW, #0
+                     117         USING   0       ;选择第0组R0~R7
+                     118     
+                     119     ;================= 用户初始化程序 ====================================
+                     120     
+0127 753800          121         MOV     display_index, #0
+A51 MACRO ASSEMBLER  STC_HC595                                                            07/01/2020 20:41:09 PAGE     3
+
+012A 7830            122         MOV     R0, #LED8
+012C 7A08            123         MOV     R2, #8
+012E                 124     L_ClearLoop:
+012E 7610            125         MOV     @R0, #DIS_BLACK     ;上电消隐
+0130 08              126         INC     R0
+0131 DAFB            127         DJNZ    R2, L_ClearLoop
+                     128         
+0133 C28C            129         CLR     TR0
+0135 438E80          130         ORL     AUXR, #(1 SHL 7)    ; Timer0_1T();
+0138 5389FB          131         ANL     TMOD, #NOT 04H      ; Timer0_AsTimer();
+013B 5389FC          132         ANL     TMOD, #NOT 03H      ; Timer0_16bitAutoReload();
+013E 758CD4          133         MOV     TH0, #Timer0_Reload / 256   ;Timer0_Load(Timer0_Reload);
+0141 758ACD          134         MOV     TL0, #Timer0_Reload MOD 256
+0144 D2A9            135         SETB    ET0         ; Timer0_InterruptEnable();
+0146 D28C            136         SETB    TR0         ; Timer0_Run();
+0148 D2AF            137         SETB    EA          ; 打开总中断
+                     138         
+014A 75390C          139         MOV     hour,   #12 ; 初始化时间值
+014D 753A00          140         MOV     minute, #0
+0150 753B00          141         MOV     second, #0
+0153 12017D          142         LCALL   F_DisplayRTC
+                     143         
+                     144     
+                     145     ;=================== 主循环 ==================================
+0156                 146     L_Main_Loop:
+0156 3000FD          147         JNB     B_1ms,  L_Main_Loop     ;1ms未到
+0159 C200            148         CLR     B_1ms
+                     149         
+015B 053D            150         INC     msecond_L       ;msecond + 1
+015D E53D            151         MOV     A, msecond_L
+015F 7002            152         JNZ     L_Check1000ms
+0161 053C            153         INC     msecond_H
+0163                 154     L_Check1000ms:  
+0163 E53D            155         MOV     A, msecond_L    ;msecond - 1000
+0165 C3              156         CLR     C
+0166 94E8            157         SUBB    A, #LOW 1000
+0168 E53C            158         MOV     A, msecond_H
+016A 9403            159         SUBB    A, #HIGH 1000
+016C 40E8            160         JC      L_Main_Loop     ;if(msecond < 1000), jmp
+                     161         
+016E 753D00          162         MOV     msecond_L, #0   ;if(msecond >= 1000)
+0171 753C00          163         MOV     msecond_H, #0
+                     164     
+0174 1201A9          165         LCALL   F_RTC
+0177 12017D          166         LCALL   F_DisplayRTC
+                     167     
+017A 020156          168         LJMP    L_Main_Loop
+                     169     
+                     170     ;**********************************************/
+                     171     
+                     172     
+                     173     
+                     174     ;========================================================================
+                     175     ; 函数: F_DisplayRTC
+                     176     ; 描述: 显示时钟子程序。
+                     177     ; 参数: none.
+                     178     ; 返回: none.
+                     179     ; 版本: VER1.0
+                     180     ; 日期: 2013-4-1
+                     181     ; 备注: 除了ACCC和PSW外, 所用到的通用寄存器都入栈
+                     182     ;========================================================================
+017D                 183     F_DisplayRTC:
+017D C0F0            184         PUSH    B       ;B入栈
+                     185         
+017F E539            186         MOV     A, hour
+0181 75F00A          187         MOV     B, #10
+A51 MACRO ASSEMBLER  STC_HC595                                                            07/01/2020 20:41:09 PAGE     4
+
+0184 84              188         DIV     AB
+0185 F530            189         MOV     LED8, A
+0187 85F031          190         MOV     LED8+1, B
+018A 753211          191         MOV     LED8+2, #DIS_;
+                     192         
+018D E53A            193         MOV     A, minute
+018F 75F00A          194         MOV     B, #10
+0192 84              195         DIV     AB
+0193 F533            196         MOV     LED8+3, A;
+0195 85F034          197         MOV     LED8+4, B;
+0198 753511          198         MOV     LED8+5, #DIS_;
+                     199     
+019B E53B            200         MOV     A, second
+019D 75F00A          201         MOV     B, #10
+01A0 84              202         DIV     AB
+01A1 F536            203         MOV     LED8+6, A;
+01A3 85F037          204         MOV     LED8+7, B;
+                     205         
+01A6 D0F0            206         POP     B       ;B出栈
+01A8 22              207         RET
+                     208     
+                     209     ;========================================================================
+                     210     ; 函数: F_RTC
+                     211     ; 描述: RTC演示子程序。
+                     212     ; 参数: none.
+                     213     ; 返回: none.
+                     214     ; 版本: VER1.0
+                     215     ; 日期: 2013-4-1
+                     216     ; 备注: 除了ACCC和PSW外, 所用到的通用寄存器都入栈
+                     217     ;========================================================================
+01A9                 218     F_RTC:
+01A9 053B            219         INC     second      ; second + 1
+01AB E53B            220         MOV     A, second
+01AD C3              221         CLR     C
+01AE 943C            222         SUBB    A,#60
+01B0 401B            223         JC      L_QuitRTC   ; second >= 60?
+01B2 753B00          224         MOV     second, #0;
+                     225     
+01B5 053A            226         INC     minute      ; minute + 1
+01B7 E53A            227         MOV     A, minute
+01B9 C3              228         CLR     C
+01BA 943C            229         SUBB    A,#60
+01BC 400F            230         JC      L_QuitRTC   ; minute >= 60?
+01BE 753A00          231         MOV     minute, #0
+                     232     
+01C1 0539            233         INC     hour        ; hour + 1
+01C3 E539            234         MOV     A, hour
+01C5 C3              235         CLR     C
+01C6 9418            236         SUBB    A,#24
+01C8 4003            237         JC      L_QuitRTC   ; hour >= 24?
+01CA 753900          238         MOV     hour, #0
+01CD                 239     L_QuitRTC:
+01CD 22              240         RET
+                     241     
+                     242     
+                     243     ; *********************** 显示相关程序 ****************************************
+01CE                 244     T_Display:                      ;标准字库
+                     245     ;    0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+01CE 3F065B4F        246     DB  03FH,006H,05BH,04FH,066H,06DH,07DH,007H,07FH,06FH,077H,07CH,039H,05EH,079H,071H
+01D2 666D7D07                
+01D6 7F6F777C                
+01DA 395E7971                
+                     247     ;  black  -    H    J    K    L    N    o    P    U    t    G    Q    r    M    y
+01DE 0040761E        248     DB  000H,040H,076H,01EH,070H,038H,037H,05CH,073H,03EH,078H,03dH,067H,050H,037H,06EH
+01E2 7038375C                
+01E6 733E783D                
+A51 MACRO ASSEMBLER  STC_HC595                                                            07/01/2020 20:41:09 PAGE     5
+
+01EA 6750376E                
+                     249     ;    0.   1.   2.   3.   4.   5.   6.   7.   8.   9.   -1
+01EE BF86DBCF        250     DB  0BFH,086H,0DBH,0CFH,0E6H,0EDH,0FDH,087H,0FFH,0EFH,046H
+01F2 E6EDFD87                
+01F6 FFEF46                  
+                     251     
+01F9                 252     T_COM:
+01F9 01020408        253     DB  001H,002H,004H,008H,010H,020H,040H,080H     ;   位码
+01FD 10204080                
+                     254     
+                     255     
+                     256     ;========================================================================
+                     257     ; 函数: F_Send_595
+                     258     ; 描述: 向HC595发送一个字节子程序。
+                     259     ; 参数: ACC: 要发送的字节数据.
+                     260     ; 返回: none.
+                     261     ; 版本: VER1.0
+                     262     ; 日期: 2013-4-1
+                     263     ; 备注: 除了ACCC和PSW外, 所用到的通用寄存器都入栈
+                     264     ;========================================================================
+0201                 265     F_Send_595:
+0201 C002            266         PUSH    02H     ;R2入栈
+0203 7A08            267         MOV     R2, #8
+0205                 268     L_Send_595_Loop:
+0205 33              269         RLC     A
+0206 92C0            270         MOV     P_HC595_SER,C
+0208 D2C3            271         SETB    P_HC595_SRCLK
+020A C2C3            272         CLR     P_HC595_SRCLK
+020C DAF7            273         DJNZ    R2, L_Send_595_Loop
+020E D002            274         POP     02H     ;R2出栈
+0210 22              275         RET
+                     276     
+                     277     ;========================================================================
+                     278     ; 函数: F_DisplayScan
+                     279     ; 描述: 显示扫描子程序。
+                     280     ; 参数: none.
+                     281     ; 返回: none.
+                     282     ; 版本: VER1.0
+                     283     ; 日期: 2013-4-1
+                     284     ; 备注: 除了ACCC和PSW外, 所用到的通用寄存器都入栈
+                     285     ;========================================================================
+0211                 286     F_DisplayScan:
+0211 C083            287         PUSH    DPH     ;DPH入栈
+0213 C082            288         PUSH    DPL     ;DPL入栈
+0215 C000            289         PUSH    00H     ;R0 入栈
+                     290         
+0217 9001F9          291         MOV     DPTR, #T_COM
+021A E538            292         MOV     A, display_index
+021C 93              293         MOVC    A, @A+DPTR
+021D F4              294         CPL     A
+021E 120201          295         LCALL   F_Send_595      ;输出位码
+                     296         
+0221 9001CE          297         MOV     DPTR, #T_Display
+0224 E538            298         MOV     A, display_index
+0226 2430            299         ADD     A, #LED8
+0228 F8              300         MOV     R0, A
+0229 E6              301         MOV     A, @R0
+022A 93              302         MOVC    A, @A+DPTR
+022B 120201          303         LCALL   F_Send_595      ;输出段码
+                     304     
+022E D2CC            305         SETB    P_HC595_RCLK
+0230 C2CC            306         CLR     P_HC595_RCLK    ;   锁存输出数据
+0232 0538            307         INC     display_index
+0234 E538            308         MOV     A, display_index
+0236 54F8            309         ANL     A, #0F8H            ; if(display_index >= 8)
+0238 6003            310         JZ      L_QuitDisplayScan
+A51 MACRO ASSEMBLER  STC_HC595                                                            07/01/2020 20:41:09 PAGE     6
+
+023A 753800          311         MOV     display_index, #0;  ;8位结束回0
+023D                 312     L_QuitDisplayScan:
+023D D000            313         POP     00H     ;R0 出栈
+023F D082            314         POP     DPL     ;DPL出栈
+0241 D083            315         POP     DPH     ;DPH出栈
+0243 22              316         RET
+                     317     
+                     318     
+                     319     ;*******************************************************************
+                     320     ;**************** 中断函数 ***************************************************
+                     321     
+0244                 322     F_Timer0_Interrupt: ;Timer0 1ms中断函数
+0244 C0D0            323         PUSH    PSW     ;PSW入栈
+0246 C0E0            324         PUSH    ACC     ;ACC入栈
+                     325     
+0248 120211          326         LCALL   F_DisplayScan   ; 1ms扫描显示一位
+024B D200            327         SETB    B_1ms           ; 1ms标志
+                     328     
+024D D0E0            329         POP     ACC     ;ACC出栈
+024F D0D0            330         POP     PSW     ;PSW出栈
+0251 32              331         RETI
+                     332         
+                     333     
+                     334     
+                     335         END
+                             
+A51 MACRO ASSEMBLER  STC_HC595                                                            07/01/2020 20:41:09 PAGE     7
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ACC. . . . . . . .  D ADDR   00E0H   A   
+AUXR . . . . . . .  D ADDR   008EH   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+B_1MS. . . . . . .  B ADDR   0020H.0 A   
+DISPLAY_INDEX. . .  D ADDR   0038H   A   
+DIS_ . . . . . . .  N NUMB   0011H   A   
+DIS_BLACK. . . . .  N NUMB   0010H   A   
+DIS_DOT. . . . . .  N NUMB   0020H   A   
+DPH. . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . .  D ADDR   0082H   A   
+EA . . . . . . . .  B ADDR   00A8H.7 A   
+ET0. . . . . . . .  B ADDR   00A8H.1 A   
+FLAG0. . . . . . .  D ADDR   0020H   A   
+FOSC_KHZ . . . . .  N NUMB   2B33H   A   
+F_DISPLAYRTC . . .  C ADDR   017DH   A   
+F_DISPLAYSCAN. . .  C ADDR   0211H   A   
+F_MAIN . . . . . .  C ADDR   0100H   A   
+F_RTC. . . . . . .  C ADDR   01A9H   A   
+F_SEND_595 . . . .  C ADDR   0201H   A   
+F_TIMER0_INTERRUPT  C ADDR   0244H   A   
+HOUR . . . . . . .  D ADDR   0039H   A   
+LED8 . . . . . . .  D ADDR   0030H   A   
+L_CHECK1000MS. . .  C ADDR   0163H   A   
+L_CLEARLOOP. . . .  C ADDR   012EH   A   
+L_MAIN_LOOP. . . .  C ADDR   0156H   A   
+L_QUITDISPLAYSCAN.  C ADDR   023DH   A   
+L_QUITRTC. . . . .  C ADDR   01CDH   A   
+L_SEND_595_LOOP. .  C ADDR   0205H   A   
+MINUTE . . . . . .  D ADDR   003AH   A   
+MSECOND_H. . . . .  D ADDR   003CH   A   
+MSECOND_L. . . . .  D ADDR   003DH   A   
+P0M0 . . . . . . .  D ADDR   0094H   A   
+P0M1 . . . . . . .  D ADDR   0093H   A   
+P1M0 . . . . . . .  D ADDR   0092H   A   
+P1M1 . . . . . . .  D ADDR   0091H   A   
+P2M0 . . . . . . .  D ADDR   0096H   A   
+P2M1 . . . . . . .  D ADDR   0095H   A   
+P3M0 . . . . . . .  D ADDR   00B2H   A   
+P3M1 . . . . . . .  D ADDR   00B1H   A   
+P4 . . . . . . . .  D ADDR   00C0H   A   
+P4M0 . . . . . . .  D ADDR   00B4H   A   
+P4M1 . . . . . . .  D ADDR   00B3H   A   
+P5 . . . . . . . .  D ADDR   00C8H   A   
+P5M0 . . . . . . .  D ADDR   00CAH   A   
+P5M1 . . . . . . .  D ADDR   00C9H   A   
+P6M0 . . . . . . .  D ADDR   00CCH   A   
+P6M1 . . . . . . .  D ADDR   00CBH   A   
+P7M0 . . . . . . .  D ADDR   00E2H   A   
+P7M1 . . . . . . .  D ADDR   00E1H   A   
+PSW. . . . . . . .  D ADDR   00D0H   A   
+P_HC595_RCLK . . .  B ADDR   00C8H.4 A   
+P_HC595_SER. . . .  B ADDR   00C0H.0 A   
+P_HC595_SRCLK. . .  B ADDR   00C0H.3 A   
+SECOND . . . . . .  D ADDR   003BH   A   
+SP . . . . . . . .  D ADDR   0081H   A   
+STACK_POIRTER. . .  N NUMB   00D0H   A   
+TH0. . . . . . . .  D ADDR   008CH   A   
+TIMER0_RELOAD. . .  N NUMB   D4CDH   A   
+TL0. . . . . . . .  D ADDR   008AH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+A51 MACRO ASSEMBLER  STC_HC595                                                            07/01/2020 20:41:09 PAGE     8
+
+TR0. . . . . . . .  B ADDR   0088H.4 A   
+T_COM. . . . . . .  C ADDR   01F9H   A   
+T_DISPLAY. . . . .  C ADDR   01CEH   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

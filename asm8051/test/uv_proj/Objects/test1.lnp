@@ -1,0 +1,3 @@
+".\Objects\stc_hongwai1.obj" 
+TO ".\Objects\test1" 
+PRINT(".\Listings\test1.m51") RAMSIZE(256) 

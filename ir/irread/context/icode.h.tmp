@@ -1,0 +1,19 @@
+#ifndef ICODE_H
+#define ICODE_H
+
+#include "icode_type.h"
+
+class icode
+{
+public:
+    icode();
+
+    int m_type;
+
+
+    icode *result;
+
+    double doubleVal;
+};
+
+#endif // ICODE_H

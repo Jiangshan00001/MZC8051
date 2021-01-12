@@ -1,0 +1,45 @@
+A51 MACRO ASSEMBLER  STC8A_TEST4                                                          06/02/2020 13:55:57 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\stc8a_test4.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\stc8a_test4.a51 SET(SMALL) DEBUG PRINT(.\Listings\stc8a_test4.lst) O
+                      BJECT(.\Objects\stc8a_test4.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+  00A2                 1     P_SW1       DATA    0A2H
+                       2     
+0000                   3                 ORG     0000H
+0000 020100            4                 LJMP    MAIN
+                       5     
+0100                   6                 ORG     0100H
+0100                   7     MAIN:
+0100 75813F            8                 MOV     SP, #3FH
+                       9     
+0103 75A200           10                 MOV     P_SW1,#00H                  ;RXD/P3.0,TXD/P3.1
+                      11     ;           MOV     P_SW1,#40H                  ;RXD_2/P3.6,TXD_2/P3.7
+                      12     ;           MOV     P_SW1,#80H                  ;RXD_3/P1.6,TXD_3/P1.7
+                      13     ;           MOV     P_SW1,#0C0H                 ;RXD_4/P4.3,TXD_4/P4.4
+                      14     
+0106 80FE             15                 SJMP    $
+                      16     
+                      17                 END
+                             
+A51 MACRO ASSEMBLER  STC8A_TEST4                                                          06/02/2020 13:55:57 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+MAIN . . . . . . .  C ADDR   0100H   A   
+P_SW1. . . . . . .  D ADDR   00A2H   A   
+SP . . . . . . . .  D ADDR   0081H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)
