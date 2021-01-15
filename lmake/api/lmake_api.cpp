@@ -1,11 +1,16 @@
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 #include <direct.h>
+#else
+#include<unistd.h>
+#endif
+
+
+#include <time.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <sstream>
-//#include <windows.h>
-//#include <shlobj.h>
-//#include <shlwapi.h>
+
 #include "lmake_api.h"
 #include "replace.h"
 #include "dir_file.h"
@@ -81,23 +86,6 @@ void make_new_project(char * directory_path, char *project_name)
 }
 
 
-#if 0
-std::string path_add_file(const char* directory_path, const char *filen)
-{
-    std::string new_p = directory_path;
-
-    if(new_p.size()==0)
-    {
-        return std::string("./")+ filen;
-    }
-
-    if((new_p[new_p.size()-1]=='\\')||(new_p[new_p.size()-1]=='/'))
-    {
-        return std::string(directory_path)+filen;
-    }
-    return std::string(directory_path)+"/"+filen;
-}
-#endif
 
 std::vector<std::string> add_line_value(std::string v_str, std::ifstream &fin, int coding)
 {
@@ -259,7 +247,6 @@ void read_makefile(char * directory_path, std::vector<std::string> &src_c, std::
 extern std::string G_PROG_NAME;
 
 
-#include <time.h>
 
 std::string get_lmake_log_file(std::string directory_path)
 {
