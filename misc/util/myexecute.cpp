@@ -103,7 +103,9 @@ int myexecute_ansi_old(std::string cmd_ansi, std::string param_ansi, int wait_fo
     std::wstring cmd_uni=AsciiToUnicode(cmd_ansi);
     std::wstring param_uni = Utf8ToUnicode(param_ansi);
 
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
     ShellExecuteW(NULL, AsciiToUnicode("open").c_str(), cmd_uni.c_str(), param_uni.c_str(),NULL, SW_SHOW );
+#endif
 
     return 0;
 }
