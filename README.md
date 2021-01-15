@@ -22,7 +22,7 @@ a c compiler for mcu8051.
 - 希望对编译器技术感兴趣的人一起讨论学习。
 - 可以在项目的issues中讨论。
 
-'''shell
+```shell
 
 测试： test_add1.c: #include "_simtrap.h" void main() { char a=1; char b=1; char c; c=a+b; _sim_assert(c==2); _sim_exit(); }
 预处理：
@@ -38,7 +38,7 @@ hex仿真执行：
 hex反汇编：
 ../../release/v2.1/MZC8051.exe -x dis8051 -i test_add1.hex -o test_add1.dis
 
-'''
+```
 
 some code is from internet:
 
