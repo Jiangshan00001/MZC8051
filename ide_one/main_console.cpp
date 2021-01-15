@@ -1,11 +1,18 @@
 #include <stdio.h>
-#include<conio.h>
 #include <time.h>
-#include <windows.h>
 #include <iostream>
 #include <vector>
 #include <string>
+
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 #include <direct.h>
+#include <windows.h>
+#else
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
+
 #include "argv.h"
 #include "asm8051_api.h"
 #include "c8051_api.h"

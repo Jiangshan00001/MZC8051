@@ -47,7 +47,7 @@ void make_new_project(char * directory_path, char *project_name)
         cerr<<"directory already exist:"<<new_dir<<std::endl;
         return ;
     }
-    if(0!=mkdir(new_dir.c_str()))
+    if(0!=mkdir(new_dir.c_str(), 0777))
     {
         cerr<<"directory create error:"<<new_dir<<std::endl;
         return ;

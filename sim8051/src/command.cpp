@@ -20,7 +20,14 @@
 //#include <ncurses.h>
 #include <stdlib.h>
 #include <stdio.h>
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 #include <conio.h>
+#else
+#include <stdio.h>
+#include <stdlib.h>
+//#include <curses.h>
+
+#endif
 
 #include "command.hpp"
 #include "cpu8051.hpp"
@@ -340,7 +347,7 @@ void Command::OnUARTTx(Cpu8051 &handler, char tx)
 bool Command::OnGPIORead(Cpu8051 &handler, std::uint8_t port, std::uint8_t bit)
 {
   printf("Read of GPIO port %d bit %d\n", port, bit);
-
+#if 0
   int c = getch();
 
   if (c == '1')
@@ -353,6 +360,9 @@ bool Command::OnGPIORead(Cpu8051 &handler, std::uint8_t port, std::uint8_t bit)
     printf("Logic low\n");
     return false;
   }
+#endif
+return true;
+	
 }
 
 void Command::OnInstructionExecuted(Cpu8051 &cpu)

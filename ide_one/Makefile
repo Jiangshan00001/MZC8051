@@ -53,8 +53,9 @@ all: $(BUILD_PATH)  $(PROG)
 $(BUILD_PATH):
 	mkdir -p $(BUILD_PATH)
 
+#  -lkernel32 -luser32 
 $(PROG): $(OBJS) $(IMPORT_LIB)
-	$(CXX) -static -g   -lkernel32 -luser32 $^  -o $@
+	$(CXX) -static -g $^  -o $@
 
 
 

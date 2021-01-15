@@ -31,8 +31,9 @@ all: $(BUILD_PATH)  $(PROG)  lib
 $(BUILD_PATH):
 	mkdir -p $(BUILD_PATH)
 
+#################### -mwindows -lkernel32 -lole32 -luser32  -lshlwapi
 $(PROG): $(OBJS) 
-	$(CXX) -static -g  -mwindows -lkernel32 -lole32 -luser32  -lshlwapi $^   $(IMPORT_LIB) -o $@
+	$(CXX) -static -g    $^   $(IMPORT_LIB) -o $@
 
 lib:$(PROG_LIB)
 	echo "finish!"

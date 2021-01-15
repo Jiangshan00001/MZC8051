@@ -11,7 +11,7 @@ PROG_LIB_OBJS := $(filter-out $(OBJ_DIR)/main_console.o $(OBJ_DIR)/number2str.o,
 AR=ar
 STRIP=strip
 
-LD_FLAGS := -static
+LD_FLAGS := -static 
 LD_LIBS := 
 #-lncurses
 CC_FLAGS := -I $(INCLUDE_DIR)  -I../misc/util/ -O3 -g -std=c++11 -Wall
@@ -36,7 +36,7 @@ test: $(OBJ_DIR)/$(EXE_FILE)
 
 $(OBJ_DIR)/$(EXE_FILE): $(OBJ_FILES)
 	@echo "Linking $@"
-	@g++ $(LD_FLAGS)  $^  $(IMPORT_LIB)  $(LD_LIBS) -o $@ 
+	@g++  $^  $(LD_FLAGS)  $(IMPORT_LIB)  $(LD_LIBS) -o $@ 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@echo "Compiling $<"
