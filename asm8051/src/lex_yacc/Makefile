@@ -13,7 +13,7 @@ scanner.cpp:ly/scanner.ll
 parser.cpp:ly/parser.yy
 	bison -v --warnings=all --report=all $^  --defines=parser.h  --output=$@
 parser.h:ly/parser.yy
-        bison -v --warnings=all  $^  --defines=parser.h  --output=$@
+	bison -v --warnings=all  $^  --defines=parser.h  --output=$@
 
 stack.hh:ly/parser.yy
 	bison -v --warnings=all $^  --defines=parser.h  --output=$@
