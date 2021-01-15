@@ -10,6 +10,9 @@ all:
 	make -C sim8051
 	make -C ide_one
 
+test:
+	echo "finish！"
+
 clean:
 	make -C misc clean
 	make -C lmake clean
