@@ -235,6 +235,8 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_1(class comp_context* pcompi, class t
 
 class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
+    ///数组方式读取
+
     //0x702-postfix_expression->postfix_expression '[' expression ']'
     //parent:
     // postfix_expression--> postfix_expression '[' expression ']'
@@ -283,6 +285,9 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class t
 
 class icode *  func_IAN_POSTFIX_EXPRESSION_3(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
+    /// 无参数的函数调用
+    ///
+    ///
     //0x703-postfix_expression->postfix_expression '(' ')'
     //parent:
     // postfix_expression--> postfix_expression '[' expression ']'
@@ -323,6 +328,8 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_3(class comp_context* pcompi, class t
 
 class icode *  func_IAN_POSTFIX_EXPRESSION_4(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
+
+    ///有参数的函数调用
 
     /// 此处是函数调用 _inline_asm_("MOV A, 0x30;\n"); 的前半部分，没有";"
 
@@ -380,6 +387,9 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_4(class comp_context* pcompi, class t
 
 class icode *  func_IAN_POSTFIX_EXPRESSION_5(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
+
+    /// 结构体的内部成员变量读取
+
     //0x705-postfix_expression->postfix_expression '.' identifier
     //parent:
     // postfix_expression--> postfix_expression '[' expression ']'
@@ -390,7 +400,7 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_5(class comp_context* pcompi, class t
     // postfix_expression--> postfix_expression INC_OP
     // postfix_expression--> postfix_expression DEC_OP
     // unary_expression--> postfix_expression
-
+#if 0
     icode *a = pcompi->new_icode();
     a->m_type=ICODE_TYPE_BLOCK;
     token_defs *postfix_expression=tdefs->m_tk_elems[0];
@@ -399,14 +409,17 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_5(class comp_context* pcompi, class t
     icode *postfix_expression_ic=pcompi->ast_to_icode(postfix_expression, 1);
     //icode *'.'_ic=pcompi->ast_to_icode('.');
 
-    assert(postfix_expression_ic->result->m_type==ICODE_TYPE_SYMBOL_REF);
+    assert((postfix_expression_ic->result->m_type==ICODE_TYPE_SYMBOL_REF)||
+           (postfix_expression_ic->result->m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||
+           (postfix_expression_ic->result->m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP)
+           );
 
     /// result是一个ref，因为之前ref和ptr是用同一个类型，所以做此判断
     /// 现在ptr使用VAR_IN_VAR来实现,所以不再用此断言
     //assert(postfix_expression_ic->result->is_ptr==0);
 
 
-    icode *dst = postfix_expression_ic->result->result;
+    icode *dst = pcompi->get_def_var( postfix_expression_ic->result);
 
     if(dst==NULL)
     {
@@ -424,6 +437,62 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_5(class comp_context* pcompi, class t
 
     a->result = (pcompi->new_ref_icode(ret));
     return a;
+#else
+    icode *a = pcompi->new_icode();
+       a->m_type=ICODE_TYPE_BLOCK;
+       token_defs *postfix_expression=tdefs->m_tk_elems[0];
+       //token_defs *'.'=tdefs->m_tk_elems[1];
+       token_defs *identifier=tdefs->m_tk_elems[2];
+       icode *postfix_expression_ic=pcompi->ast_to_icode(postfix_expression, 1);
+       //icode *'.'_ic=pcompi->ast_to_icode('.');
+
+       assert((postfix_expression_ic->result->m_type==ICODE_TYPE_SYMBOL_REF)||
+              (postfix_expression_ic->result->m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||
+              (postfix_expression_ic->result->m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP)
+              );
+
+       /// result是一个ref，因为之前ref和ptr是用同一个类型，所以做此判断
+       /// 现在ptr使用VAR_IN_VAR来实现,所以不再用此断言
+       //assert(postfix_expression_ic->result->is_ptr==0);
+
+
+       icode *dst = pcompi->get_def_var( postfix_expression_ic->result);
+
+       if(dst==NULL)
+       {
+           cerr<<"ERROR: unresolved symbol:"<< postfix_expression_ic->result->name<<"\n";
+           return a;
+       }
+
+       icode * var_attr = NULL;
+       int bit_width_offset = NULL;
+
+
+       var_attr = dst->get_member_icode(identifier->val_str);
+       bit_width_offset = dst->get_member_offset_bit_width(identifier->val_str);
+
+
+       icode *ptr_new = pcompi->new_temp_ptr_var(var_attr);
+
+
+       icode * mova = pcompi->new_icode(ICODE_TYPE_EXP_OP);
+       mova->name = "address_of";
+       mova->right = pcompi->new_ref_icode(dst);
+       mova->result = pcompi->new_ref_icode(ptr_new);
+
+       icode *adda = pcompi->new_icode(ICODE_TYPE_EXP_OP);
+       adda->name = "+";
+       adda->right=pcompi->new_ref_icode(ptr_new);
+       adda->left=pcompi->new_iconst_icode(bit_width_offset/8);
+       adda->result = pcompi->new_ref_icode(ptr_new);
+       a->merge_icode(ptr_new);
+       a->merge_icode(mova);
+       a->merge_icode(adda);
+
+       a->result = pcompi->new_var_in_var_icode(ptr_new);
+
+       return a;
+#endif
 }
 
 
@@ -449,6 +518,9 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_5(class comp_context* pcompi, class t
 ///
 class icode *  func_IAN_POSTFIX_EXPRESSION_6(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
+    /// 内部成员访问：指针内部 a->b
+    ///
+    ///
     //0x706-postfix_expression->postfix_expression PTR_OP identifier
     //parent:
     // postfix_expression--> postfix_expression '[' expression ']'
@@ -468,21 +540,34 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_6(class comp_context* pcompi, class t
     a->m_type=ICODE_TYPE_BLOCK;
 
     token_defs *postfix_expression=tdefs->m_tk_elems[0];
-    token_defs *PTR_OP=tdefs->m_tk_elems[1];
+    token_defs *PTR_OP = tdefs->m_tk_elems[1];
     token_defs *identifier = tdefs->m_tk_elems[2];
 
     icode * expr_ic = pcompi->ast_to_icode(postfix_expression, 1);
 
-    assert(expr_ic->result->m_type==ICODE_TYPE_SYMBOL_REF);
+    ///expr_ic->result可能是两种值：
+    /// struct A *a;
+    /// a->a=1;//->此处expr_ic=a 为符号引用
+    /// struct A **a;
+    /// (*a)->a=1; //->此处expr_ic=*a 为var_in_var
+
+
+    assert((expr_ic->result->m_type==ICODE_TYPE_SYMBOL_REF)||
+           (expr_ic->result->m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||
+           (expr_ic->result->m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP)
+           );
     assert(expr_ic->result->result!=NULL);
     icode *ptr_ic_ref = expr_ic->result;
     icode *ptr_ic = pcompi->get_def_var(expr_ic->result);
     //assert(ptr_ic->is_union || ptr_ic->is_struct);
     //assert(ptr_ic->is_array||ptr_ic->is_ptr);
 
-    icode * var_attr = ptr_ic->get_member_icode(identifier->val_str);
+    icode * var_attr = NULL;
+    int bit_width_offset = NULL;
 
-    int bit_width_offset = ptr_ic->get_member_offset_bit_width(identifier->val_str);
+
+    var_attr = ptr_ic->get_member_icode(identifier->val_str);
+    bit_width_offset = ptr_ic->get_member_offset_bit_width(identifier->val_str);
 
 
 
@@ -773,49 +858,6 @@ icode * in_ptr_expr(comp_context* pcompi, token_defs* tdefs, bool need_result_ic
 
 
     a->result = pcompi->new_var_in_var_icode(c->result);
-#if 0
-    a->result->is_ptr--;
-
-    //返回c->result是符号引用REF。 内部的result是指针本身。
-    // 指针定义的m_bit_width是指针所指向值的bit_width
-    a->result->m_bit_width = pcompi->get_def_var(c)->m_bit_width;//->result->result
-    a->result->is_signed =  pcompi->get_def_var(c)->is_signed;
-    a->result->is_float32 =  pcompi->get_def_var(c)->is_float32;
-#endif
-    if(need_result_icode&&result_ic)
-    {
-        {
-            icode *b = pcompi->new_copy_icode_gen(a->result, result_ic);
-            a->result = result_ic;
-            a->merge_icode(b);
-        }
-    }
-
-    return a;
-}
-#if 0
-icode * in_ptr_expr(comp_context* pcompi, token_defs* tdefs, bool need_result_icode, icode* result_ic)
-{
-    token_defs * unary_operator = tdefs->m_tk_elems[0];
-    token_defs* unary_expr = tdefs->m_tk_elems[1];
-
-
-    icode *a = pcompi->new_icode();
-    a->m_type=ICODE_TYPE_BLOCK;
-
-
-    icode *c = pcompi->ast_to_icode(unary_expr, 1);
-    a->merge_icode(c);
-
-
-    a->result = pcompi->new_ref_icode(c->result);
-    a->result->is_ptr--;
-
-    //返回c->result是符号引用REF。 内部的result是指针本身。
-    // 指针定义的m_bit_width是指针所指向值的bit_width
-    a->result->m_bit_width = pcompi->get_def_var(c)->m_bit_width;//->result->result
-    a->result->is_signed =  pcompi->get_def_var(c)->is_signed;
-    a->result->is_float32 =  pcompi->get_def_var(c)->is_float32;
 
     if(need_result_icode&&result_ic)
     {
@@ -828,8 +870,6 @@ icode * in_ptr_expr(comp_context* pcompi, token_defs* tdefs, bool need_result_ic
 
     return a;
 }
-#endif
-
 
 class icode *  func_IAN_UNARY_EXPRESSION_4(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {

@@ -184,6 +184,64 @@ icode *icodes::new_copy_icode_gen(icode *from, icode *to)
 
 icode *icodes::new_var_in_var_icode(icode *to_ref)
 {
+    icode * to_def = get_def_var(to_ref);
+
+#if 0
+    if((to_def->m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||
+            (to_def->m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP))
+    {//如果已经是变量内部引用，则只复制，增加ptr
+
+        icode *e_ref = new_ref_icode(to_def->result);
+        e_ref->m_type = ICODE_TYPE_DEF_VAR_IN_VAR;
+        if(to_def->result==NULL)
+        {
+            ///未知引用
+            e_ref->result = NULL;
+            return e_ref;
+        }
+        e_ref->is_ptr = to_def->result->is_ptr;
+        e_ref->is_ptr--;
+        return e_ref;
+    }
+#endif
+
+    icode *e_ref = new_ref_icode(to_ref);
+    e_ref->m_type = ICODE_TYPE_DEF_VAR_IN_VAR;
+    if(to_ref==NULL)
+    {
+        ///未知引用
+        e_ref->result = NULL;
+        return e_ref;
+    }
+
+    e_ref->is_ptr--;
+
+    return e_ref;
+}
+icode *icodes::new_var_in_var_tmp_icode(icode *to_ref)
+{
+#if 0
+    icode * to_def = get_def_var(to_ref);
+
+    if((to_def->m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||
+            (to_def->m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP))
+    {//如果已经是变量内部引用，则只复制，增加ptr
+
+        icode *e_ref = new_ref_icode(to_def->result);
+        e_ref->m_type = ICODE_TYPE_DEF_VAR_IN_VAR_TMP;
+        if(to_def->result==NULL)
+        {
+            ///未知引用
+            e_ref->result = NULL;
+            return e_ref;
+        }
+        e_ref->is_ptr = to_def->result->is_ptr;
+        e_ref->is_ptr--;
+        return e_ref;
+    }
+#endif
+
+
 
     icode *e_ref = new_ref_icode(to_ref);
     e_ref->m_type = ICODE_TYPE_DEF_VAR_IN_VAR_TMP;

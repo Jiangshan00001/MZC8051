@@ -563,7 +563,7 @@ int comp_context::add_function(token_defs *func)
 {
     if(m_just_ret_tree)
     {
-        m_yy_tree = token_to_tree(func);
+        m_yy_tree = m_yy_tree +"============\n"+ token_to_tree(func);
 
         //此处生成tree
         return 0;
@@ -590,7 +590,7 @@ int comp_context::add_declaration(token_defs *declaration)
 {
     if(m_just_ret_tree)
     {
-        m_yy_tree = token_to_tree(declaration);
+        m_yy_tree = m_yy_tree +"============\n"+ token_to_tree(declaration);
 
         //此处生成tree
         return 0;

@@ -34,6 +34,7 @@ public:
     icode *new_temp_var();
     icode *new_copy_icode_gen(icode *from, icode *to);
     icode *new_var_in_var_icode(icode *to_ref);
+    icode *new_var_in_var_tmp_icode(icode *to_ref);
     icode *new_temp_ptr_var(icode *in_ptr_type, target_base* mtarget);
     icode *new_temp_ptr_ptr_var(target_base *mtarget);
     icode* get_function(std::string func_name);
