@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: mzc8051_ubuntu_build
 
 on:
   push:
