@@ -1,4 +1,7 @@
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 #include <windows.h>
+#endif
+
 #include <string>
 
 #include "text_encode.h"
@@ -7,53 +10,68 @@ using namespace std;
 
 wstring AsciiToUnicode(const string& str)
 {
+    wstring ret_str ;
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
     // 预算-缓冲区中宽字节的长度
     int unicodeLen = MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, nullptr, 0);
     // 给指向缓冲区的指针变量分配内存
     wchar_t *pUnicode = (wchar_t*)malloc(sizeof(wchar_t)*unicodeLen);
     // 开始向缓冲区转换字节
     MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, pUnicode, unicodeLen);
-    wstring ret_str = pUnicode;
+    ret_str = pUnicode;
     free(pUnicode);
+#endif
     return ret_str;
 }
 
 string UnicodeToAscii(const wstring& wstr)
 {
+    string ret_str;
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
+
     // 预算-缓冲区中多字节的长度
     int ansiiLen = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
     // 给指向缓冲区的指针变量分配内存
     char *pAssii = (char*)malloc(sizeof(char)*ansiiLen);
     // 开始向缓冲区转换字节
     WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, pAssii, ansiiLen, nullptr, nullptr);
-    string ret_str = pAssii;
+    ret_str = pAssii;
     free(pAssii);
+#endif
     return ret_str;
 }
 
 wstring Utf8ToUnicode(const string& str)
 {
+    wstring ret_str;
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
+
     // 预算-缓冲区中宽字节的长度
     int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
     // 给指向缓冲区的指针变量分配内存
     wchar_t *pUnicode = (wchar_t*)malloc(sizeof(wchar_t)*unicodeLen);
     // 开始向缓冲区转换字节
     MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, pUnicode, unicodeLen);
-    wstring ret_str = pUnicode;
+    ret_str = pUnicode;
     free(pUnicode);
+#endif
     return ret_str;
 }
 
 string UnicodeToUtf8(const wstring& wstr)
 {
+    string ret_str ;
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
+
     // 预算-缓冲区中多字节的长度
     int ansiiLen = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
     // 给指向缓冲区的指针变量分配内存
     char *pAssii = (char*)malloc(sizeof(char)*ansiiLen);
     // 开始向缓冲区转换字节
     WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, pAssii, ansiiLen, nullptr, nullptr);
-    string ret_str = pAssii;
+    ret_str = pAssii;
     free(pAssii);
+#endif
     return ret_str;
 }
 

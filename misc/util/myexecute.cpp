@@ -3,8 +3,11 @@
 ///
 ///
 #include <assert.h>
+
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 #include <windows.h>
 #include <shellapi.h>
+#endif
 
 #include "text_encode.h"
 #include "myexecute.h"
@@ -18,6 +21,8 @@ using mylog::cout;
 
 int myexecute_ansi(std::string cmd_ansi, std::string param_ansi, int wait_for_finish, std::string output_file_name)
 {
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
+
     std::wstring output_file_name_w = AsciiToUnicode(output_file_name);
     std::wstring param_w = AsciiToUnicode(param_ansi);
     std::wstring cmd_w = AsciiToUnicode(cmd_ansi);
@@ -28,18 +33,7 @@ int myexecute_ansi(std::string cmd_ansi, std::string param_ansi, int wait_for_fi
 
 
     DWORD dwShareMode=FILE_SHARE_READ|FILE_SHARE_WRITE;
-#if 0
-    SECURITY_ATTRIBUTES sa={sizeof ( sa ),NULL,TRUE};
-    SECURITY_ATTRIBUTES *psa=NULL;
-    OSVERSIONINFO osVersion={0};
-    osVersion.dwOSVersionInfoSize =sizeof ( osVersion );
-    if ( GetVersionEx ( &osVersion ) )
-    {
-        if ( osVersion.dwPlatformId ==VER_PLATFORM_WIN32_NT )
-        {
-        }
-    }
-#endif
+
     SECURITY_ATTRIBUTES sa={sizeof ( sa ),NULL,TRUE};
     //根据版本设置共享模式和安全属性
     // 创建记录文件
@@ -94,6 +88,8 @@ int myexecute_ansi(std::string cmd_ansi, std::string param_ansi, int wait_for_fi
     }
     CloseHandle ( hConsoleRedirect );
 	return exitCode;
+#endif
+    return 0;
 }
 
 
@@ -109,45 +105,14 @@ int myexecute_ansi_old(std::string cmd_ansi, std::string param_ansi, int wait_fo
 
     ShellExecuteW(NULL, AsciiToUnicode("open").c_str(), cmd_uni.c_str(), param_uni.c_str(),NULL, SW_SHOW );
 
-#if 0
-    std::string cmd_uni=(cmd_ansi);
-    std::string param_uni = (param_ansi);
-
-    cout<<"exec:"<<cmd_ansi<<"\n";
-    cout<<"exec_param:"<<param_ansi<<"\n";
-
-
-    std::string open_cmd = ("open");
-    SHELLEXECUTEINFOA sei;
-    memset(&sei, 0, sizeof(SHELLEXECUTEINFOA));
-
-    sei.cbSize = sizeof(SHELLEXECUTEINFOA);
-    sei.fMask = SEE_MASK_NOCLOSEPROCESS;
-    sei.lpVerb =open_cmd.c_str();
-    sei.lpFile = cmd_uni.c_str();
-    sei.lpParameters = param_uni.c_str();
-    sei.nShow = SW_SHOWDEFAULT;
-    bool is_exec_success = ShellExecuteExA(&sei);
-
-    if(!is_exec_success)
-    {
-        cout<<"ERROR:exec"<<"\n";
-        cerr<<"ERROR:exec"<<"\n";
-    }
-
-    if(wait_for_finish)
-    {
-        WaitForSingleObject(sei.hProcess, INFINITE);
-    }
-
-    CloseHandle(sei.hProcess);
-#endif
     return 0;
 }
 
 
 int myexecute(std::string cmd_utf8, std::string param_utf8, int wait_for_finish)
 {
+#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
+
     std::wstring cmd_uni=Utf8ToUnicode(cmd_utf8);
     std::wstring param_uni = Utf8ToUnicode(param_utf8);
 
@@ -182,4 +147,7 @@ int myexecute(std::string cmd_utf8, std::string param_utf8, int wait_for_finish)
 	GetExitCodeProcess(sei.hProcess, &exitCode);
     CloseHandle(sei.hProcess);
     return exitCode;
+
+#endif
+    return 0;
 }
