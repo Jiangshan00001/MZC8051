@@ -2,7 +2,7 @@
 
 https://jiangshan00001.github.io/
 
-[Build Status](https://github.com/Jiangshan00001/MZC8051/workflows/mzc8051_ubuntu_build/badge.svg)
+![Build Status](https://github.com/Jiangshan00001/MZC8051/workflows/mzc8051_ubuntu_build/badge.svg)
 
 
 a c compiler for mcu8051.
