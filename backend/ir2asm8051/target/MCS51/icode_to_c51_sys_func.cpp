@@ -9,104 +9,6 @@ void icode_to_c51::load_sys_func_def()
 
     std::stringstream asm_str;
 
-#if 0
-    ///乘法 byte2xbyte2
-    /// 乘数： R4 R5
-    /// 被乘数: R6 R7
-    /// 结果： R6 R7
-    /// (R4 + R5*256) * (R6 + R7*256)
-    /// =R4 * R6 + R5*R6*256 + R4*R7*256  (+ R5*R7*256*256 此部分忽略,因为结果为byte2)
-
-    std::string mul_byte2_func = "MOV      A,R6;\n"
-             "MOV      0xF0,R4;\n"
-             "MUL      AB;\n "
-             "MOV      R0,0xF0;\n"
-             "XCH      A,R6;\n"
-             "MOV      0xF0,R5;\n"
-             "MUL      AB;\n"
-             "ADD      A,R0;\n"
-             "XCH      A,R7;\n"
-             "MOV      0xF0,R4;\n"
-             "MUL      AB;\n"
-             "ADD      A,R7;\n"
-             "MOV      R7,A;\n"
-             "RET;\n";
-
-m_inline_sys_func["_sys_func_mul_byte2"] = mul_byte2_func;
-///_sys_imul_byte2
-
-
-
-
-    std::string mul_byte4_func="MOV      A,R3;\n"
-            "MOV      0xF0,R4;\n"
-            "MUL      AB;\n"
-            "XCH      A,R7;\n"
-            "MOV      0xF0,R0;\n"
-            "MUL      AB;\n"
-            "ADD      A,R7;\n"
-            "MOV      R7,A;\n"
-            "MOV      A,R2;\n"
-            "MOV      0xF0,R5;\n"
-            "MUL      AB;\n"
-            "ADD      A,R7;\n"
-            "MOV      R7,A;\n"
-            "MOV      0xF0,R1;\n"
-            "MOV      A,R6;\n"
-            "MUL      AB;\n"
-            "ADD      A,R7;\n"
-            "MOV      R7,A;\n"
-            "MOV      A,R1;\n"
-            "MOV      0xF0,R5;\n"
-            "MUL      AB;\n"
-            "XCH      A,R6;\n"
-            "MOV      R3,0xF0;\n"
-            "MOV      0xF0,R0;\n"
-            "MUL      AB;\n"
-            "ADD      A,R6;\n"
-            "XCH      A,R7;\n"
-            "ADDC     A,R3;\n"
-            "ADD      A,0xF0;\n"
-            "MOV      R6,A;\n"
-            "MOV      A,R2;\n"
-            "MOV      0xF0,R4;\n"
-            "MUL      AB;\n"
-            "ADD      A,R7;\n"
-            "XCH      A,R6;\n"
-            "ADDC     A,0xF0;\n"
-            "MOV      R7,A;\n"
-            "MOV      A,R0;\n"
-            "MOV      0xF0,R5;\n"
-            "MUL      AB;\n"
-            "MOV      R5,A;\n"
-            "MOV      R2,0xF0;\n"
-            "MOV      A,R0;\n"
-            "MOV      0xF0,R4;\n"
-            "MUL      AB;\n"
-            "XCH      A,R4;\n"
-            "XCH      A,0xF0;\n"
-            "ADD      A,R5;\n"
-            "XCH      A,R6;\n"
-            "ADDC     A,R2;\n"
-            "MOV      R5,A;\n"
-            "CLR      A;\n"
-            "ADDC     A,R7;\n"
-            "MOV      R7,A;\n"
-            "MOV      A,R1;\n"
-            "MUL      AB;\n"
-            "ADD      A,R6;\n"
-            "XCH      A,R5;\n"
-            "ADDC     A,0xF0;\n"
-            "MOV      R6,A;\n"
-            "CLR      A;\n"
-            "ADDC     A,R7;\n"
-            "MOV      R7,A;\n"
-            "RET  ";
-
-
-    m_inline_sys_func["_sys_func_mul_byte4"] =mul_byte4_func;
-    ///_sys_lmul_byte4
-#endif
     ///带符号的8bit除法
     /// A/B
     /// 结果在A，余数在B
@@ -171,6 +73,8 @@ m_inline_sys_func["_sys_func_mul_byte2"] = mul_byte2_func;
                                     "RET;\n";
 
 
+    /// ptr byte to a
+    /// ptr input: r1 r2 r3
     std::string func_ptr_byte_to_a =  "CJNE R3, #4, _SYS_FUNC_PTR_BYTE_TO_A_3;\n"
                                     "MOV 0x82, R1;\n"
                                     "MOV 0x83, R2;\n"

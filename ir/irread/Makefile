@@ -44,7 +44,7 @@ CXX_FLAGS:= -g -Wall  -fpermissive
 AR=ar
 RM=rm
 RMFLAGS= -rf
-INCS = -I$(CURR_DIR) -I$(CURR_DIR)/lex_yacc  -I$(CURR_DIR)/lex_yacc/ly -I$(CURR_DIR)/lex_yacc_adapt -I$(CURR_DIR)/context  -I$(CURR_DIR)/icode_lib -I$(CURR_DIR)/../../misc/json_lib  -I$(CURR_DIR)/../../misc/util   -I$(CURR_DIR)/target/MCS51
+INCS = -I$(CURR_DIR) -I$(CURR_DIR)/lex_yacc  -I$(CURR_DIR)/lex_yacc/ly -I$(CURR_DIR)/lex_yacc_adapt -I$(CURR_DIR)/context  -I$(CURR_DIR)/icode_lib -I$(CURR_DIR)/../../misc/json_lib  -I$(CURR_DIR)/../../misc/util   -I$(CURR_DIR)/target/MCS51 -I/include/
 
 all: $(BUILD_PATH) $(SRCS_LEXYACC)  $(PROG_LIB)  $(PROG)
 	echo "finish!"

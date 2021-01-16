@@ -468,38 +468,45 @@ int c51_var_manage::parse_ptr(icode *ic)
     ///
 
 
-
-    if(ic->is_ptr+ic->result->is_ptr + ic->result->is_array>0)
-    {
-        ///FIXME 此处对多级指针的处理不对！！！
-        //仍然是读写指针
-        process_one(ic->result);
-        ic->target = ic->result->target;
-        return 0;
-    }
-
     /// 此处是读写指针指向的数值
     ///
     ///
     process_one(ic->result);
     //读写内部数据
     ic->target = new_c51_addr(ic);
-
-    /// 读写的数据宽度
-    /// 指针的数据类型，数据宽度，float，sign等标记
-    ///
-    ///////icode *type_ic = this->m_context->get_def_var( ic)->result->m_in_ptr_type;
-    //2020.12.7 error: char*a; *a=3;
-    icode *type_ic = this->m_context->get_def_var( ic)->result->m_in_ptr_type;
-    ic->target->m_bit_width = type_ic->m_bit_width;
-    ic->target->is_signed = type_ic->is_signed;
-    ic->target->is_float32 = type_ic->is_float32;
-
-
-
-
     ic->target->m_type = DATA_TYPE_IN_GENRIC_PTR;
-    ic->target->ptr_target = ic->result->target;
+
+    if(ic->is_ptr+ic->result->is_ptr + ic->result->is_array>0)
+    {
+        ///仍然是读写指针
+        /// 读出3个字节，作为指针变量内容
+        /// int a;
+        /// int *b;
+        /// int **c;
+        /// b = &a;
+        /// c= &b;
+        /// (*c) <---?
+        ///
+        ic->target->m_bit_width = 3*8;// FIXME 此处是指针的长度 this->m_context->;
+        ic->target->is_signed = 0;
+        ic->target->is_float32 = 0;
+        ic->target->ptr_target = ic->result->target;
+        ic->target->is_ptr = ic->is_ptr;
+
+    }
+    else
+    {
+        /// 读写的数据宽度
+        /// 指针的数据类型，数据宽度，float，sign等标记
+        ///
+        ///////icode *type_ic = this->m_context->get_def_var( ic)->result->m_in_ptr_type;
+        //2020.12.7 error: char*a; *a=3;
+        icode *type_ic = this->m_context->get_def_var( ic)->result->m_in_ptr_type;
+        ic->target->m_bit_width = type_ic->m_bit_width;
+        ic->target->is_signed = type_ic->is_signed;
+        ic->target->is_float32 = type_ic->is_float32;
+        ic->target->ptr_target = ic->result->target;
+    }
     return 0;
 }
 

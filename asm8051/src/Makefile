@@ -31,7 +31,7 @@ CXX_FLAGS:= -g -Wall  -fpermissive -O0
 AR=ar
 STRIP=strip
 
-INCS = -I$(CURR_DIR)  -I$(CURR_DIR)/lex_yacc/   -I$(CURR_DIR)/../../misc/util/ -I$(CURR_DIR)/api/
+INCS = -I$(CURR_DIR)  -I$(CURR_DIR)/lex_yacc/   -I$(CURR_DIR)/../../misc/util/ -I$(CURR_DIR)/api/ -I/include/
 
 
 all:  $(BUILD_PATH) $(PROG_LIB)  $(PROG)

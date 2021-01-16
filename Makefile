@@ -11,7 +11,7 @@ all:
 	make -C ide_one
 
 test:
-	echo "finish！"
+	echo "finish!"
 
 clean:
 	make -C misc clean

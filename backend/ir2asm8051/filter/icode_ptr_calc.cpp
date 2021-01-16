@@ -44,7 +44,12 @@ int icode_ptr_calc::process_array_result(icode *ic, std::vector<icode *> &parent
 
 
     /// temp1=a;
-    icode *movB = pcompi->new_copy_icode_gen(pcompi->new_ref_icode(result_brief->result), pcompi->new_ref_icode(result_new));
+    //icode *movB = pcompi->new_copy_icode_gen(pcompi->new_ref_icode(result_brief->result), pcompi->new_ref_icode(result_new));
+    icode *movB = pcompi->new_icode(ICODE_TYPE_EXP_OP);
+    movB->name="address_of";
+    movB->left = NULL;
+    movB->right = pcompi->new_ref_icode(result_brief->result);
+    movB->result = pcompi->new_ref_icode(result_new);
 
     this->m_icodes.push_back(result_new);
     this->m_icodes.push_back(movB);

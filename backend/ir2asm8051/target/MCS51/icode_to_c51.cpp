@@ -391,6 +391,7 @@ std::string icode_to_c51::icode_to_asm(icode *ic)
     case ICODE_TYPE_DEF_VAR_IN_VAR_TMP:
     {
         asm_str<<";" <<ic->to_str()<<"\n";
+        asm_str<<";addr: 0x"<<std::hex<<ic->target->m_addr<<"\n";
     }
          break;
     case ICODE_TYPE_FUNC_RET_TYPE:

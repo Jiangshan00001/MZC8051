@@ -40,11 +40,12 @@ hex反汇编：
 
 ```
 
-some code is from internet:
+some code is from github:
 
 - json lib is from:https://github.com/nlohmann/json
 - sim8051 is mostly from: https://github.com/andersdellien/8051-sim
 - simplecpp: https://github.com/danmar/simplecpp
+
 if there is any license issue, please contact me.
 
 
