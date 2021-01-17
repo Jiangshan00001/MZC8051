@@ -1627,7 +1627,8 @@ class icode *  func_IAN_VAR_IN_REF_ARRAY_1(class comp_context* pcompi, class tok
     //icode *'['_ic=pcompi->ast_to_icode('[');
     icode *opr_elem_ic=pcompi->ast_to_icode(opr_elem);
 
-    var_in_start_ic->is_array++;
+    /// 引用的array都是--
+    var_in_start_ic->is_array--;
     if(VAR_REF_ic!=NULL)
     {
         // VAR_REF_ic返回的是一个引用。此处需要result=实际icode
@@ -1659,7 +1660,7 @@ class icode *  func_IAN_VAR_IN_REF_ARRAY_2(class comp_context* pcompi, class tok
 	//icode *'['_ic=pcompi->ast_to_icode('[');
     icode *opr_elem_ic=pcompi->ast_to_icode(opr_elem);
 
-    var_in_ref_array_ic->is_array++;
+    var_in_ref_array_ic->is_array--;
     var_in_ref_array_ic->array_cnt.push_back(opr_elem_ic);
 
     return var_in_ref_array_ic;

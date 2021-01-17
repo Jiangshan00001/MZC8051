@@ -16,7 +16,7 @@ SRCS_CPP = 	 api/ir2asm8051_api.cpp \
 			 filter/icode_func_var_register.cpp filter/icode_global_func.cpp filter/icode_inline.cpp \
 			 filter/icode_ptr_calc.cpp filter/icode_ptr_copy.cpp filter/icode_ref_number.cpp \
 			 filter/icode_replace.cpp filter/icode_var_scope.cpp filter/icode_unresolved.cpp \
-			 filter/icode_positive_opr.cpp
+			 filter/icode_positive_opr.cpp filter/icode_ptr_in_calc.cpp
 
 			
 SRCS_COMMON_ICODE = 

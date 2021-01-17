@@ -104,7 +104,7 @@ int icode_ptr_calc::process_array_result(icode *ic, std::vector<icode *> &parent
 
 
     //
-    if(ic->is_array != ic->result->is_array)
+    if((-ic->is_array) != ic->result->is_array)
     {
         /// 返回值是指针
         this->m_icode_result =  pcompi->new_ref_icode( result_new);

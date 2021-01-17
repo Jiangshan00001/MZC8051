@@ -22,6 +22,8 @@
 #include "icode_sym_rebuild.h"
 #include "icode_replace.h"
 #include "icode_refresh_number_dict.h"
+#include "icode_ptr_in_calc.h"
+
 
 c51_filter_manage::c51_filter_manage()
 {
@@ -61,6 +63,8 @@ void c51_filter_manage::do_filter(icodes *ics)
     ptr_calc.process_topcode(m_top_icodes);
 
 
+    icode_ptr_in_calc ptr_in_calc;
+    ptr_in_calc.execute(ics);
 
 
     /// 6-正号翻译，将正号翻译转移为=号. negative翻译为函数 a=+3;---> right=3;result=a; opr=+.
