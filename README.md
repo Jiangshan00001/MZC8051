@@ -39,8 +39,8 @@ a c compiler for mcu8051.
 
 some code is from github:
 
-- json lib is from:https://github.com/nlohmann/json
-- sim8051 is mostly from: https://github.com/andersdellien/8051-sim
+- json: https://github.com/nlohmann/json
+- sim8051: https://github.com/andersdellien/8051-sim
 - simplecpp: https://github.com/danmar/simplecpp
 
 if there is any license issue, please contact me.
