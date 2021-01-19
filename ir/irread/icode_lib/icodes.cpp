@@ -149,10 +149,23 @@ icode *icodes::new_temp_var()
     icode *e = new_icode();
 
 
-    ss<<e;
+    ss<<(unsigned long long)e;
 
     e->m_type = ICODE_TYPE_DEF_VAR_TMP;
     e->name = "TMP_" + ss.str(); //get_temp_name();
+    return e;
+}
+
+icode *icodes::new_temp_var(icode *to_copy)
+{
+    std::stringstream ss;
+    icode *e = new_temp_var();
+    std::string tmp_name = e->name;
+    unsigned long tmp_num = e->m_icode_number;
+
+    *e = *to_copy;
+    e->name = tmp_name;
+    e->m_icode_number = tmp_num;
     return e;
 }
 

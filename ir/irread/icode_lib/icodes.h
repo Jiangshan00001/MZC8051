@@ -32,6 +32,8 @@ public:
 public:
     icode *new_ref_icode(icode *to_ref);
     icode *new_temp_var();
+    /// 生成一个新的临时变量，类型和to_copy一样
+    icode *new_temp_var(icode* to_copy);
     icode *new_copy_icode_gen(icode *from, icode *to);
     icode *new_var_in_var_icode(icode *to_ref);
     icode *new_var_in_var_tmp_icode(icode *to_ref);
