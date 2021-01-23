@@ -551,44 +551,6 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class t
         return a;
     }
 
-
-
-
-#else
-    icode *a = pcompi->new_icode();
-    a->m_type=ICODE_TYPE_BLOCK;
-    //token_defs *postfix_expression=tdefs->m_tk_elems[0];
-    //token_defs *'['=tdefs->m_tk_elems[1];
-    //token_defs *expression=tdefs->m_tk_elems[2];
-    //token_defs *']'=tdefs->m_tk_elems[3];
-    //icode *postfix_expression_ic=pcompi->ast_to_icode(postfix_expression);
-    //icode *'['_ic=pcompi->ast_to_icode('[');
-    //icode *expression_ic=pcompi->ast_to_icode(expression);
-    //icode *']'_ic=pcompi->ast_to_icode(']');
-    //a->merge_icode(postfix_expression_ic);
-    //a->merge_icode('['_ic);
-    //a->merge_icode(expression_ic);
-    //a->merge_icode(']'_ic);
-    token_defs *postfix_expression = tdefs->m_tk_elems[0];
-    token_defs *expression = tdefs->m_tk_elems[2];
-
-    icode *post_ic = pcompi->ast_to_icode(postfix_expression, 1);
-    icode *expr_ic = pcompi->ast_to_icode(expression, 1);
-
-    //post_ic->result->array_shift.push_back(expr_ic->result);
-    post_ic->result->array_cnt.push_back(expr_ic->result);
-    post_ic->result->is_array--;
-
-    //本来是ref，如果添加了数组的读取，则改变类型为ICODE_TYPE_DEF_VAR_IN_VAR
-    post_ic->result->m_type= ICODE_TYPE_DEF_VAR_IN_VAR;
-
-
-    a->merge_icode(post_ic);
-    a->merge_icode(expr_ic);
-    a->result = post_ic->result;
-
-
-    return a;
 #endif
 }
 
@@ -1150,6 +1112,22 @@ class icode *  func_IAN_UNARY_EXPRESSION_3(class comp_context* pcompi, class tok
 
 icode * in_ptr_expr(comp_context* pcompi, token_defs* tdefs, bool need_result_icode, icode* result_ic)
 {
+    /// int *a;
+    /// *a=3;
+    ///
+    /// def_var: $a,u24*1*[i16];
+    /// opr: "=", null;, iconst:0x3;, var_in:%a*1;
+
+    /// int **a;
+    /// **a=3;
+    ///
+    /// def_var: $a,u24*2*[i16];
+    /// def_var_tmp: $tmp1, u24*1*[i16];
+    /// opr: "=", null;, var_in:%a*1;, %tmp1;
+    /// opr: "=", null;, iconst:0x3;, var_in:%tmp1*1;
+    ///
+    ///
+    ///
     /// *b;
     token_defs * unary_operator = tdefs->m_tk_elems[0];
     token_defs* unary_expr = tdefs->m_tk_elems[1];
@@ -1162,19 +1140,63 @@ icode * in_ptr_expr(comp_context* pcompi, token_defs* tdefs, bool need_result_ic
     icode *c = pcompi->ast_to_icode(unary_expr, 1);
     a->merge_icode(c);
 
-
-    a->result = pcompi->new_var_in_var_icode(c->result);
-
-    if(need_result_icode&&result_ic)
+    if((c->result->m_type!=ICODE_TYPE_DEF_VAR_IN_VAR)&&
+            (c->result->m_type!=ICODE_TYPE_DEF_VAR_IN_VAR_TMP))
     {
+        //不是指针的多次迭代
+        a->result = pcompi->new_var_in_var_icode(c->result);
+
+        if(need_result_icode&&result_ic)
         {
-            icode *b = pcompi->new_copy_icode_gen(a->result, result_ic);
-            a->result = result_ic;
-            a->merge_icode(b);
+            {
+                icode *b = pcompi->new_copy_icode_gen(a->result, result_ic);
+                a->result = result_ic;
+                a->merge_icode(b);
+            }
         }
+
+        return a;
+    }
+    else
+    {
+        /// 此处是指针的多次迭代，
+        /// int **a;
+        /// **a=3;
+        ///
+        /// 如果按照上面同样的代码，会生成中间代码：
+        /// def_var: $a,u24*2*[i16];
+        /// opr: "=", null;, iconst:0x3;, var_in:%a*2;
+        /// 此处直接将 var_in:%a*2 翻译为只有var_in:%x*1的1维指针模式。
+        ///
+        /// def_var: $a,u24*2*[i16];
+        /// def_var_tmp: $tmp1, u24*1*[i16];  <<<----------生成新的临时变量
+        /// opr: "=", null;, var_in:%a*1;, %tmp1;
+        /// opr: "=", null;, iconst:0x3;, var_in:%tmp1*1;
+        ///
+
+        /// c->result是var_in_var类型
+        /// c->result->result是引用的类型，应该是指针或者数组变量
+        ///
+
+        icode * tmp1 = pcompi->m_top_icodes->new_temp_var( c->result->result);
+        if(tmp1->is_ptr>1)
+        {
+            tmp1->is_ptr--;
+        }
+        else
+        {
+            assert(0);
+        }
+        a->merge_icode(tmp1);
+        icode *opr_mov = pcompi->new_opr_icode("=", NULL, c->result, tmp1);
+        a->merge_icode(opr_mov);
+        a->result = pcompi->m_top_icodes->new_var_in_var_tmp_icode(tmp1);
+        return a;
     }
 
-    return a;
+
+
+
 }
 
 class icode *  func_IAN_UNARY_EXPRESSION_4(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)

@@ -32,8 +32,8 @@ int icode_ptr_in_calc::process_one_icode(icode *ic, std::vector<icode *> &parent
     ///
     ///
     /// def_var_tmp: $tmp1;,$a,u24*2*[i16];
-    /// def_var_tmp: $tmp2;,$a,u24*1*[i16];
     /// opr: "=", null;, var_in:%a*1;, %tmp1;
+    /// def_var_tmp: $tmp2;,$a,u24*1*[i16];
     /// opr: "=", null;, var_in:%tmp1*1;, %tmp2;
     /// opr: "=", null;, iconst:0x3;, var_in:%tmp2*1;
     ///
@@ -60,7 +60,6 @@ int icode_ptr_in_calc::process_one_icode(icode *ic, std::vector<icode *> &parent
     ///
 
     icode * tmp_var_curr = pcompi->get_def_var(ic->result);
-    int is_first=1;
     while(to_ptr<-1)
     {
         to_ptr++;
