@@ -1238,34 +1238,34 @@ class icode *  func_IAN_UNARY_EXPRESSION_4(class comp_context* pcompi, class tok
     //return pcompi->ast_to_icode_op_b(tdefs, need_result_icode, a, result_ic, 0);
 
 
-
-    icode *b = pcompi->new_icode();
-    b->m_type = ICODE_TYPE_EXP_OP;
-    b->name = tdefs->m_tk_elems[0]->val_str;
-
-    icode *c = pcompi->ast_to_icode(unary_expr, 1);
-
-    ///----------------
-
-    b->right = c->result;
-    ///----------------
-
-    if(b->name=="&")
+    std::string opr_name="";
+    if(tdefs->m_tk_elems[0]->val_str=="&")
     {
         //此处是求地址 &c; 只有右操作符，没有左操作符
         //修改名字，方便后期使用
-        b->name = "address_of";
+        opr_name = "address_of";
     }
-    if(b->name=="-")
+    else if(tdefs->m_tk_elems[0]->val_str=="-")
     {
         ///因为- 负号 减号 是一样的，所以负号 改为negative，方便后期区分
-        b->name = "negative";
+        opr_name = "negative";
     }
-    if(b->name=="+")
+    else if(tdefs->m_tk_elems[0]->val_str=="+")
     {
         ///因为+ 正号 加号 是一样的，所以正号 改为positive，方便后期区分
-        b->name = "positive";
+        opr_name = "positive";
     }
+    else
+    {
+        opr_name = tdefs->m_tk_elems[0]->val_str;
+    }
+
+
+
+    icode *c = pcompi->ast_to_icode(unary_expr, 1);
+
+    icode *b = pcompi->new_opr_icode(opr_name, NULL, c->result, NULL);
+
 
     a->merge_icode(c);
     if(need_result_icode)

@@ -296,5 +296,30 @@ icode *icodes::new_opr_icode(std::string name, icode *left, icode *right, icode 
     addA->right = (right==NULL?NULL:new_ref_icode(right));
     addA->result = (result==NULL?NULL:new_ref_icode(result));
 
+
+    ///--------------------------------
+    ///2021.21.23
+    /// 如果name="address_of" right=var_in:ptr.
+    /// 则改为"=" ptr
+    ///
+    if((name=="address_of")&&right&&
+            (right->is_var_in()))
+    {
+        addA->name="=";
+        addA->right = new_ref_icode(right->result);
+    }
+
+
+
+    ///--------------------------------
+
+
+
+
+
+
+
+
+
     return addA;
 }

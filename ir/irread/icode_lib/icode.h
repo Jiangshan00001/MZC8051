@@ -235,6 +235,9 @@ public://icode_var
 
     //-----------------------
 
+    ///  是否是var_in变量引用
+    bool is_var_in();
+
     bool is_def_var();
     void set_width_from(icode * from);
 

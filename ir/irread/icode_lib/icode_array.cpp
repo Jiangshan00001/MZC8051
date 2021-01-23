@@ -8,6 +8,11 @@ int icode::refresh_array_total_bit_width()
     return 0;
 }
 
+bool icode::is_var_in()
+{
+    return ((m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||(m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP));
+}
+
 int icode::get_array_bit_width()
 {
     if(!is_array)

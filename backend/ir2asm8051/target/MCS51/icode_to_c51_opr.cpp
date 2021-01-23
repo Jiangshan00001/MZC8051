@@ -166,6 +166,7 @@ std::string icode_to_c51::to_asm_opr_mov(icode *ic)
     }
     ///==============================
 
+
     ///==============================
     /// 此处处理code data地址问题.
     /// 代码数组
@@ -970,7 +971,14 @@ std::string icode_to_c51::to_asm_opr_address_of(icode *ic)
         ad->m_addr = right_t->m_addr;
     }
     ad->m_bit_width = 3*8;
-    ad->m_addr |= (right_t->m_type <<16);
+    /// 2021.1.23 此处注释掉。
+    /// right_t->m_addr=0x010008
+    /// ad->m_addr = 010008 就是对的，添加上m_type=DATA_TYPE_J_DATA(7) 反而不对 了？？？
+    if(right_t->m_type<=DATA_TYPE_CODE)
+    {
+        ad->m_addr =(ad->m_addr&0xffff)| (right_t->m_type <<16);
+    }
+
 
 
 
