@@ -152,6 +152,7 @@ public://icode array
 
     int get_array_bit_width();
     int set_array_bit_width(int total_bit_width);
+    int refresh_array_total_bit_width();
 
 public://icode_var
 

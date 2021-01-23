@@ -32,6 +32,11 @@ icode* icode_manage::new_icode()
     return m_top_icodes->new_icode();
 }
 
+icode *icode_manage::new_opr_icode(std::string name, icode * left, icode* right, icode* result)
+{
+    return m_top_icodes->new_opr_icode(name, left, right, result);
+}
+
 icode* icode_manage::new_icode(ICODE_TYPE mtype)
 {
     return m_top_icodes->new_icode(mtype);
@@ -157,9 +162,11 @@ icode *icode_manage::new_var(icode *def_ic, icode *typedec, int &is_already_exis
         a->array_cnt=def_ic->array_cnt;
         //数组元素，总体无符号
         a->is_signed = 0;
-        ///此处必须先设置bitwidth为单个元素的bitwidth，才能求得总体元素的所有bitwidth
+        /// 2021.1.23 此处已经不需要先设置m_bit_width。只需要设置m_in_ptr_type即可
+        /// 2020. 此处必须先设置bitwidth为单个元素的bitwidth，才能求得总体元素的所有bitwidth
         a->m_bit_width = typedec->m_bit_width;
-        a->m_bit_width = a->get_array_bit_width();
+        //a->m_bit_width = a->get_array_bit_width();
+        a->refresh_array_total_bit_width();
     }
     else if(def_ic->is_ptr)
     {

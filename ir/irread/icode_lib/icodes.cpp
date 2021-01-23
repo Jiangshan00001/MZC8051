@@ -303,3 +303,16 @@ icode *icodes::get_function(std::string func_name)
 
 }
 
+
+
+icode *icodes::new_opr_icode(std::string name, icode *left, icode *right, icode *result)
+{
+    icode *addA = new_icode();
+    addA->m_type = ICODE_TYPE_EXP_OP;
+    addA->name=name;
+    addA->left = (left==NULL?NULL:new_ref_icode(left));
+    addA->right = (right==NULL?NULL:new_ref_icode(right));
+    addA->result = (result==NULL?NULL:new_ref_icode(result));
+
+    return addA;
+}

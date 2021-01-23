@@ -54,7 +54,7 @@ int icode_ptr_calc::process_array_result(icode *ic, std::vector<icode *> &parent
     this->m_icodes.push_back(result_new);
     this->m_icodes.push_back(movB);
 
-    int array_cnt= - ic->is_array;
+    int array_cnt= ic->is_array;
     int curr_arr_idx=0;
     while(array_cnt<0)
     {

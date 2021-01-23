@@ -2,6 +2,12 @@
 #include "icode.h"
 
 
+int icode::refresh_array_total_bit_width()
+{
+    this->m_bit_width = this->get_array_bit_width();
+    return 0;
+}
+
 int icode::get_array_bit_width()
 {
     if(!is_array)
@@ -16,7 +22,7 @@ int icode::get_array_bit_width()
         arr_cnt *= array_cnt[arrtmp]->num;
     }
 
-    return m_bit_width * arr_cnt;
+    return this->m_in_ptr_type->m_bit_width * arr_cnt;
 }
 int icode::set_array_bit_width(int total_bit_width)
 {

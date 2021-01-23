@@ -24,6 +24,7 @@ public:
     icode* new_icode(ICODE_TYPE mtype);
     icode* new_icode(const icode &cp);
     icode* new_iconst_icode(int const_num);
+    icode* new_opr_icode(std::string name, icode * left, icode* right, icode* result);
     void clear_all_icode();
 
 

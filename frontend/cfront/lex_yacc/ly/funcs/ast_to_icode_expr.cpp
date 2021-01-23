@@ -157,7 +157,7 @@ constant_expression
  * **/
 
 #include "ast_to_icode_expr.h"
-
+#include "target_base.h"
 
 #include "parser.h"
 #include "comp_context_gen_defs.h"
@@ -235,7 +235,36 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_1(class comp_context* pcompi, class t
 
 class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
-    ///数组方式读取
+    ///数组方式读取的访问
+    ///2021.1.20L
+    ///
+    ///
+    /// int a[4];
+    /// a[2]=5;
+    /// -------------
+    /// def_var: $a,u64[i16][iconst:0x4];
+    /// opr: "=", null;, iconst:0x5;, var_in:%a[iconst:0x2];
+    /// -------------
+    ///
+    /// int a[4][7];
+    /// a[2][6]=3;
+    ///
+    /// def_var: $a,u448[i16][iconst:0x4][iconst:0x7];
+    /// opr: "=", null;, iconst:0x3;, var_in:%a[iconst:0x2][iconst:0x6];
+    ///
+    /// --------------------
+    /// int **a;
+    /// a[3][4]=5;
+    ///
+    /// def_var: $a,u24*2*[i16];
+    /// opr: "=", null;, iconst:0x5;, var_in:%a[iconst:0x3][iconst:0x4];
+    /// --------------------
+    ///
+    ///
+    ///
+    ///
+    ///
+    ///
 
     //0x702-postfix_expression->postfix_expression '[' expression ']'
     //parent:
@@ -247,6 +276,285 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class t
     // postfix_expression--> postfix_expression INC_OP
     // postfix_expression--> postfix_expression DEC_OP
     // unary_expression--> postfix_expression
+#if 1
+
+
+    token_defs *postfix_expression = tdefs->m_tk_elems[0];
+    token_defs *expression = tdefs->m_tk_elems[2];
+
+    icode *post_ic = pcompi->ast_to_icode(postfix_expression, 1);
+    icode *expr_ic = pcompi->ast_to_icode(expression, 1);
+    icode *post_def_var = pcompi->get_def_var(post_ic->result);
+
+
+    if((post_def_var->m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||
+            (post_def_var->m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP))
+    {
+        ///此处只能是数组生成的
+        /// 内部是指针，指向一个数组
+        ///
+        ///
+        ///
+        /// int a[5][6];
+        /// a[3][4]=7;
+        /// def_var: $a,u480[i16][iconst:0x5][iconst:0x6];
+        ///
+        /// def_var_tmp: $tmp1, u24*1*u88[i16][iconst:0x6]; <--多维数组，数据类型是少了一层的数组的指针
+        /// opr:"address_of";,null;,%a;,%tmp1;
+        /// def_var_tmp:$tmp2;,u24;
+        /// opr:"*";,const:11;, const:3;, %tmp2;
+        /// opr:"+";,%tmp1;,%tmp2;, %tmp1;
+        /// var_in_tmp:%tmp1*1; <<--多维数组，返回一个数组的指针
+        ///
+        ///
+        ///
+        ///
+        ///
+        ///
+        assert(post_def_var->result->is_ptr==1);
+
+        icode *a = pcompi->new_icode();
+        a->m_type = ICODE_TYPE_BLOCK;
+
+        icode *tmp1=NULL;
+        if(post_def_var->result->m_in_ptr_type->is_array==1)
+        {
+            //是数组，并且就是1维数组
+            tmp1 = pcompi->new_temp_ptr_var(post_def_var->result->m_in_ptr_type->m_in_ptr_type);
+        }
+        else
+        {
+            tmp1 = pcompi->new_temp_ptr_var(post_def_var->result->m_in_ptr_type);
+            tmp1->m_in_ptr_type->array_cnt.erase(tmp1->m_in_ptr_type->array_cnt.begin());
+            tmp1->m_in_ptr_type->refresh_array_total_bit_width();
+        }
+
+        //opr:"=";,null;,%a;,%tmp1;
+        icode *movB = pcompi->new_opr_icode("=", NULL, post_def_var->result, tmp1);
+
+        //def_var_tmp:$tmp2;,u24;
+        icode *tmp2 = pcompi->new_temp_var();
+        tmp2->m_bit_width = pcompi->m_target->get_basic_type_bit_width("GENERIC_PTR");
+        tmp2->is_signed = 0;
+
+        //opr:"*";,const:11;, const:3;, %tmp2;
+        icode *movA = pcompi->new_opr_icode("*", expr_ic->result, pcompi->new_iconst_icode((tmp1->m_in_ptr_type->m_bit_width+7)/8), tmp2 );
+
+
+        //opr:"+";,%tmp1;,%tmp2;, %tmp1;
+        icode *addA = pcompi->new_opr_icode("+", tmp1, tmp2, tmp1);
+
+
+        //是数组，并且就是1维数组
+        icode *var_in1 = pcompi->m_top_icodes->new_var_in_var_tmp_icode(tmp1);
+        post_ic->result = var_in1;
+
+
+        a->merge_icode(post_ic);
+        a->merge_icode(expr_ic);
+
+        a->merge_icode(tmp1);
+        a->merge_icode(movB);
+        a->merge_icode(tmp2);
+        a->merge_icode(movA);
+        a->merge_icode(addA);
+
+        a->result = post_ic->result;
+        return a;
+
+    }
+    else if(post_def_var->is_ptr)
+    {
+        int is_ptr_level = pcompi->get_def_var(post_ic->result)->is_ptr;
+        ///
+        /// int *a;
+        /// a[3]=6;
+        ///
+        /// def_var:$a, u24*1*[u16];
+        /// def_var_tmp: $tmp1, u24*1*[u16];
+        /// opr:"=";,null;,%a;,%tmp1;
+        /// def_var_tmp:$tmp2;,u24;
+        /// opr:"*";,const:2;, const:3;, %tmp2;
+        /// opr:"+";,%tmp1;,%tmp2;, %tmp1;
+        /// var_in_tmp:tmp1*1;
+        ///
+        ///
+        /// int **a;
+        /// a[3][4]=6;
+        ///
+        /// def_var:$a, u24*2*[u16];
+        /// def_var_tmp: $tmp0, u24*1*[u16];
+        /// def_var_tmp: $tmp1, u24*2*[u16];
+        /// opr:"=";,null;,%a;,%tmp1;
+        /// def_var_tmp:$tmp2;,u24;
+        /// opr:"*";,const:2;, const:3;, %tmp2;
+        /// opr:"+";,%tmp1;,%tmp2;, %tmp1;
+        /// opr:"=";,null;,var_in_tmp:tmp1*1;,%tmp0;
+        /// tmp0???
+        ///
+        ///
+        /// (int *) p[5]; <--数组，里面存的是指针
+        /// int (* p)[5]; <--指针，指向的是数组
+        ///
+        ///
+        ///如果是指针
+        /// 通过数组的方式读写，则只需要将原来指针复制到新临时变量，+偏移。 返回新的指针,var_in 类型
+        ///创建1个临时变量
+
+
+
+        icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
+
+        a->merge_icode(post_ic);
+        a->merge_icode(expr_ic);
+
+        icode * tmp0 = NULL;
+        icode * tmp_var_curr=NULL;
+        if(is_ptr_level!=1)
+        {
+            tmp0 = pcompi->m_top_icodes->new_temp_var(pcompi->get_def_var(post_ic->result));
+            tmp0->is_ptr--;
+            a->merge_icode(tmp0);
+        }
+
+        {
+            //如果是-1，则返回的是var_in.
+            icode * tmp_1 = pcompi->m_top_icodes->new_temp_var(pcompi->get_def_var(post_ic->result));
+            tmp_var_curr = tmp_1;
+
+            icode *movB = pcompi->new_opr_icode("=", NULL, post_ic->result, tmp_1);
+
+            icode *tmp2 = pcompi->new_temp_var();
+            tmp2->m_bit_width = pcompi->m_target->get_basic_type_bit_width("GENERIC_PTR");
+            tmp2->is_signed = 0;
+
+            icode *movA = pcompi->new_opr_icode("*",NULL, expr_ic->result,  tmp2);
+            if(is_ptr_level==1)
+            {
+                movA->left = pcompi->new_iconst_icode((pcompi->get_def_var(post_ic->result)->m_in_ptr_type->m_bit_width+7)/8);
+            }
+            else
+            {
+                //不是最后一层，每一层都是指针的长度
+                movA->left = pcompi->new_iconst_icode((pcompi->m_target->get_basic_type_bit_width("GENERIC_PTR")+7)/8);
+            }
+
+            icode *addA = pcompi->new_opr_icode("+",tmp2, tmp_1, tmp_1 );
+
+            a->merge_icode(tmp_1);
+            a->merge_icode(movB);
+            a->merge_icode(tmp2);
+            a->merge_icode(movA);
+            a->merge_icode(addA);
+        }
+        if(is_ptr_level==1)
+        {
+            ///最后一层。返回的是var_in
+            icode *var_in1 = pcompi->m_top_icodes->new_var_in_var_tmp_icode(tmp_var_curr);
+            post_ic->result = var_in1;
+            a->result = post_ic->result;
+            return a;
+        }
+        else
+        {
+            ///非最后一层，返回的是tmp0
+            ///
+            icode *var_in1 = pcompi->m_top_icodes->new_var_in_var_tmp_icode(tmp_var_curr);
+            icode *ass2A = pcompi->new_opr_icode("=", NULL, var_in1, tmp0);
+
+            post_ic->result = pcompi->new_ref_icode(tmp0);
+            a->result = post_ic->result;
+            a->merge_icode(ass2A);
+
+            return a;
+
+
+        }
+
+    }
+    else
+    {
+        //如果是数组
+        /// int a[5];
+        /// a[3]=4;
+        ///
+        /// def_var: $a,u80[i16][iconst:0x5];
+        /// def_var_tmp: $tmp1, u24*1*u16; <---一维数组，此tmp1就是内部是数据类型的指针
+        /// opr:"address_of";,null;,%a;,%tmp1;
+        /// def_var_tmp:$tmp2;,u24;
+        /// opr:"*";,const:2;, const:3;, %tmp2;
+        /// opr:"+";,%tmp1;,%tmp2;, %tmp1;
+        /// var_in_tmp:tmp1*1; <<--一维数组，返回var_in
+        ///
+        ///
+        /// int a[5][6];
+        /// a[3][4]=7;
+        /// def_var: $a,u480[i16][iconst:0x5][iconst:0x6];
+        ///
+        /// def_var_tmp: $tmp1, u24*1*u88[i16][iconst:0x6]; <--多维数组，数据类型是少了一层的数组的指针
+        /// opr:"address_of";,null;,%a;,%tmp1;
+        /// def_var_tmp:$tmp2;,u24;
+        /// opr:"*";,const:11;, const:3;, %tmp2;
+        /// opr:"+";,%tmp1;,%tmp2;, %tmp1;
+        /// tmp1; <<--多维数组，返回一个数组的指针
+        ///
+        ///
+        ///
+        icode *a = pcompi->new_icode();
+        a->m_type = ICODE_TYPE_BLOCK;
+
+        icode *tmp1=NULL;
+        if(post_def_var->is_array==1)
+        {
+            //是数组，并且就是1维数组
+            tmp1 = pcompi->new_temp_ptr_var(post_def_var->m_in_ptr_type);
+        }
+        else
+        {
+            tmp1 = pcompi->new_temp_ptr_var(post_def_var);
+            tmp1->m_in_ptr_type->array_cnt.erase(tmp1->m_in_ptr_type->array_cnt.begin());
+            tmp1->m_in_ptr_type->is_array = tmp1->m_in_ptr_type->array_cnt.size();
+            tmp1->m_in_ptr_type->refresh_array_total_bit_width();
+
+        }
+
+        //opr:"address_of";,null;,%a;,%tmp1;
+        icode *movB = pcompi->new_opr_icode("address_of", NULL, post_ic->result, tmp1);
+
+        //def_var_tmp:$tmp2;,u24;
+        icode *tmp2 = pcompi->new_temp_var();
+        tmp2->m_bit_width = pcompi->m_target->get_basic_type_bit_width("GENERIC_PTR");
+        tmp2->is_signed = 0;
+
+        //opr:"*";,const:11;, const:3;, %tmp2;
+        icode *movA = pcompi->new_opr_icode("*", expr_ic->result, pcompi->new_iconst_icode((tmp1->m_in_ptr_type->m_bit_width+7)/8), tmp2 );
+
+        //opr:"+";,%tmp1;,%tmp2;, %tmp1;
+        icode *addA = pcompi->new_opr_icode("+", tmp1, tmp2, tmp1);
+
+
+        //是数组，并且就是1维数组
+        icode *var_in1 = pcompi->m_top_icodes->new_var_in_var_tmp_icode(tmp1);
+        post_ic->result = var_in1;
+
+
+        a->merge_icode(post_ic);
+        a->merge_icode(expr_ic);
+
+        a->merge_icode(tmp1);
+        a->merge_icode(movB);
+        a->merge_icode(tmp2);
+        a->merge_icode(movA);
+        a->merge_icode(addA);
+
+        a->result = post_ic->result;
+        return a;
+    }
+
+
+
+
+#else
     icode *a = pcompi->new_icode();
     a->m_type=ICODE_TYPE_BLOCK;
     //token_defs *postfix_expression=tdefs->m_tk_elems[0];
@@ -281,6 +589,7 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class t
 
 
     return a;
+#endif
 }
 
 class icode *  func_IAN_POSTFIX_EXPRESSION_3(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
@@ -475,16 +784,13 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_5(class comp_context* pcompi, class t
        icode *ptr_new = pcompi->new_temp_ptr_var(var_attr);
 
 
-       icode * mova = pcompi->new_icode(ICODE_TYPE_EXP_OP);
-       mova->name = "address_of";
-       mova->right = pcompi->new_ref_icode(dst);
-       mova->result = pcompi->new_ref_icode(ptr_new);
+       icode * mova = pcompi->new_opr_icode("address_of", NULL, dst, ptr_new);
 
-       icode *adda = pcompi->new_icode(ICODE_TYPE_EXP_OP);
-       adda->name = "+";
-       adda->right=pcompi->new_ref_icode(ptr_new);
-       adda->left=pcompi->new_iconst_icode(bit_width_offset/8);
-       adda->result = pcompi->new_ref_icode(ptr_new);
+       icode *adda = pcompi->new_opr_icode("+",
+                                           pcompi->new_iconst_icode((bit_width_offset+7)/8),
+                                           ptr_new, ptr_new);
+
+       a->merge_icode(postfix_expression_ic);
        a->merge_icode(ptr_new);
        a->merge_icode(mova);
        a->merge_icode(adda);
