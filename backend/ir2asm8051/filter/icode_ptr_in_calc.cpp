@@ -61,28 +61,25 @@ int icode_ptr_in_calc::process_one_icode(icode *ic, std::vector<icode *> &parent
 
     icode * tmp_var_curr = pcompi->get_def_var(ic->result);
     int is_first=1;
-    while(to_ptr<0)
+    while(to_ptr<-1)
     {
         to_ptr++;
         {
         ///创建1个临时变量
-        icode * tmp_var = pcompi->new_temp_var(pcompi->get_def_var(ic->result)->m_in_ptr_type);
+        icode * tmp_var = pcompi->new_temp_var(pcompi->get_def_var(ic->result));//->m_in_ptr_type
         assert(tmp_var->is_ptr);
-        tmp_var->is_ptr = to_ptr;
+        tmp_var->is_ptr = -to_ptr;
 
         /// opr: "=", null;, var_in:%a*1;, %tmp1;
         icode *var_in1 = pcompi->new_var_in_var_tmp_icode(tmp_var_curr);
-        icode *opr = pcompi->new_icode();
-        opr->m_type= ICODE_TYPE_EXP_OP;
-        opr->name = "=";
-        opr->right = var_in1;
-        opr->result = tmp_var;
+        icode *opr = pcompi->new_opr_icode("=", NULL, var_in1, tmp_var);
+
         m_icode_to_insert_before_inst.push_back(tmp_var);
         m_icode_to_insert_before_inst.push_back(opr);
         tmp_var_curr = tmp_var;
         }
     }
-    m_to_rep_ic = tmp_var_curr;
+    m_to_rep_ic = pcompi->new_var_in_var_tmp_icode(tmp_var_curr);
     return 0;
 }
 
