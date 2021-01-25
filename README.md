@@ -10,6 +10,9 @@ a c compiler for mcu8051.
 欢迎任何人参与和完善：一个人可以走的很快，但是一群人却可以走的更远。
 
 
+[程序使用说明](doc/usage.md)
+
+
 ## 源码说明：
 
 - [asm8051](doc/asm8051.md): 8051的asm到hex的汇编编译器
@@ -29,12 +32,6 @@ a c compiler for mcu8051.
 - [如何添加新的前端](doc/add_new_front_how_to.md)
 - [如何添加新的后端](doc/add_new_backend_how_to.md)
 - [如何添加新的中间代码过滤器](doc/add_new_filter_how_to.md)
-
-
-[程序使用说明](doc/usage.md)
-
-
-
 
 
 some code is from github:
