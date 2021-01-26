@@ -565,7 +565,11 @@ std::string icode_to_c51::icode_to_asm_op(icode *ic)
 {
     std::stringstream asm_str;
 
-    if(ic->name=="=")
+    if(ic->name=="init")
+    {
+        asm_str <<to_asm_opr_init(ic);
+    }
+    else if(ic->name=="=")
     {
         //=号算符
         asm_str <<to_asm_opr_mov(ic);

@@ -752,7 +752,7 @@ std::string icode::get_var_type()
 
     if(this->is_typedef)
     {
-        ss1<<","<< "type";
+        ss1<<","<< " TYPEDEF(1) ";
     }
     if(this->is_extern)
     {
@@ -790,6 +790,10 @@ std::string icode::get_var_type()
     {
         //某个变量，是寄存器参数
         ss1<<", REGISTER(\""<<this->m_register_desc<<"\") ";
+    }
+    if(this->is_sbit)
+    {
+        ss1<<", SBIT(1) ";
     }
 
     return ss1.str();

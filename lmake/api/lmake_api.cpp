@@ -66,14 +66,15 @@ void make_new_project(char * directory_path, char *project_name)
           "# 源文件列表，将自己需要编译下的c文件写在下面。已经添加了一个main.c。\n"
           "# 如果您的c文件实际名称不是main.c，则需要根据实际修改\n"
           "# 如果有多个c文件，则可以依次写在下面，多个文件之间以1个或多个空格分开\n"
-          "# 如果一行写的太长，可以用 \"\\\" 字符换行\n"
           "SRC_C= main.c\n\n"
-
-          "# 汇编文件原文件列表。 将需要编译的汇编文件下载下面=号右边。 多个文件以空格分隔\n"
-          "SRC_A51= asm_file.a51\n\n"
-
           "#此处是生成的项目的hex文件名\n"
-          "PROG=default_name\n";
+          "PROG=";
+
+
+    //"# 汇编文件原文件列表。 将需要编译的汇编文件下载下面=号右边。 多个文件以空格分隔\n"
+    //"SRC_A51= asm_file.a51\n\n"
+    fout<<project_name<<"\n\n";
+
 
     fout.close();
 
@@ -83,10 +84,9 @@ void make_new_project(char * directory_path, char *project_name)
     fout<<"//此处是示例代码\n\n void main()\n{\n}\n";
     fout.close();
 
-    fout.open(new_dir+"asm_file.a51");
-
-    fout<<";//此处是示例代码\n\n ";
-    fout.close();
+    //fout.open(new_dir+"asm_file.a51");
+    //fout<<";//此处是示例代码\n\n ";
+    //fout.close();
 
 
     cout<<"finish!\n";
@@ -311,7 +311,7 @@ int make(char * directory_path)
         cmd_compi_one_c_file = "\"" + ( G_PROG_NAME) +"\""  +" -x c8051 " +"-c -d ";
         cmd_compi_one_c_file =cmd_compi_one_c_file + " -I "+ std::string(directory_path) ;
         cmd_compi_one_c_file =cmd_compi_one_c_file + " -I \""+ std::string(get_path(G_PROG_NAME)+"\\inc\\c8051") +"\" ";
-        cmd_compi_one_c_file =cmd_compi_one_c_file + " -ISTDC8051";
+        cmd_compi_one_c_file =cmd_compi_one_c_file + " -IMZC8051";
 
         cmd_compi_one_c_file =cmd_compi_one_c_file + " -D mzc ";
         cmd_compi_one_c_file =cmd_compi_one_c_file + " -i " + path_add(directory_path, src_c[i].c_str());
@@ -337,11 +337,12 @@ int make(char * directory_path)
         ///
         std::string cmd_compi_one_c_file;
 
-        std::string output_afile=  +"_mzo.a51";
-        cmd_compi_one_c_file = "\"" + ( G_PROG_NAME) +"\""  +" -x c8051 " +" -d ";
+        std::string output_afile=  proj_name + "_mzo.a51";
+        cmd_compi_one_c_file = "\"" + ( G_PROG_NAME) +"\""  +" -x ir2asm8051 " +" -d " \
+                + " -I \""+ std::string(get_path(G_PROG_NAME)+"\\inc\\c8051") +"\" ";
         //cmd_compi_one_c_file = cmd_compi_one_c_file + " -I "+ std::string(directory_path) ;
         //cmd_compi_one_c_file = cmd_compi_one_c_file + " -I \""+ std::string(get_path(G_PROG_NAME)+"\\inc\\c8051") +"\" ";
-        cmd_compi_one_c_file = cmd_compi_one_c_file + " -ISTDC8051";
+        cmd_compi_one_c_file = cmd_compi_one_c_file + " -IMZC8051";
 
         cmd_compi_one_c_file = cmd_compi_one_c_file + " -D mzc ";
 
@@ -431,10 +432,21 @@ int make_clean(char * directory_path)
 
     }
     remove("_mzo.a51");
+    remove((proj_name+"_mzo.a51.tmp").c_str());
+    remove((proj_name+"_mzo.a51").c_str());
+
+
     cout.close_log_file();
     cerr.close_log_file();
-    remove("lmake_err.tmp");
-    remove("lmake_log.tmp");
+    std::vector<std::string> to_remove_tmp_file={"lmake_make.tmp", "lmake_err.tmp", "lmake_log.tmp", "asm8051_err.tmp", "asm8051_log.tmp", "c8051_err.tmp", "c8051_log.tmp",
+                                                "ir2asm8051_err.tmp", "ir2asm8051_log.tmp"};
+
+    for(int i=0;i<to_remove_tmp_file.size();++i)
+    {
+        remove(to_remove_tmp_file[i].c_str());
+    }
+    //remove("lmake_err.tmp");
+    //remove("lmake_log.tmp");
     cout.set_log_file();
     cerr.set_log_file();
 

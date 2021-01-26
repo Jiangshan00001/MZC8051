@@ -396,6 +396,9 @@ class icode *  func_IAN_INIT_DECLARATOR_1(class comp_context* pcompi, class toke
     icode *a = pcompi->new_icode();
     a->m_type=ICODE_TYPE_BLOCK;
 
+
+    /// 2021.1.25 添加opr init。用于初始化变量值
+
     /// int a =1;
     /// 1b02-declaration(int a=1;)-3
     /// -- type_specifier(int)
@@ -451,19 +454,22 @@ class icode *  func_IAN_INIT_DECLARATOR_1(class comp_context* pcompi, class toke
     ///-------------------------------------------------
     ///变量的初始值
     /// 如果是数组，初始值是向数组内部填内容
-
+#if 0
     if(asym->is_array)
     {
         b_ref->m_type = ICODE_TYPE_DEF_VAR_IN_VAR;
         b_ref->is_ptr = - asym->is_array;
         b_ref->m_bit_width = asym->get_array_bit_width();
     }
+#endif
     ///-------------------------------------------------
     ///
 
 
+    /// , b_ref--2021.1.25不再放在result参数中
+    ///
     //后面的语句。如果语句结果已经在b_ref中，则不再赋值
-    icode * ret_ic = pcompi->ast_to_icode(initializer, 1, b_ref);
+    icode * ret_ic = pcompi->ast_to_icode(initializer, 1);
     a->merge_icode(ret_ic);
 
     ///===========
@@ -474,6 +480,9 @@ class icode *  func_IAN_INIT_DECLARATOR_1(class comp_context* pcompi, class toke
     ///
     pcompi->correct_initializer_width_from_declarator(asym, ret_ic->result);
 
+
+    ///2021.1.25 添加init算符
+    #if 0
     ///-----------------------------------------------------
     /// char a[]="pcompi is a string";
     /// 这种情况下，是复制数据。
@@ -487,19 +496,18 @@ class icode *  func_IAN_INIT_DECLARATOR_1(class comp_context* pcompi, class toke
         }
     }
     ///-----------------------------------------------------
+    #endif
 
-    if((ret_ic->result->m_type!=ICODE_TYPE_SYMBOL_REF)||(ret_ic->result->result!=b_ref->result))
+    //if((ret_ic->result->m_type!=ICODE_TYPE_SYMBOL_REF)||(ret_ic->result->result!=b_ref->result))
     {
 
         ///添加变量初始化
         /// 2020.8.10 =赋值运算符，改为 right result
 
-        icode *c = pcompi->new_copy_icode_gen(ret_ic->result, b_ref);
+        //icode *c = pcompi->new_copy_icode_gen(ret_ic->result, b_ref);
+        icode *c = pcompi->new_opr_icode("init",NULL, ret_ic->result, b_ref  );
 
         a->merge_icode(c);
-
-        icode *resA = pcompi->release_tmp_if_need(ret_ic->result);
-        a->merge_icode(resA);
     }
     return a;
 }

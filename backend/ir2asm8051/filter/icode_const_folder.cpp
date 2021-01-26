@@ -187,7 +187,8 @@ long long icode_const_folder::iconst_opr(icode *ic, bool &can_folder)
             (ic->name=="<<=")||
             (ic->name==">>=")||
             (ic->name=="++")||
-            (ic->name=="--")
+            (ic->name=="--")||
+            (ic->name=="init")
             )
 
     {

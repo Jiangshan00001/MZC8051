@@ -335,7 +335,7 @@ class icode *  func_IAN_DIRECT_DECLARATOR_ARRAY_2(class comp_context* pcompi, cl
     a->result->is_array++;
     a->result->array_cnt.push_back(expr);
     a->merge_icode(direct_array);
-    a->merge_icode(expr);
+
     return a;
 }
 class icode *  func_IAN_DIRECT_DECLARATOR_ARRAY_3(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)

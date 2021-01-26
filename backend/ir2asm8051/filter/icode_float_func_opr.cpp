@@ -102,7 +102,7 @@ int icode_float_func_opr::opr_1_func_ex(std::string func_name, icode *ic, std::v
             (!ic->result->is_float())
         )
     {
-        ///运算符，全部是float类型，不作处理
+        ///运算符，全不是float类型，不作处理
         return 0;
     }
     icode *real_left = ic->left;

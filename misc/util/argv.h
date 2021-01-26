@@ -79,7 +79,7 @@ public:
                 break;
             default:
                 std::cout<<"unknown arg:"<<i<<", "<<argv[i];
-                break;
+                continue;
 
             }
         }        

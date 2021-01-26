@@ -128,22 +128,18 @@ std::string icode_to_c51::to_asm_opr_logic_or(icode *ic)
     return asm_str.str();
 }
 
-//{"mov", DATA_TYPE_DIRECT, DATA_TYPE_DIRECT}
-std::string icode_to_c51::to_asm_opr_mov(icode *ic)
+std::string icode_to_c51::to_asm_opr_init(icode *ic)
 {
     std::stringstream asm_str;
     assert(ic->m_type==ICODE_TYPE_EXP_OP);
-    assert(ic->name=="=");
+    assert(ic->name=="init");
 
-    ///2020.8.10 left_t 修改为right.
-    /// 原来的 a=b; result=a; left=b
-    /// 修改后：     result=a; right=b; left=a;
-    c51_addr *left_t = get_target(ic->right);
+    c51_addr *right_t = get_target(ic->right);
     c51_addr *result_t = get_target(ic->result);
 
 
     assert(result_t!=NULL);
-    assert(left_t!=NULL);
+    assert(right_t!=NULL);
 
     ///==============================
     /// 此处处理sfr地址问题
@@ -152,7 +148,7 @@ std::string icode_to_c51::to_asm_opr_mov(icode *ic)
     {
         ///此处是寄存器变量未赋值，则赋值
         /// sfr P0=0xC0;
-        result_t->m_addr = left_t->m_addr;
+        result_t->m_addr = right_t->m_addr;
         return asm_str.str();
     }
     else if((result_t->m_type==DATA_TYPE_BIT)&&
@@ -161,10 +157,11 @@ std::string icode_to_c51::to_asm_opr_mov(icode *ic)
         ///sbit变量地址赋值
         /// sbit P01=0xC1;
 
-        result_t->m_addr = left_t->m_addr;
+        result_t->m_addr = right_t->m_addr;
         return asm_str.str();
     }
     ///==============================
+
 
 
     ///==============================
@@ -184,12 +181,38 @@ std::string icode_to_c51::to_asm_opr_mov(icode *ic)
 
         //此处初始值初始化，只是将数组标签改为变量标签。因为变量默认都是没有空间的。
         /// FIXME: 无初始值的code代码会出问题？？？？ 因为没有初始值，就没有申请代码空间
-        left_t->labelA = result_t->ptr_target->labelA;
+        right_t->labelA = result_t->ptr_target->labelA;
         //此处left一般为label
         return asm_str.str();
     }
     ///==============================
+    ///==============================
     ///
+    /// 其他变量的初始化，使用mov函数
+    ///
+    ///
+
+    asm_str<<mov(right_t, result_t);
+    return asm_str.str();
+}
+
+//{"mov", DATA_TYPE_DIRECT, DATA_TYPE_DIRECT}
+std::string icode_to_c51::to_asm_opr_mov(icode *ic)
+{
+    std::stringstream asm_str;
+    assert(ic->m_type==ICODE_TYPE_EXP_OP);
+    assert(ic->name=="=");
+
+    ///2020.8.10 left_t 修改为right.
+    /// 原来的 a=b; result=a; left=b
+    /// 修改后：     result=a; right=b; left=a;
+    c51_addr *left_t = get_target(ic->right);
+    c51_addr *result_t = get_target(ic->result);
+
+
+    assert(result_t!=NULL);
+    assert(left_t!=NULL);
+
 
 
 

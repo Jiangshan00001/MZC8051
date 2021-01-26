@@ -456,6 +456,10 @@ class icode *  func_IAN_FUNC_ATTRIB1_2(class comp_context* pcompi, class token_d
         icode *I_CONSTANT_ic=pcompi->ast_to_icode(I_CONSTANT);
         result_ic->m_interrupt_num = I_CONSTANT_ic->num;
     }
+    else if(IDENTIFIER->val_str=="TYPEDEF")
+    {
+        result_ic->is_typedef = 1;
+    }
     else if(IDENTIFIER->val_str=="EXTERN")
     {
         result_ic->is_extern = 1;
@@ -487,6 +491,10 @@ class icode *  func_IAN_FUNC_ATTRIB1_2(class comp_context* pcompi, class token_d
     else if(IDENTIFIER->val_str=="NAKED")
     {
         result_ic->is_naked = 1;
+    }
+    else if(IDENTIFIER->val_str=="SBIT")
+    {
+        result_ic->is_sbit = 1;
     }
     else
     {

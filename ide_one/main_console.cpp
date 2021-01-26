@@ -45,7 +45,7 @@ void usage_exit()
     cout<<"prog -x asm8051 -i input_asm_file -o output_hex_file \n";
     cout<<"prog -x sim8051 -i input_hex_file\n";
     cout<<"prog -x dis8051 -i input_hex_file -o output_asm_file\n";
-    cout<<"prog -x c2 -i input_c_file -o output_file_name -t output_type(c/)  -O 优化数字\n";
+    cout<<"prog -x c2 -i input_c_file -o output_file_name -t output_type(c/)  -O number\n";
     cout<<"prog -x cpp -i input_c_file -o output_file_name  -D define_sym -I includ_path  -n include_file\n";
     cout<<"prog -x c2ir -i input_c_file -o output_file_name\n";
     cout<<"prog -x ir2ir -i input_ir_file [-i input_ir_file2 ] -o output_file_name\n";
@@ -278,11 +278,34 @@ int main(int argc, char * argv[])
         fout<<out_str;
         fout.close();
         delete ics;
+        return -cerr.m_line_count;
     }
     else if(cmd_str=="c8051")
     {
+        cpp_api m_cpp;
+        std::string out_cpp = m_cpp.c_do_cpp(input_file[0], include_file, defined_sym, include_path, is_debug_flag);
+        c8051_api m_api;
+        icodes* ics = m_api.c_to_icode(input_file[0],is_debug_flag);
+
+        if(is_just_c)
+        {
+            std::ofstream fout(output_file);
+            fout<<ics->m_top_icodes->to_str();
+            fout.close();
+            delete ics;
+            return -cerr.m_line_count;
+        }
+
+
+        ir2asm8051_api m_asm;
+        std::string out_str = m_asm.icode_to_asm8051(ics);
+        std::ofstream fout(output_file);
+        fout<<out_str;
+        fout.close();
+        delete ics;
+
+        return -cerr.m_line_count;
         //translate_c_to_asm(input_file, parse_str, output_file, include_file, defined_sym, include_path, is_just_c, is_debug_flag);
-        cerr<<"unsupported now\n";
     }
     else if(cmd_str=="asm8051")
     {

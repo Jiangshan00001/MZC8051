@@ -214,6 +214,7 @@ private:
     ///===========================================================================================
     /// opr
     /// 转移、算术运算
+    std::string to_asm_opr_init(class icode* ic);
     std::string to_asm_opr_mov(class icode* ic);
     std::string to_asm_opr_plus(icode *ic);
     std::string to_asm_opr_sub(icode *ic);

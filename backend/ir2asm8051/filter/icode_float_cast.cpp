@@ -123,7 +123,8 @@ int icode_float_cast::process_one_icode(icode *ic, std::vector<icode *> &parent,
              (ic->name=="|=")||
              (ic->name=="^=")||
              (ic->name=="<<=")||
-             (ic->name==">>=")
+             (ic->name==">>=")||
+             (ic->name=="init")
              )
             )
     {

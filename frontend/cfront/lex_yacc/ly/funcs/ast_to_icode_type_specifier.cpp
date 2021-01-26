@@ -296,9 +296,16 @@ class icode *func_token_TYPEDEF_NAME(class comp_context* pcompi, class token_def
     // type_specifier--> TYPEDEF_NAME
 
     sym* s = pcompi->find_symbol(tdefs->val_str);
-    result_ic->m_bit_width = s->def_icode->m_bit_width;
-    result_ic->m_type_str = result_ic->m_type_str + s->def_icode->name;
-    result_ic->name = s->def_icode->name;
+    unsigned long tmp = result_ic->m_icode_number;
+    std::string tmp_type_name = result_ic->m_type_str;
+
+
+    *result_ic = *s->def_icode;
+    result_ic->m_icode_number = tmp;
+    //result_ic->m_bit_width = s->def_icode->m_bit_width;
+    result_ic->m_type_str = tmp_type_name + s->def_icode->name;
+    //result_ic->name = s->def_icode->name;
+
 
     result_ic->m_dir_line_no = tdefs->line_no;
     result_ic->m_dir_source = tdefs->m_file_name;
