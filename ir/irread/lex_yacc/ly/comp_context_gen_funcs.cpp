@@ -496,6 +496,14 @@ class icode *  func_IAN_FUNC_ATTRIB1_2(class comp_context* pcompi, class token_d
     {
         result_ic->is_sbit = 1;
     }
+    else if(IDENTIFIER->val_str=="CODE")
+    {
+        result_ic->is_code = 1;
+    }
+    else if(IDENTIFIER->val_str=="CONST")
+    {
+        result_ic->is_const = 1;
+    }
     else
     {
         assert(0);
@@ -992,6 +1000,30 @@ class icode *  func_IAN_TYPE_SPECIFIER_6(class comp_context* pcompi, class token
 	//a->merge_icode('['_ic);
 	//a->merge_icode(opr_elem_ic);
 	//a->merge_icode(']'_ic);
+    return NULL;
+}
+class icode *  func_IAN_TYPE_SPECIFIER_7(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
+{
+	///变量/函数类型属性值，没有返回值，将属性值直接填入result_ic中
+	//0xc07-type_specifier->type_specifier ',' func_attrib 
+	//parent:
+	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
+	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
+	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
+	// type_specifier--> type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']'
+	// type_specifier--> type_specifier '[' type_specifier ']'
+	// type_specifier--> type_specifier '[' opr_elem ']'
+	// type_specifier--> type_specifier func_attrib
+
+	token_defs *type_specifier=tdefs->m_tk_elems[0];
+	//token_defs *','=tdefs->m_tk_elems[1];
+	token_defs *func_attrib=tdefs->m_tk_elems[2];
+	icode *type_specifier_ic=pcompi->ast_to_icode(type_specifier, need_result_icode, result_ic);
+	//icode *','_ic=pcompi->ast_to_icode(',');
+	icode *func_attrib_ic=pcompi->ast_to_icode(func_attrib, need_result_icode, result_ic);
+	//a->merge_icode(type_specifier_ic);
+	//a->merge_icode(','_ic);
+	//a->merge_icode(func_attrib_ic);
     return NULL;
 }
 class icode *  func_IAN_TYPE_SPECIFIER_BASIC_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)

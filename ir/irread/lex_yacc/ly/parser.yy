@@ -341,19 +341,6 @@ ret_type
 		$$.m_tk_elems.push_back(parser_ntoken($4));
 		$$.m_tk_elems.push_back(parser_ntoken($5));
 		}
-	|  RET_TYPE  VAR_NAME_IDENTIFIER  ','  type_specifier  ','  func_attrib  ';' 	{
-		$$=gempty_token();
-		$$.m_type=TOKEN_DEFS_TYPE_AST;
-		$$.m_tk_type_int = IAN_RET_TYPE_2;
-		$$.m_tk_type_int_list.push_back(IAN_RET_TYPE_2);
-		$$.m_tk_elems.push_back(parser_ntoken($1));
-		$$.m_tk_elems.push_back(parser_ntoken($2));
-		$$.m_tk_elems.push_back(parser_ntoken($3));
-		$$.m_tk_elems.push_back(parser_ntoken($4));
-		$$.m_tk_elems.push_back(parser_ntoken($5));
-		$$.m_tk_elems.push_back(parser_ntoken($6));
-		$$.m_tk_elems.push_back(parser_ntoken($7));
-		}
 	;
 def_arg
 	:  DEF_ARG  VAR_NAME_IDENTIFIER  ','  type_specifier  ';' 	{
@@ -367,19 +354,6 @@ def_arg
 		$$.m_tk_elems.push_back(parser_ntoken($4));
 		$$.m_tk_elems.push_back(parser_ntoken($5));
 		}
-	|  DEF_ARG  VAR_NAME_IDENTIFIER  ','  type_specifier  ','  func_attrib  ';' 	{
-		$$=gempty_token();
-		$$.m_type=TOKEN_DEFS_TYPE_AST;
-		$$.m_tk_type_int = IAN_DEF_ARG_2;
-		$$.m_tk_type_int_list.push_back(IAN_DEF_ARG_2);
-		$$.m_tk_elems.push_back(parser_ntoken($1));
-		$$.m_tk_elems.push_back(parser_ntoken($2));
-		$$.m_tk_elems.push_back(parser_ntoken($3));
-		$$.m_tk_elems.push_back(parser_ntoken($4));
-		$$.m_tk_elems.push_back(parser_ntoken($5));
-		$$.m_tk_elems.push_back(parser_ntoken($6));
-		$$.m_tk_elems.push_back(parser_ntoken($7));
-		}
 	;
 def_one_var
 	:  def_var_start  VAR_NAME_IDENTIFIER  ','  type_specifier  ';' 	{
@@ -392,19 +366,6 @@ def_one_var
 		$$.m_tk_elems.push_back(parser_ntoken($3));
 		$$.m_tk_elems.push_back(parser_ntoken($4));
 		$$.m_tk_elems.push_back(parser_ntoken($5));
-		}
-	|  def_var_start  VAR_NAME_IDENTIFIER  ','  type_specifier  ','  func_attrib  ';' 	{
-		$$=gempty_token();
-		$$.m_type=TOKEN_DEFS_TYPE_AST;
-		$$.m_tk_type_int = IAN_DEF_ONE_VAR_2;
-		$$.m_tk_type_int_list.push_back(IAN_DEF_ONE_VAR_2);
-		$$.m_tk_elems.push_back(parser_ntoken($1));
-		$$.m_tk_elems.push_back(parser_ntoken($2));
-		$$.m_tk_elems.push_back(parser_ntoken($3));
-		$$.m_tk_elems.push_back(parser_ntoken($4));
-		$$.m_tk_elems.push_back(parser_ntoken($5));
-		$$.m_tk_elems.push_back(parser_ntoken($6));
-		$$.m_tk_elems.push_back(parser_ntoken($7));
 		}
 	;
 def_var_start
@@ -476,6 +437,15 @@ type_specifier
 		$$.m_tk_elems.push_back(parser_ntoken($2));
 		$$.m_tk_elems.push_back(parser_ntoken($3));
 		$$.m_tk_elems.push_back(parser_ntoken($4));
+		}
+	|  type_specifier  ','  func_attrib 	{
+		$$=gempty_token();
+		$$.m_type=TOKEN_DEFS_TYPE_AST;
+		$$.m_tk_type_int = IAN_TYPE_SPECIFIER_7;
+		$$.m_tk_type_int_list.push_back(IAN_TYPE_SPECIFIER_7);
+		$$.m_tk_elems.push_back(parser_ntoken($1));
+		$$.m_tk_elems.push_back(parser_ntoken($2));
+		$$.m_tk_elems.push_back(parser_ntoken($3));
 		}
 	;
 type_specifier_basic

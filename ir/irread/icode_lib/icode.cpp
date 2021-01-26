@@ -795,6 +795,14 @@ std::string icode::get_var_type()
     {
         ss1<<", SBIT(1) ";
     }
+    if(this->is_code)
+    {
+        ss1<<", CODE(1) ";
+    }
+    if(this->is_const)
+    {
+        ss1<<", CONST(1) ";
+    }
 
     return ss1.str();
 }

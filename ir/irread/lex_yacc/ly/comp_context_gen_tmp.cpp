@@ -468,33 +468,15 @@ case IAN_RET_TYPE_1: //0x801-ret_type->RET_TYPE VAR_NAME_IDENTIFIER ',' type_spe
 	return a;
 }
 break;
-case IAN_RET_TYPE_2: //0x802-ret_type->RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';' 
-{
-	icode *a= func_IAN_RET_TYPE_2(this, tdefs, need_result_icode, result_ic);
-	return a;
-}
-break;
 case IAN_DEF_ARG_1: //0x901-def_arg->DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';' 
 {
 	icode *a= func_IAN_DEF_ARG_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_DEF_ARG_2: //0x902-def_arg->DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';' 
-{
-	icode *a= func_IAN_DEF_ARG_2(this, tdefs, need_result_icode, result_ic);
-	return a;
-}
-break;
 case IAN_DEF_ONE_VAR_1: //0xa01-def_one_var->def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';' 
 {
 	icode *a= func_IAN_DEF_ONE_VAR_1(this, tdefs, need_result_icode, result_ic);
-	return a;
-}
-break;
-case IAN_DEF_ONE_VAR_2: //0xa02-def_one_var->def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';' 
-{
-	icode *a= func_IAN_DEF_ONE_VAR_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
@@ -543,6 +525,12 @@ break;
 case IAN_TYPE_SPECIFIER_6: //0xc06-type_specifier->type_specifier '[' opr_elem ']' 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_6(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_TYPE_SPECIFIER_7: //0xc07-type_specifier->type_specifier ',' func_attrib 
+{
+	icode *a= func_IAN_TYPE_SPECIFIER_7(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
@@ -895,7 +883,7 @@ case IAN_INLINE_ASM_1: //0x2101-inline_asm->INLINE_ASM STRING_LITERAL ';'
 }
 break;
 
-}//switch end. case_cnt=5f
+}//switch end. case_cnt=5d
 
 }
 

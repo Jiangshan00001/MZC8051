@@ -27,11 +27,8 @@ IAN_DECLARATIONS_2=0x602, //declarations->declarations def_one_var
 IAN_FUNCTION_ARG_1=0x701, //function_arg->def_arg 
 IAN_FUNCTION_ARG_2=0x702, //function_arg->function_arg def_arg 
 IAN_RET_TYPE_1=0x801, //ret_type->RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';' 
-IAN_RET_TYPE_2=0x802, //ret_type->RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';' 
 IAN_DEF_ARG_1=0x901, //def_arg->DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';' 
-IAN_DEF_ARG_2=0x902, //def_arg->DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';' 
 IAN_DEF_ONE_VAR_1=0xa01, //def_one_var->def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';' 
-IAN_DEF_ONE_VAR_2=0xa02, //def_one_var->def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';' 
 IAN_DEF_VAR_START_1=0xb01, //def_var_start->DEF_VAR 
 IAN_DEF_VAR_START_2=0xb02, //def_var_start->DEF_VAR_TMP 
 IAN_TYPE_SPECIFIER_1=0xc01, //type_specifier->type_specifier_basic 
@@ -40,6 +37,7 @@ IAN_TYPE_SPECIFIER_3=0xc03, //type_specifier->type_specifier_basic '(' '(' decla
 IAN_TYPE_SPECIFIER_4=0xc04, //type_specifier->type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']' 
 IAN_TYPE_SPECIFIER_5=0xc05, //type_specifier->type_specifier '[' type_specifier ']' 
 IAN_TYPE_SPECIFIER_6=0xc06, //type_specifier->type_specifier '[' opr_elem ']' 
+IAN_TYPE_SPECIFIER_7=0xc07, //type_specifier->type_specifier ',' func_attrib 
 IAN_TYPE_SPECIFIER_BASIC_1=0xd01, //type_specifier_basic->VOID 
 IAN_TYPE_SPECIFIER_BASIC_2=0xd02, //type_specifier_basic->U1 
 IAN_TYPE_SPECIFIER_BASIC_3=0xd03, //type_specifier_basic->U8 
@@ -124,11 +122,8 @@ class icode *  func_IAN_DECLARATIONS_2(class comp_context* pcompi, class token_d
 class icode *  func_IAN_FUNCTION_ARG_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_FUNCTION_ARG_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_RET_TYPE_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
-class icode *  func_IAN_RET_TYPE_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_DEF_ARG_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
-class icode *  func_IAN_DEF_ARG_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_DEF_ONE_VAR_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
-class icode *  func_IAN_DEF_ONE_VAR_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_DEF_VAR_START_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_DEF_VAR_START_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_TYPE_SPECIFIER_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
@@ -137,6 +132,7 @@ class icode *  func_IAN_TYPE_SPECIFIER_3(class comp_context* pcompi, class token
 class icode *  func_IAN_TYPE_SPECIFIER_4(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_TYPE_SPECIFIER_5(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_TYPE_SPECIFIER_6(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
+class icode *  func_IAN_TYPE_SPECIFIER_7(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_TYPE_SPECIFIER_BASIC_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_TYPE_SPECIFIER_BASIC_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_TYPE_SPECIFIER_BASIC_3(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
@@ -195,7 +191,7 @@ class icode *  func_IAN_OPR_ELEM_SEQ_2(class comp_context* pcompi, class token_d
 class icode *  func_IAN_LABEL_DEF_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_LABEL_REF_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_INLINE_ASM_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
-//ast func cout:95
+//ast func cout:93
  class icode *func_token_END(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
  class icode *func_token_EOL(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
  class icode *func_token_BLOCKS(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);

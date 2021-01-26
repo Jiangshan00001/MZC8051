@@ -373,9 +373,7 @@ class icode *  func_IAN_FUNC_ATTRIB_1(class comp_context* pcompi, class token_de
 	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type FUNC_END VAR_REF ';'
 	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg FUNC_END VAR_REF ';'
 	// func_attrib--> func_attrib ',' func_attrib1
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
+	// type_specifier--> type_specifier ',' func_attrib
 return pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
 }
 class icode *  func_IAN_FUNC_ATTRIB_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
@@ -387,9 +385,7 @@ class icode *  func_IAN_FUNC_ATTRIB_2(class comp_context* pcompi, class token_de
 	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type FUNC_END VAR_REF ';'
 	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg FUNC_END VAR_REF ';'
 	// func_attrib--> func_attrib ',' func_attrib1
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
+	// type_specifier--> type_specifier ',' func_attrib
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	//token_defs *func_attrib=tdefs->m_tk_elems[0];
 	//token_defs *','=tdefs->m_tk_elems[1];
@@ -534,43 +530,6 @@ class icode *  func_IAN_RET_TYPE_1(class comp_context* pcompi, class token_defs*
 	assert(0);
 	return a;
 }
-class icode *  func_IAN_RET_TYPE_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
-{
-	//0x802-ret_type->RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';' 
-	//parent:
-	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ';' ret_type compound_statement FUNC_END VAR_REF ';'
-	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type compound_statement FUNC_END VAR_REF ';'
-	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg compound_statement FUNC_END VAR_REF ';'
-	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg compound_statement FUNC_END VAR_REF ';'
-	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ';' ret_type FUNC_END VAR_REF ';'
-	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type FUNC_END VAR_REF ';'
-	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg FUNC_END VAR_REF ';'
-	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg FUNC_END VAR_REF ';'
-	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
-	//token_defs *RET_TYPE=tdefs->m_tk_elems[0];
-	//token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
-	//token_defs *','=tdefs->m_tk_elems[2];
-	//token_defs *type_specifier=tdefs->m_tk_elems[3];
-	//token_defs *','=tdefs->m_tk_elems[4];
-	//token_defs *func_attrib=tdefs->m_tk_elems[5];
-	//token_defs *';'=tdefs->m_tk_elems[6];
-	//icode *RET_TYPE_ic=pcompi->ast_to_icode(RET_TYPE);
-	//icode *VAR_NAME_IDENTIFIER_ic=pcompi->ast_to_icode(VAR_NAME_IDENTIFIER);
-	//icode *','_ic=pcompi->ast_to_icode(',');
-	//icode *type_specifier_ic=pcompi->ast_to_icode(type_specifier);
-	//icode *','_ic=pcompi->ast_to_icode(',');
-	//icode *func_attrib_ic=pcompi->ast_to_icode(func_attrib);
-	//icode *';'_ic=pcompi->ast_to_icode(';');
-	//a->merge_icode(RET_TYPE_ic);
-	//a->merge_icode(VAR_NAME_IDENTIFIER_ic);
-	//a->merge_icode(','_ic);
-	//a->merge_icode(type_specifier_ic);
-	//a->merge_icode(','_ic);
-	//a->merge_icode(func_attrib_ic);
-	//a->merge_icode(';'_ic);
-	assert(0);
-	return a;
-}
 class icode *  func_IAN_DEF_ARG_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
 	//0x901-def_arg->DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';' 
@@ -592,37 +551,6 @@ class icode *  func_IAN_DEF_ARG_1(class comp_context* pcompi, class token_defs* 
 	//a->merge_icode(VAR_NAME_IDENTIFIER_ic);
 	//a->merge_icode(','_ic);
 	//a->merge_icode(type_specifier_ic);
-	//a->merge_icode(';'_ic);
-	assert(0);
-	return a;
-}
-class icode *  func_IAN_DEF_ARG_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
-{
-	//0x902-def_arg->DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';' 
-	//parent:
-	// function_arg--> def_arg
-	// function_arg--> function_arg def_arg
-	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
-	//token_defs *DEF_ARG=tdefs->m_tk_elems[0];
-	//token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
-	//token_defs *','=tdefs->m_tk_elems[2];
-	//token_defs *type_specifier=tdefs->m_tk_elems[3];
-	//token_defs *','=tdefs->m_tk_elems[4];
-	//token_defs *func_attrib=tdefs->m_tk_elems[5];
-	//token_defs *';'=tdefs->m_tk_elems[6];
-	//icode *DEF_ARG_ic=pcompi->ast_to_icode(DEF_ARG);
-	//icode *VAR_NAME_IDENTIFIER_ic=pcompi->ast_to_icode(VAR_NAME_IDENTIFIER);
-	//icode *','_ic=pcompi->ast_to_icode(',');
-	//icode *type_specifier_ic=pcompi->ast_to_icode(type_specifier);
-	//icode *','_ic=pcompi->ast_to_icode(',');
-	//icode *func_attrib_ic=pcompi->ast_to_icode(func_attrib);
-	//icode *';'_ic=pcompi->ast_to_icode(';');
-	//a->merge_icode(DEF_ARG_ic);
-	//a->merge_icode(VAR_NAME_IDENTIFIER_ic);
-	//a->merge_icode(','_ic);
-	//a->merge_icode(type_specifier_ic);
-	//a->merge_icode(','_ic);
-	//a->merge_icode(func_attrib_ic);
 	//a->merge_icode(';'_ic);
 	assert(0);
 	return a;
@@ -653,44 +581,11 @@ class icode *  func_IAN_DEF_ONE_VAR_1(class comp_context* pcompi, class token_de
 	assert(0);
 	return a;
 }
-class icode *  func_IAN_DEF_ONE_VAR_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
-{
-	//0xa02-def_one_var->def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';' 
-	//parent:
-	// declarations--> def_one_var
-	// declarations--> declarations def_one_var
-	// block_item--> def_one_var
-	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
-	//token_defs *def_var_start=tdefs->m_tk_elems[0];
-	//token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
-	//token_defs *','=tdefs->m_tk_elems[2];
-	//token_defs *type_specifier=tdefs->m_tk_elems[3];
-	//token_defs *','=tdefs->m_tk_elems[4];
-	//token_defs *func_attrib=tdefs->m_tk_elems[5];
-	//token_defs *';'=tdefs->m_tk_elems[6];
-	//icode *def_var_start_ic=pcompi->ast_to_icode(def_var_start);
-	//icode *VAR_NAME_IDENTIFIER_ic=pcompi->ast_to_icode(VAR_NAME_IDENTIFIER);
-	//icode *','_ic=pcompi->ast_to_icode(',');
-	//icode *type_specifier_ic=pcompi->ast_to_icode(type_specifier);
-	//icode *','_ic=pcompi->ast_to_icode(',');
-	//icode *func_attrib_ic=pcompi->ast_to_icode(func_attrib);
-	//icode *';'_ic=pcompi->ast_to_icode(';');
-	//a->merge_icode(def_var_start_ic);
-	//a->merge_icode(VAR_NAME_IDENTIFIER_ic);
-	//a->merge_icode(','_ic);
-	//a->merge_icode(type_specifier_ic);
-	//a->merge_icode(','_ic);
-	//a->merge_icode(func_attrib_ic);
-	//a->merge_icode(';'_ic);
-	assert(0);
-	return a;
-}
 class icode *  func_IAN_DEF_VAR_START_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
 	//0xb01-def_var_start->DEF_VAR 
 	//parent:
 	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 return pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
 }
 class icode *  func_IAN_DEF_VAR_START_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
@@ -698,7 +593,6 @@ class icode *  func_IAN_DEF_VAR_START_2(class comp_context* pcompi, class token_
 	//0xb02-def_var_start->DEF_VAR_TMP 
 	//parent:
 	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 return pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
 }
 class icode *  func_IAN_TYPE_SPECIFIER_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
@@ -706,14 +600,12 @@ class icode *  func_IAN_TYPE_SPECIFIER_1(class comp_context* pcompi, class token
 	//0xc01-type_specifier->type_specifier_basic 
 	//parent:
 	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// type_specifier--> type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' opr_elem ']'
+	// type_specifier--> type_specifier ',' func_attrib
 return pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
 }
 class icode *  func_IAN_TYPE_SPECIFIER_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
@@ -721,14 +613,12 @@ class icode *  func_IAN_TYPE_SPECIFIER_2(class comp_context* pcompi, class token
 	//0xc02-type_specifier->type_specifier_basic '(' declarations ')' 
 	//parent:
 	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// type_specifier--> type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' opr_elem ']'
+	// type_specifier--> type_specifier ',' func_attrib
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	//token_defs *type_specifier_basic=tdefs->m_tk_elems[0];
 	//token_defs *'('=tdefs->m_tk_elems[1];
@@ -750,14 +640,12 @@ class icode *  func_IAN_TYPE_SPECIFIER_3(class comp_context* pcompi, class token
 	//0xc03-type_specifier->type_specifier_basic '(' '(' declarations ')' ')' 
 	//parent:
 	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// type_specifier--> type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' opr_elem ']'
+	// type_specifier--> type_specifier ',' func_attrib
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	//token_defs *type_specifier_basic=tdefs->m_tk_elems[0];
 	//token_defs *'('=tdefs->m_tk_elems[1];
@@ -785,14 +673,12 @@ class icode *  func_IAN_TYPE_SPECIFIER_4(class comp_context* pcompi, class token
 	//0xc04-type_specifier->type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']' 
 	//parent:
 	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// type_specifier--> type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' opr_elem ']'
+	// type_specifier--> type_specifier ',' func_attrib
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	//token_defs *type_specifier_basic=tdefs->m_tk_elems[0];
 	//token_defs *'*'=tdefs->m_tk_elems[1];
@@ -823,14 +709,12 @@ class icode *  func_IAN_TYPE_SPECIFIER_5(class comp_context* pcompi, class token
 	//0xc05-type_specifier->type_specifier '[' type_specifier ']' 
 	//parent:
 	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// type_specifier--> type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' opr_elem ']'
+	// type_specifier--> type_specifier ',' func_attrib
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	//token_defs *type_specifier=tdefs->m_tk_elems[0];
 	//token_defs *'['=tdefs->m_tk_elems[1];
@@ -852,14 +736,12 @@ class icode *  func_IAN_TYPE_SPECIFIER_6(class comp_context* pcompi, class token
 	//0xc06-type_specifier->type_specifier '[' opr_elem ']' 
 	//parent:
 	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// type_specifier--> type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' type_specifier ']'
 	// type_specifier--> type_specifier '[' opr_elem ']'
+	// type_specifier--> type_specifier ',' func_attrib
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	//token_defs *type_specifier=tdefs->m_tk_elems[0];
 	//token_defs *'['=tdefs->m_tk_elems[1];
@@ -873,6 +755,30 @@ class icode *  func_IAN_TYPE_SPECIFIER_6(class comp_context* pcompi, class token
 	//a->merge_icode('['_ic);
 	//a->merge_icode(opr_elem_ic);
 	//a->merge_icode(']'_ic);
+	assert(0);
+	return a;
+}
+class icode *  func_IAN_TYPE_SPECIFIER_7(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
+{
+	//0xc07-type_specifier->type_specifier ',' func_attrib 
+	//parent:
+	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
+	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
+	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
+	// type_specifier--> type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']'
+	// type_specifier--> type_specifier '[' type_specifier ']'
+	// type_specifier--> type_specifier '[' opr_elem ']'
+	// type_specifier--> type_specifier ',' func_attrib
+	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
+	//token_defs *type_specifier=tdefs->m_tk_elems[0];
+	//token_defs *','=tdefs->m_tk_elems[1];
+	//token_defs *func_attrib=tdefs->m_tk_elems[2];
+	//icode *type_specifier_ic=pcompi->ast_to_icode(type_specifier);
+	//icode *','_ic=pcompi->ast_to_icode(',');
+	//icode *func_attrib_ic=pcompi->ast_to_icode(func_attrib);
+	//a->merge_icode(type_specifier_ic);
+	//a->merge_icode(','_ic);
+	//a->merge_icode(func_attrib_ic);
 	assert(0);
 	return a;
 }
@@ -1720,7 +1626,6 @@ class icode *  func_IAN_INLINE_ASM_1(class comp_context* pcompi, class token_def
 	//DEF_ARG
 	//parent:
 	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	assert(0);
 	return a;
@@ -1992,7 +1897,6 @@ class icode *  func_IAN_INLINE_ASM_1(class comp_context* pcompi, class token_def
 	//RET_TYPE
 	//parent:
 	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	assert(0);
 	return a;
@@ -2020,11 +1924,8 @@ class icode *  func_IAN_INLINE_ASM_1(class comp_context* pcompi, class token_def
 	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg FUNC_END VAR_REF ';'
 	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg FUNC_END VAR_REF ';'
 	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
-	// def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ',' func_attrib ';'
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	assert(0);
 	return a;

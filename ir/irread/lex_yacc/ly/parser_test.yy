@@ -55,15 +55,12 @@ function_arg
 	;
 ret_type
 	:  RET_TYPE  VAR_NAME_IDENTIFIER  ','  type_specifier  ';' 
-	|  RET_TYPE  VAR_NAME_IDENTIFIER  ','  type_specifier  ','  func_attrib  ';' 
 	;
 def_arg
 	:  DEF_ARG  VAR_NAME_IDENTIFIER  ','  type_specifier  ';' 
-	|  DEF_ARG  VAR_NAME_IDENTIFIER  ','  type_specifier  ','  func_attrib  ';' 
 	;
 def_one_var
 	:  def_var_start  VAR_NAME_IDENTIFIER  ','  type_specifier  ';' 
-	|  def_var_start  VAR_NAME_IDENTIFIER  ','  type_specifier  ','  func_attrib  ';' 
 	;
 def_var_start
 	:  DEF_VAR 
@@ -76,6 +73,7 @@ type_specifier
 	|  type_specifier_basic  '*'  I_CONSTANT  '*'  '['  type_specifier  ']' 
 	|  type_specifier  '['  type_specifier  ']' 
 	|  type_specifier  '['  opr_elem  ']' 
+	|  type_specifier  ','  func_attrib 
 	;
 type_specifier_basic
 	:  VOID 

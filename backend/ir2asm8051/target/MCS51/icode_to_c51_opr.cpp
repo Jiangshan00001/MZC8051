@@ -186,6 +186,28 @@ std::string icode_to_c51::to_asm_opr_init(icode *ic)
         return asm_str.str();
     }
     ///==============================
+    /// char a[]="1234";初始化，将字符串复制到数组a中
+    ///
+
+
+
+    if((ic->right->m_type==ICODE_TYPE_CONST_STRING)&&
+            (ic->result->m_type==ICODE_TYPE_SYMBOL_REF)&&
+            (ic->result->result->m_type==ICODE_TYPE_DEF_VAR)&&
+            (ic->result->result->is_array)
+            )
+    {
+        asm_str<<mov(right_t->ptr_target, result_t->ptr_target);
+        return asm_str.str();
+
+
+    }
+
+
+
+
+    ///
+    ///
     ///==============================
     ///
     /// 其他变量的初始化，使用mov函数
