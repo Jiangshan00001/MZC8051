@@ -10,7 +10,30 @@ a c compiler for mcu8051.
 欢迎任何人参与和完善：一个人可以走的很快，但是一群人却可以走的更远。
 
 
+## 程序使用说明：
+
+当前有3个例程在release中：
+example_test: led01 led02 shumaguan01
+
+以led01为例，说明代码编译流程：
+```
+cd led01;
+../MZC8051.exe -x lmake -m clean -i .
+../MZC8051.exe -x lmake -m make -i .
+../MZC8051.exe -x sim8051 -i led01.hex
+```
+仿真运行结果：
+![led01-p2.0闪烁](doc/led01.gif)
+![led02-p2口跑马灯](doc/led02.gif)
+
+
+
+
+
+
 [程序使用说明](doc/usage.md)
+
+
 
 
 ## 源码说明：
