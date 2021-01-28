@@ -32,11 +32,13 @@ SfrIO::SfrIO(std::string name, Block &block, std::uint8_t address, std::uint8_t 
 
 bool SfrIO::ReadBit(std::uint8_t bit)
 {
+    SfrBitAddressable::ReadBit(bit);
   return block.alu.GetCallback()->OnGPIORead(*block.alu.GetCallbackCpu(), port, bit);
 }
 
 void SfrIO::WriteBit(std::uint8_t bit, bool value)
 {
+    SfrBitAddressable::WriteBit(bit, value);
   return block.alu.GetCallback()->OnGPIOWrite(*block.alu.GetCallbackCpu(), port, bit, value);
 }
 

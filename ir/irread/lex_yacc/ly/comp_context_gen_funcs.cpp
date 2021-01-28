@@ -1860,7 +1860,7 @@ class icode *  func_IAN_LABEL_DEF_1(class comp_context* pcompi, class token_defs
 {
     /// 返回语句icode
 
-	//0x1d01-label_def->LABEL_START I_CONSTANT ';' 
+    //0x1d01-label_def->LABEL_START IDENTIFIER ';'
 	//parent:
 	// statement--> label_def
 	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
@@ -1869,7 +1869,7 @@ class icode *  func_IAN_LABEL_DEF_1(class comp_context* pcompi, class token_defs
 	//token_defs *';'=tdefs->m_tk_elems[2];
 
 
-    sym* s = pcompi->find_symbol("__LB"+I_CONSTANT->val_str);
+    sym* s = pcompi->find_symbol(I_CONSTANT->val_str);
     if(s!=NULL)
     {
         //已经有此定义直接返回
@@ -1881,7 +1881,7 @@ class icode *  func_IAN_LABEL_DEF_1(class comp_context* pcompi, class token_defs
 
     LABEL_START_ic->name = I_CONSTANT->val_str;
 
-    std::string sym_name = "__LB"+I_CONSTANT->val_str;
+    std::string sym_name = I_CONSTANT->val_str;
     pcompi->add_symbol(sym_name, LABEL_START_ic);
 
     return LABEL_START_ic;
@@ -1897,14 +1897,14 @@ class icode *  func_IAN_LABEL_REF_1(class comp_context* pcompi, class token_defs
     token_defs *I_CONSTANT=tdefs->m_tk_elems[1];
     icode *LABEL_REF_ic=pcompi->ast_to_icode(LABEL_REF);
 
-    sym* s = pcompi->find_symbol("__LB"+I_CONSTANT->val_str);
+    sym* s = pcompi->find_symbol(I_CONSTANT->val_str);
     if(s==NULL)
     {
         //未定义
         icode *label_start_ic = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
         label_start_ic->name = I_CONSTANT->val_str;
 
-        std::string sym_name = "__LB"+I_CONSTANT->val_str;
+        std::string sym_name = I_CONSTANT->val_str;
         pcompi->add_symbol(sym_name, label_start_ic);
         LABEL_REF_ic->result = label_start_ic;
     }

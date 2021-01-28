@@ -149,6 +149,7 @@ std::string icode_to_c51::to_asm_opr_init(icode *ic)
         ///此处是寄存器变量未赋值，则赋值
         /// sfr P0=0xC0;
         result_t->m_addr = right_t->m_addr;
+        asm_str<<";sfr "<<pcompi->get_def_var(ic->result)->name<<". addr:0x"<<std::hex<<right_t->m_addr<<"\n";
         return asm_str.str();
     }
     else if((result_t->m_type==DATA_TYPE_BIT)&&
@@ -158,38 +159,51 @@ std::string icode_to_c51::to_asm_opr_init(icode *ic)
         /// sbit P01=0xC1;
 
         result_t->m_addr = right_t->m_addr;
+        asm_str<<";sbit "<<pcompi->get_def_var(ic->result)->name<<". addr:0x"<<std::hex<<right_t->m_addr<<"\n";
         return asm_str.str();
     }
     ///==============================
 
-
-
-    ///==============================
-    /// 此处处理code data地址问题.
-    /// 代码数组
-    if((result_t->m_type==DATA_TYPE_IN_GENRIC_PTR)&&
-            (result_t->ptr_target!=NULL)&&
-            (result_t->ptr_target->m_type==DATA_TYPE_J_DATA_LABEL)&&
-            (result_t->ptr_target->ptr_target!=NULL)&&
-            (result_t->ptr_target->ptr_target->m_type==DATA_TYPE_CODE)
-            )
+    if(ic->right->m_type==ICODE_TYPE_CONST_LIST)
     {
-        /// code char a[] = "aabbcc";
-        /// code不可能赋值，只有1此添加初始值的机会
-        /// TODO: result_t中添加变量： is_inited;确定是否已经附过初始值
-        //result_t->labelA = left_t->labelA;
+        if((ic->result->m_type==ICODE_TYPE_SYMBOL_REF)&&
+                (ic->result->result->m_type==ICODE_TYPE_DEF_VAR)&&
+                (ic->result->result->is_array))
+        {
+            if((ic->result->result->is_const)||
+                    (ic->result->result->is_code))
+            {
+                /// int code a[]={1,2,3,5};
+                /// code char a[] = "aabbcc";
+                /// code不可能赋值，只有1此添加初始值的机会
+                /// TODO: result_t中添加变量： is_inited;确定是否已经附过初始值
+                //result_t->labelA = left_t->labelA;
 
-        //此处初始值初始化，只是将数组标签改为变量标签。因为变量默认都是没有空间的。
-        /// FIXME: 无初始值的code代码会出问题？？？？ 因为没有初始值，就没有申请代码空间
-        right_t->labelA = result_t->ptr_target->labelA;
-        //此处left一般为label
-        return asm_str.str();
+                //此处初始值初始化，只是将数组标签改为变量标签。因为变量默认都是没有空间的。
+                /// FIXME: 无初始值的code代码会出问题？？？？ 因为没有初始值，就没有申请代码空间
+                //right_t->labelA = result_t->ptr_target->labelA;
+                ic->result->result->target->ptr_target->labelA = right_t->labelA;
+                ic->result->result->target->labelA = right_t->labelA;
+                //此处left一般为label
+                return asm_str.str();
+            }
+            else
+            {
+                /// int a[]={1,2,3,5};
+                asm_str<<mov(right_t, result_t->ptr_target);
+                return asm_str.str();
+
+            }
+
+
+        }
+
+
     }
+
     ///==============================
     /// char a[]="1234";初始化，将字符串复制到数组a中
-    ///
-
-
+    /// char a[4]={1,2,3,4};
 
     if((ic->right->m_type==ICODE_TYPE_CONST_STRING)&&
             (ic->result->m_type==ICODE_TYPE_SYMBOL_REF)&&
@@ -197,16 +211,21 @@ std::string icode_to_c51::to_asm_opr_init(icode *ic)
             (ic->result->result->is_array)
             )
     {
-        asm_str<<mov(right_t->ptr_target, result_t->ptr_target);
-        return asm_str.str();
+        if((ic->result->result->is_const)||
+                (ic->result->result->is_code)
+                )
+        {
+            ic->result->result->target->ptr_target->labelA = right_t->labelA;
+            ic->result->result->target->labelA = right_t->labelA;
 
-
+        }
+        else
+        {
+            asm_str<<mov(right_t->ptr_target, result_t->ptr_target);
+            return asm_str.str();
+        }
     }
 
-
-
-
-    ///
     ///
     ///==============================
     ///
@@ -915,6 +934,7 @@ std::string icode_to_c51::to_asm_opr_xor(icode *ic)
         assert(is_valid);
 
         result_t->m_addr =  bit_addr;
+        asm_str<<";sbit "<<get_def_var(ic->result)->name<<". addr:0x"<<std::hex<<bit_addr<<"\n";
         return asm_str.str();
     }
     ///==============================
@@ -1004,10 +1024,15 @@ std::string icode_to_c51::to_asm_opr_address_of(icode *ic)
     std::stringstream asm_str;
     c51_addr *ad = new c51_addr();
 
+    ///char code a[5]={1,2,3};
+    /// char *b=&a;
+    /// &a <<----DATA_TYPE_J_DATA_LABEL
 
-    if(right_t->m_type==DATA_TYPE_CODE)
+    if((right_t->m_type==DATA_TYPE_CODE)||
+            (right_t->m_type==DATA_TYPE_J_DATA_LABEL)
+            )
     {
-        ad->m_type==DATA_TYPE_J_DATA_LABEL;
+        ad->m_type =DATA_TYPE_J_DATA_LABEL;
         ad->labelA = right_t->labelA;
     }
     else

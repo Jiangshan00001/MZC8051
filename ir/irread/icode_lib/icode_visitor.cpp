@@ -19,7 +19,8 @@ icode_visitor::~icode_visitor()
 int icode_visitor::process_topcode(class icode *top_icode, void *user_data)
 {
     std::vector<icode *> &top_icodes = top_icode->sub_icode;
-    m_icode_number_set.clear();
+    std::set<class icode*> set_curr;
+    m_icode_number_set.push_back(set_curr);
     int ret = 0;
     for(int i=0;i<top_icodes.size();++i)
     {
@@ -29,6 +30,7 @@ int icode_visitor::process_topcode(class icode *top_icode, void *user_data)
         check_insert_inst(top_icodes, i);
         ret += enum_all_child( top_icodes[i], top_icodes, i, user_data, NULL);
     }
+    m_icode_number_set.pop_back();
     return ret;
 }
 
@@ -38,13 +40,14 @@ int icode_visitor::enum_one(icode *ic, std::vector<icode *> &parent, int index, 
     {
         return 0;
     }
-    if(m_icode_number_set.find(ic)!=m_icode_number_set.end())
+    std::set<class icode*> &set_curr = m_icode_number_set[m_icode_number_set.size()-1];
+    if(set_curr.find(ic)!=set_curr.end())
     {
         ///已经枚举过一遍了，直接返回
         return 0;
     }
 
-    m_icode_number_set.insert(ic);
+    set_curr.insert(ic);
     return process_one_icode(ic, parent, index, user_data, iparent);
 }
 

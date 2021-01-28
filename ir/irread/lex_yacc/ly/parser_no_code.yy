@@ -227,10 +227,10 @@ opr_elem_seq :   opr_elem ';'
                 | opr_elem_seq opr_elem ';'
                 ;
 
-label_def : LABEL_START I_CONSTANT ';'
+label_def : LABEL_START IDENTIFIER ';'
             ;
 
-label_ref : LABEL_REF  I_CONSTANT
+label_ref : LABEL_REF  IDENTIFIER
         ;
 
 inline_asm : INLINE_ASM STRING_LITERAL ';'

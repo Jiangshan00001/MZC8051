@@ -418,7 +418,10 @@ bool c51_var_manage::alloc_low_data(c51_addr *ad, icode *ic)
 int c51_var_manage::alloc_memory(c51_addr *ad, icode *ic)
 {
 
-    if(ic->is_code)
+    if(((ic->is_code)||(ic->is_const))||
+            ((ic->is_array )&&(ic->m_in_ptr_type->is_code))||
+            ((ic->is_array )&&(ic->m_in_ptr_type->is_const))
+            )
     {
         //code代码区，不需要实际申请空间
 

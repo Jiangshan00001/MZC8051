@@ -149,7 +149,7 @@ std::string icode::to_str(int is_one_line, int is_dbg)
     case ICODE_TYPE_LABELED_BLOCK:
         ret_str<<icode::get_type_str(this->m_type)<<":";
 
-        ret_str<< this->m_icode_number<<";";
+        ret_str<< this->name<<";";
         if(!is_one_line)
         {ret_str<<"\n";}
 
@@ -223,7 +223,7 @@ std::string icode::to_str(int is_one_line, int is_dbg)
 
         if(this->result!=NULL)
         {
-            ret_str<<icode::get_type_str(this->m_type)<<"BS" <<":"<<this->result->m_icode_number;
+            ret_str<<icode::get_type_str(this->m_type)<<"BS" <<":"<<this->result->name;
         }
         else
         {

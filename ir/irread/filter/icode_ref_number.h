@@ -11,6 +11,11 @@ public:
     icode_ref_number();
 public:
     int process_one_icode(class icode *ic, std::vector<class icode *> &parent, int index, void *user_data, class icode *iparent);
+    int process_one_icode_clean(class icode *ic, std::vector<class icode *> &parent, int index, class icode *iparent);
+    int process_one_icode_addref(class icode *ic, std::vector<class icode *> &parent, int index, class icode *iparent);
+
+    void execute(class icodes* ics);
+
 
 };
 

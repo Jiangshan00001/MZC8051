@@ -713,7 +713,7 @@ opr_elem_seq
 		}
 	;
 label_def
-	:  LABEL_START  I_CONSTANT  ';' 	{
+	:  LABEL_START  IDENTIFIER  ';' 	{
 		$$=gempty_token();
 		$$.m_type=TOKEN_DEFS_TYPE_AST;
 		$$.m_tk_type_int = IAN_LABEL_DEF_1;
@@ -724,7 +724,7 @@ label_def
 		}
 	;
 label_ref
-	:  LABEL_REF  I_CONSTANT 	{
+	:  LABEL_REF  IDENTIFIER 	{
 		$$=gempty_token();
 		$$.m_type=TOKEN_DEFS_TYPE_AST;
 		$$.m_tk_type_int = IAN_LABEL_REF_1;

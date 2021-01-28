@@ -63,8 +63,6 @@ public:
 
 
 public:
-    ///当前函数，在函数名称获取时需要用到
-    icode *m_curr_func;
 
 
     public:

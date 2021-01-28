@@ -40,7 +40,6 @@ CommandInfo::CommandInfo(std::string c, CommandCallback *ca, std::vector<Paramet
 Shell::Shell()
 {
     cpu.Reset();
-
 }
 
 void Shell::RegisterCommand(std::string command, CommandCallback *callback, std::vector<ParameterType> parameters)
@@ -65,6 +64,13 @@ void Shell::RunCommand(std::string command, std::vector<std::string> params)
       break;
     }
   }
+
+  if(index==callbacks.size())
+  {
+      //command not found!
+      return ;
+  }
+
   std::vector<Parameter*> parameters;
   std::vector<ParameterType> &ptype = callbacks[index]->parameterTypes;
 
@@ -97,37 +103,4 @@ void Shell::RunCommand(std::string command, std::vector<std::string> params)
   }
 }
 
-
-#if 0
-void Shell::CommandLoop()
-{
-    std::vector<Parameter*> parameters;
-    std::string command; // Matching prefix of a command
-    int parameterCount;
-
-    // ncurses initialization
-    setlocale(LC_ALL, "");
-
-
-    cpu.Reset();
-
-    printf("Welcome to 8051-sim\n");
-
-    //--------------------------
-
-    //--------------------------
-
-
-    do
-    {
-        std::vector<std::string> params;
-        params.push_back("default_name.hex");
-        RunCommand("load", params);
-        params.clear();
-        RunCommand("run", params);
-
-    }
-    while(0);
-}
-#endif
 

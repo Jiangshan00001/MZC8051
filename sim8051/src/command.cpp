@@ -388,7 +388,10 @@ void Command::OnInstructionExecuted(Cpu8051 &cpu)
   {
       int ticks = cpu.GetTicks();
       std::string strA = cpu.alu.Disassemble(pc);
-    printf("%d %4.4x %s\n", ticks , pc, strA.c_str());
+        if(instructionCount==instructionLimit)
+        {
+            printf("%d %4.4x %s\n", ticks , pc, strA.c_str());
+        }
   }
 }
 

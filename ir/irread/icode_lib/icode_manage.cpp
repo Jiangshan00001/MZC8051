@@ -2,6 +2,7 @@
 #include "mylog.h"
 #include "target_base.h"
 #include "icodes.h"
+#include "number2str.h"
 using mylog::cout;
 using mylog::cerr;
 
@@ -9,7 +10,8 @@ icode_manage::icode_manage()
 {
     //m_icode_index = 0;
 
-
+    m_label_index=0;
+    m_curr_func = NULL;
     m_top_icodes =  new icodes();
     m_top_icodes_need_free=0;
 }
@@ -39,7 +41,12 @@ icode *icode_manage::new_opr_icode(std::string name, icode * left, icode* right,
 
 icode* icode_manage::new_icode(ICODE_TYPE mtype)
 {
-    return m_top_icodes->new_icode(mtype);
+    icode *n = m_top_icodes->new_icode(mtype);
+    if(mtype==ICODE_TYPE_LABELED_BLOCK)
+    {
+        n->name = get_temp_label_name("");
+    }
+    return n;
 }
 
 icode* icode_manage::new_icode(const icode &cp)
@@ -155,18 +162,32 @@ icode *icode_manage::new_var(icode *def_ic, icode *typedec, int &is_already_exis
     }
     else if(def_ic->is_array)
     {
+
+
         ///数组定义 int a[]; 数组is_array属性在后面def_ic，而不是typedec
         a->m_in_ptr_type = new_icode(*typedec);
         //数组
         a->is_array = def_ic->is_array;
         a->array_cnt=def_ic->array_cnt;
+
+
+
         //数组元素，总体无符号
         a->is_signed = 0;
+
+        //2021.1.28添加数组声明。如果数组中元素是const或者code。则数组定义为const或code
+        if(typedec->is_const)a->is_const = 1;
+        if(typedec->is_code)a->is_code = 1;
+
+
         /// 2021.1.23 此处已经不需要先设置m_bit_width。只需要设置m_in_ptr_type即可
         /// 2020. 此处必须先设置bitwidth为单个元素的bitwidth，才能求得总体元素的所有bitwidth
         a->m_bit_width = typedec->m_bit_width;
         //a->m_bit_width = a->get_array_bit_width();
         a->refresh_array_total_bit_width();
+
+
+
     }
     else if(def_ic->is_ptr)
     {
@@ -252,6 +273,24 @@ std::string icode_manage::get_temp_name(std::string prefix)
     a<<prefix<<m_tmp_var_name_index;
 
     return a.str();
+}
+
+std::string icode_manage::get_label_name(std::string str1)
+{
+    if(m_curr_func==NULL)
+    {
+        return "_labelgo_"+str1;
+    }
+    return "_labelgo_"+m_curr_func->name+"_"+str1;
+}
+
+std::string icode_manage::get_temp_label_name(std::string str1)
+{
+    if(m_curr_func==NULL)
+    {
+        return "_labelc_"+NumberToStr(m_label_index++);
+    }
+    return "_labelc_"+m_curr_func->name+"_"+NumberToStr(m_label_index++);
 }
 
 icode *icode_manage::get_def_var(icode *ic)

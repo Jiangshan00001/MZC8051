@@ -14,7 +14,7 @@ SRCS_CPP = 	 api/ir2asm8051_api.cpp \
 			 filter/c51_filter_manage.cpp filter/icode_collect_str.cpp filter/icode_const_folder.cpp \
 			 filter/icode_dead_func.cpp filter/icode_float_cast.cpp filter/icode_float_func_opr.cpp \
 			 filter/icode_func_var_register.cpp filter/icode_global_func.cpp filter/icode_inline.cpp \
-			 filter/icode_ptr_calc.cpp filter/icode_ptr_copy.cpp filter/icode_ref_number.cpp \
+			 filter/icode_ptr_calc.cpp filter/icode_ptr_copy.cpp \
 			 filter/icode_replace.cpp filter/icode_var_scope.cpp filter/icode_unresolved.cpp \
 			 filter/icode_positive_opr.cpp filter/icode_ptr_in_calc.cpp
 
@@ -44,7 +44,7 @@ CXX_FLAGS:= -g -Wall  -fpermissive
 AR=ar
 RM=rm
 RMFLAGS= -rf
-INCS = -I$(CURR_DIR) -I$(CURR_DIR)/../../ir/irread/icode_lib/ -I$(CURR_DIR)/../../misc/json_lib/  -I$(CURR_DIR)/../../misc/util/  -I$(CURR_DIR)/common/util  -I$(CURR_DIR)/target/MCS51 -I$(CURR_DIR)/filter/
+INCS = -I$(CURR_DIR) -I$(CURR_DIR)/../../ir/irread/icode_lib/ -I$(CURR_DIR)/../../misc/json_lib/  -I$(CURR_DIR)/../../misc/util/  -I$(CURR_DIR)/common/util  -I$(CURR_DIR)/target/MCS51 -I$(CURR_DIR)/filter/  -I$(CURR_DIR)/../../ir/irread/filter/ 
 
 all: $(BUILD_PATH) $(SRCS_LEXYACC)  $(PROG_LIB)  $(PROG)
 	echo "finish!"

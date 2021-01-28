@@ -12,7 +12,19 @@ icode_ref_number::icode_ref_number()
 
 }
 
-int icode_ref_number::process_one_icode(icode *ic, std::vector<icode *> &parent, int index, void *user_data, icode *iparent)
+int icode_ref_number::process_one_icode_clean(icode *ic, std::vector<icode *> &parent, int index, icode *iparent)
+{
+    if(ic->is_def_var())
+    {
+        ic->m_ref_number = 0;
+        ic->m_ref_read_number = 0;
+        ic->m_ref_write_number = 0;
+        return 0;
+    }
+    return 0;
+}
+
+int icode_ref_number::process_one_icode_addref(icode *ic, std::vector<icode *> &parent, int index, icode *iparent)
 {
     if(ic->m_type!=ICODE_TYPE_SYMBOL_REF)
     {
@@ -63,4 +75,28 @@ int icode_ref_number::process_one_icode(icode *ic, std::vector<icode *> &parent,
     }
 
     return 0;
+}
+
+int icode_ref_number::process_one_icode(icode *ic, std::vector<icode *> &parent, int index, void *user_data, icode *iparent)
+{
+    if(user_data==0)
+    {
+        return process_one_icode_addref(ic, parent, index, iparent);
+    }
+    else
+    {
+        return process_one_icode_clean(ic, parent, index, iparent);
+    }
+    return 0;
+}
+
+
+void icode_ref_number::execute(icodes *ics)
+{
+    this->pcompi = ics;
+    ///清除ref_number
+    this->process_topcode(ics->m_top_icodes, (void*)1);
+    ///重新标记ref_number
+    this->process_topcode(ics->m_top_icodes, 0);
+
 }

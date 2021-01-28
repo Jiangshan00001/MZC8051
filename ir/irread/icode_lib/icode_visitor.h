@@ -66,7 +66,7 @@ public:
     int m_level;
 
     ///每个类型的变量，第一次是定义，后面都是引用，所以此处只需要将遍历过的number记下来，保证每个icode只遍历一次
-    std::set<class icode*> m_icode_number_set;
+    std::vector<std::set<class icode*> > m_icode_number_set;
 };
 
 #endif // ICODE_VISITOR_H

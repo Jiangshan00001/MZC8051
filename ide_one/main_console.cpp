@@ -285,7 +285,7 @@ int main(int argc, char * argv[])
         cpp_api m_cpp;
         std::string out_cpp = m_cpp.c_do_cpp(input_file[0], include_file, defined_sym, include_path, is_debug_flag);
         c8051_api m_api;
-        icodes* ics = m_api.c_to_icode(input_file[0],is_debug_flag);
+        icodes* ics = m_api.c_to_icode(out_cpp,input_file[0],is_debug_flag);
 
         if(is_just_c)
         {

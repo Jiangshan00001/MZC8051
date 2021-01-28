@@ -167,10 +167,10 @@ opr_elem_seq
 	|  opr_elem_seq  opr_elem  ';' 
 	;
 label_def
-	:  LABEL_START  I_CONSTANT  ';' 
+	:  LABEL_START  IDENTIFIER  ';' 
 	;
 label_ref
-	:  LABEL_REF  I_CONSTANT 
+	:  LABEL_REF  IDENTIFIER 
 	;
 inline_asm
 	:  INLINE_ASM  STRING_LITERAL  ';' 

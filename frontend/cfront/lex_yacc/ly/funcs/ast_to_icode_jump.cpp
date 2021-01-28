@@ -74,14 +74,16 @@ class icode *  func_IAN_LABELED_STATEMENT_1(class comp_context* pcompi, class to
     icode *a = pcompi->new_icode();
     a->m_type=ICODE_TYPE_BLOCK;
 
-    std::string label_name = tdefs->m_tk_elems[0]->name;
-    if(pcompi->m_goto_label.find(label_name)!=pcompi->m_goto_label.end())
+    std::string label_name = pcompi->get_label_name(tdefs->m_tk_elems[0]->name);
+    sym *s = pcompi->find_symbol(label_name);
+    if(s!=NULL)
     {
+
+
         //已经存在，则不能创建新的
         if(std::find(pcompi->m_goto_label_unset.begin(), pcompi->m_goto_label_unset.end(),label_name )!=pcompi->m_goto_label_unset.end())
         {
-            //m_goto_label[label_name]= pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
-            a->merge_icode(pcompi->m_goto_label[label_name]);
+            a->merge_icode(s->def_icode);
             pcompi->m_goto_label_unset.erase(std::find(pcompi->m_goto_label_unset.begin(), pcompi->m_goto_label_unset.end(),label_name ));
         }
         else
@@ -95,10 +97,11 @@ class icode *  func_IAN_LABELED_STATEMENT_1(class comp_context* pcompi, class to
     {
         //label不存在创建新的
         icode *n = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
-        pcompi->m_goto_label[label_name] = n;
+        n->name = label_name;
+        //pcompi->m_goto_label[label_name] = n;
+        pcompi->add_symbol(label_name, n);
         a->merge_icode(n);
     }
-
 
     icode * n = pcompi->ast_to_icode( tdefs->m_tk_elems[2]);
     a->merge_icode(n);
@@ -140,7 +143,6 @@ class icode *  func_IAN_LABELED_STATEMENT_3(class comp_context* pcompi, class to
     a->m_type=ICODE_TYPE_BLOCK;
 
     pcompi->m_default_label = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
-
     token_defs *statem = tdefs->m_tk_elems[2];
     icode * statem_ic = pcompi->ast_to_icode(statem);
 
@@ -164,11 +166,9 @@ class icode *  func_IAN_SELECTION_STATEMENT_1(class comp_context* pcompi, class 
 
     icode * expr_ic = pcompi->ast_to_icode(expr, 1);
 
-    icode *icb1=pcompi->new_icode();
-    icb1->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb1=pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
-    icode *icb2 = pcompi->new_icode();
-    icb2->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb2 = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
     icode * jz_code = pcompi->new_icode();
     icode * jmp_code = pcompi->new_jmp_icode(icb2);
@@ -224,8 +224,7 @@ class icode *  func_IAN_SELECTION_STATEMENT_2(class comp_context* pcompi, class 
 
     icode * expr_ic = pcompi->ast_to_icode(expr, 1);
 
-    icode *icb1=pcompi->new_icode();
-    icb1->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb1=pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
     icode * jz_code = pcompi->new_icode();
 
@@ -391,11 +390,9 @@ class icode *  func_IAN_ITERATION_STATEMENT_1(class comp_context* pcompi, class 
 
     icode * expr_ic = pcompi->ast_to_icode(expr, 1);
 
-    icode *icb1=pcompi->new_icode();
-    icb1->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb1=pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
-    icode *icb2 = pcompi->new_icode();
-    icb2->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb2 = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
     icode * jz_code = pcompi->new_icode();
     icode * jmp_code = pcompi->new_jmp_icode(icb1);
 
@@ -456,11 +453,9 @@ class icode *  func_IAN_ITERATION_STATEMENT_2(class comp_context* pcompi, class 
 
     icode * expr_ic = pcompi->ast_to_icode(expr, 1);
 
-    icode *icb1=pcompi->new_icode();
-    icb1->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb1=pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
-    icode *icb2=pcompi->new_icode();
-    icb2->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb2=pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
     icode * jmp_code = pcompi->new_jnz_icode(expr_ic->result, icb1,"JNZ", ICODE_TYPE_LABELED_BLOCK_START_REF); //pcompi->new_icode();
 
@@ -517,11 +512,9 @@ class icode *  func_IAN_ITERATION_STATEMENT_3(class comp_context* pcompi, class 
     icode * exp1_ic = pcompi->ast_to_icode(exp1);
     icode * exp2_ic = pcompi->ast_to_icode(exp2, 1);
 
-    icode *icb1=pcompi->new_icode();
-    icb1->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb1=pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
-    icode *icb2 = pcompi->new_icode();
-    icb2->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb2 = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
 
     icode * jz_code = pcompi->new_icode();
@@ -531,8 +524,7 @@ class icode *  func_IAN_ITERATION_STATEMENT_3(class comp_context* pcompi, class 
     jz_code->left = exp2_ic->result;
 
     //零，跳转到icb2的起始位置
-    jz_code->result = pcompi->new_icode();
-    jz_code->result->m_type = ICODE_TYPE_LABELED_BLOCK_START_REF;
+    jz_code->result = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK_START_REF);
     jz_code->result->result = icb2;
 
 
@@ -590,10 +582,8 @@ class icode *  func_IAN_ITERATION_STATEMENT_4(class comp_context* pcompi, class 
     icode *exp3_ic = pcompi->ast_to_icode(exp3);
 
 
-    icode *icb1 = pcompi->new_icode();
-    icb1->m_type = ICODE_TYPE_LABELED_BLOCK;
-    icode *icb2 = pcompi->new_icode();
-    icb2->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb1 = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
+    icode *icb2 = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
     icode * jz_code = pcompi->new_icode();
     jz_code->m_type = ICODE_TYPE_EXP_OP;
@@ -668,11 +658,10 @@ class icode *  func_IAN_ITERATION_STATEMENT_5(class comp_context* pcompi, class 
     icode * exp1_ic = pcompi->ast_to_icode(exp1);
     icode * exp2_ic = pcompi->ast_to_icode(exp2, 1);
 
-    icode *icb1=pcompi->new_icode();
-    icb1->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb1=pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
-    icode *icb2 = pcompi->new_icode();
-    icb2->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb2 = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
+
 
 
     icode * jz_code = pcompi->new_icode();
@@ -751,10 +740,8 @@ class icode *  func_IAN_ITERATION_STATEMENT_6(class comp_context* pcompi, class 
     icode *exp3_ic = pcompi->ast_to_icode(exp3);
 
 
-    icode *icb1 = pcompi->new_icode();
-    icb1->m_type = ICODE_TYPE_LABELED_BLOCK;
-    icode *icb2 = pcompi->new_icode();
-    icb2->m_type = ICODE_TYPE_LABELED_BLOCK;
+    icode *icb1 = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
+    icode *icb2 = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
 
     icode * jz_code = pcompi->new_icode();
     jz_code->m_type = ICODE_TYPE_EXP_OP;
@@ -806,12 +793,17 @@ class icode *  func_IAN_JUMP_STATEMENT_1(class comp_context* pcompi, class token
 
     token_defs *tk = tdefs->m_tk_elems[1];
 
-    if(pcompi->m_goto_label.find(tk->name)==pcompi->m_goto_label.end())
+    std::string label_name = pcompi->get_label_name(tk->name);
+    sym* s = pcompi->find_symbol(label_name);
+    if(s==NULL)
     {
         pcompi->m_goto_label_unset.push_back(tk->name);
-        pcompi->m_goto_label[tk->name]= pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
+        icode *n = pcompi->new_icode(ICODE_TYPE_LABELED_BLOCK);
+        n->name = label_name;
+        pcompi->add_symbol(label_name, n);
     }
-    icode * n = pcompi->new_jmp_icode(pcompi->m_goto_label[tk->name]);
+    s = pcompi->find_symbol(label_name);
+    icode * n = pcompi->new_jmp_icode(s->def_icode);
     a->merge_icode(n);
     return a;
 }

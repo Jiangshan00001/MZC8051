@@ -17,6 +17,7 @@ SRCS_COMMON_ICODE =  icode_lib/ast_base.cpp icode_lib/icode.cpp \
 			  icode_lib/icode_visitor.cpp  icode_lib/mem_alloc.cpp \
 			  icode_lib/reg_alloc.cpp  icode_lib/sym.cpp \
 			  icode_lib/sym_manage.cpp  icode_lib/target_base.cpp  icode_lib/icodes.cpp \
+			  filter/icode_ref_number.cpp filter/icode_tmp_var_opt1.cpp
 
 
 SRCS_COMMON_UTIL= 

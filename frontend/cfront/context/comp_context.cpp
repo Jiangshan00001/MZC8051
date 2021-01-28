@@ -295,7 +295,7 @@ int comp_context::correct_initializer_width_from_declarator(icode *var, icode *i
             for(unsigned i=0;i<initializer->sub_icode.size();++i)
             {
                 assert(initializer->sub_icode[i]->m_type==ICODE_TYPE_I_CONST);
-                initializer->sub_icode[i]->m_bit_width = var->m_bit_width;
+                initializer->sub_icode[i]->m_bit_width = var->m_in_ptr_type->m_bit_width;
                 total_bit_width+=initializer->sub_icode[i]->m_bit_width;
             }
 
@@ -312,20 +312,20 @@ int comp_context::correct_initializer_width_from_declarator(icode *var, icode *i
             if(total_bit_width>target_total_bit_width)
             {
                 cout<<"WARNING: data truncated. " <<*var <<" init data too more. just truncated the last\n";
-                int comp_cnt = target_total_bit_width/var->m_bit_width;
+                int comp_cnt = target_total_bit_width/var->m_in_ptr_type->m_bit_width;
                 initializer->sub_icode.resize(comp_cnt);
             }
             else if(total_bit_width<target_total_bit_width)
             {
                 //数据补0
                 int left_bit = target_total_bit_width-total_bit_width;
-                int left_comp = left_bit / var->m_bit_width;
+                int left_comp = left_bit / var->m_in_ptr_type->m_bit_width;
                 for(unsigned i=0;i<left_comp;++i)
                 {
                     icode * icn = new_icode(ICODE_TYPE_I_CONST);
                     initializer->sub_icode.push_back(icn);
                     icn->num = 0;
-                    icn->m_bit_width = var->m_bit_width;
+                    icn->m_bit_width = var->m_in_ptr_type->m_bit_width;
                 }
             }
             initializer->m_bit_width = target_total_bit_width;
@@ -356,7 +356,7 @@ int comp_context::correct_initializer_width_from_declarator(icode *var, icode *i
             if(total_bit_width>target_total_bit_width)
             {
                 cout<<"WARNING: data truncated. " <<*var <<" init data too more. just truncated the last\n";
-                int comp_cnt = target_total_bit_width/var->m_bit_width;
+                int comp_cnt = target_total_bit_width/var->m_in_ptr_type->m_bit_width;
                 initializer->name.resize(comp_cnt);
             }
             else if(total_bit_width<target_total_bit_width)

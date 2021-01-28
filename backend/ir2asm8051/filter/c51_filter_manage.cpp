@@ -23,7 +23,7 @@
 #include "icode_replace.h"
 #include "icode_refresh_number_dict.h"
 #include "icode_ptr_in_calc.h"
-
+#include "icode_tmp_var_opt1.h"
 
 c51_filter_manage::c51_filter_manage()
 {
@@ -33,6 +33,12 @@ void c51_filter_manage::do_filter(icodes *ics)
 {
     icode * m_top_icodes = ics->m_top_icodes;
 
+    icode_tmp_var_opt1 tmp_var_opt1;
+    tmp_var_opt1.execute(ics);
+
+
+    icode_ref_number m_ref_number;
+    m_ref_number.execute(ics);
 
     icode_const_folder m_const_folder;
     m_const_folder.execute(ics);

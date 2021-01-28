@@ -50,6 +50,8 @@ public:
     /// 所有符号添加标号，标号代表了符号本身
     std::map<std::string, class icode*> m_functions;
 
+    ///当前函数，在函数名称获取时需要用到
+    icode *m_curr_func;
 
 public:
     /// 用户自定义类型表
@@ -141,8 +143,10 @@ public:
 
 
 public:
+    int m_label_index;
 
-
+    std::string get_label_name(std::string str1);
+    std::string get_temp_label_name(std::string str1);
     ///用于goto的标签
     std::map<std::string, class icode *> m_goto_label;
     //此处 放置没有位置的标签。eg:
@@ -157,6 +161,7 @@ public:
     std::vector<int> m_case_int_vec;
     std::map<int, class icode*> m_case_label;
     //switch 语句中default对应的标签
+    ///需要设置为数组。避免循环嵌套
     class icode * m_default_label;
 public:
     std::map<std::string, std::vector<class icode*> > m_struct_union_type;
