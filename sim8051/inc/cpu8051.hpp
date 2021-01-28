@@ -26,6 +26,7 @@
 #include "port0.hpp"
 #include "port1.hpp"
 #include "port2.hpp"
+#include "port3.hpp"
 #include "pca.hpp"
 #include "system.hpp"
 #include "uart.hpp"
@@ -61,6 +62,7 @@ class Cpu8051: public Scheduler
     Port0 port0;
     Port1 port1;
     Port2 port2;
+    Port3 port3;
     Pca pca;
     System system;
     Uart uart;

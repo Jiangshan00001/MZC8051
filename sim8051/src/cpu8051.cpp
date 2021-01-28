@@ -25,6 +25,7 @@ Cpu8051::Cpu8051() :
   port0("Port0", *this, alu),
   port1("Port1", *this, alu),
   port2("Port2", *this, alu),
+  port3("Port3", *this, alu),
   pca("Pca", *this, alu),
   system("System", *this, alu),
   uart("Uart", *this, alu),
@@ -38,6 +39,7 @@ Cpu8051::Cpu8051() :
   blocks.push_back(&port0);
   blocks.push_back(&port1);
   blocks.push_back(&port2);
+  blocks.push_back(&port3);
   blocks.push_back(&pca);
   blocks.push_back(&system);
   blocks.push_back(&uart);
