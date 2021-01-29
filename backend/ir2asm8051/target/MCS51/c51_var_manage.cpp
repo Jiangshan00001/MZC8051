@@ -427,6 +427,7 @@ int c51_var_manage::alloc_memory(c51_addr *ad, icode *ic)
 
         ad->m_type = DATA_TYPE_CODE;
         ad->labelA = new_const_label();
+        ad->m_bit_width = ic->m_bit_width;
         return 0;
     }
 

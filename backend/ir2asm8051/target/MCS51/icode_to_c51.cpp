@@ -100,7 +100,7 @@ std::string icode_to_c51::const_to_db(std::vector<class icode *>& ic)
             asm_str<<"DB ";
             for(unsigned db_index=0;db_index<curr_ic->sub_icode.size();++db_index)
             {
-                int bit_cnt=curr_ic->sub_icode[i]->m_bit_width;
+                int bit_cnt=curr_ic->sub_icode[db_index]->m_bit_width;
                 int byte_cnt=0;
                 while(bit_cnt>0)
                 {

@@ -78,8 +78,11 @@ IAN_CONSTANT_2=0x1402, //constant->f_const
 IAN_CONSTANT_3=0x1403, //constant->string 
 IAN_CONSTANT_4=0x1404, //constant->const_list 
 IAN_I_CONST_1=0x1501, //i_const->I_CONST_ID I_CONSTANT 
+IAN_I_CONST_2=0x1502, //i_const->I_CONST_ID I_CONSTANT ':' I_CONSTANT 
 IAN_F_CONST_1=0x1601, //f_const->F_CONST_ID F_CONSTANT 
 IAN_F_CONST_2=0x1602, //f_const->F_CONST_ID I_CONSTANT 
+IAN_F_CONST_3=0x1603, //f_const->F_CONST_ID I_CONSTANT ':' I_CONSTANT 
+IAN_F_CONST_4=0x1604, //f_const->F_CONST_ID F_CONSTANT ':' I_CONSTANT 
 IAN_STRING_1=0x1701, //string->STRING_ID STRING_LITERAL 
 IAN_VAR_IN_REF_1=0x1801, //var_in_ref->var_in_ref_ptr 
 IAN_VAR_IN_REF_2=0x1802, //var_in_ref->var_in_ref_array 
@@ -93,8 +96,8 @@ IAN_CALL_STATEMENT_1=0x1d01, //call_statement->CALL_START VAR_REF ';' opr_elem_s
 IAN_CALL_STATEMENT_2=0x1d02, //call_statement->CALL_START VAR_REF ';' CALL_END VAR_REF ';' 
 IAN_OPR_ELEM_SEQ_1=0x1e01, //opr_elem_seq->opr_elem ';' 
 IAN_OPR_ELEM_SEQ_2=0x1e02, //opr_elem_seq->opr_elem_seq opr_elem ';' 
-IAN_LABEL_DEF_1=0x1f01, //label_def->LABEL_START I_CONSTANT ';' 
-IAN_LABEL_REF_1=0x2001, //label_ref->LABEL_REF I_CONSTANT 
+IAN_LABEL_DEF_1=0x1f01, //label_def->LABEL_START IDENTIFIER ';' 
+IAN_LABEL_REF_1=0x2001, //label_ref->LABEL_REF IDENTIFIER 
 IAN_INLINE_ASM_1=0x2101, //inline_asm->INLINE_ASM STRING_LITERAL ';' 
 };
 
@@ -173,8 +176,11 @@ class icode *  func_IAN_CONSTANT_2(class comp_context* pcompi, class token_defs*
 class icode *  func_IAN_CONSTANT_3(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_CONSTANT_4(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_I_CONST_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
+class icode *  func_IAN_I_CONST_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_F_CONST_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_F_CONST_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
+class icode *  func_IAN_F_CONST_3(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
+class icode *  func_IAN_F_CONST_4(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_STRING_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_VAR_IN_REF_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_VAR_IN_REF_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
@@ -191,7 +197,7 @@ class icode *  func_IAN_OPR_ELEM_SEQ_2(class comp_context* pcompi, class token_d
 class icode *  func_IAN_LABEL_DEF_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_LABEL_REF_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
 class icode *  func_IAN_INLINE_ASM_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
-//ast func cout:93
+//ast func cout:96
  class icode *func_token_END(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
  class icode *func_token_EOL(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);
  class icode *func_token_BLOCKS(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic);

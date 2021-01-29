@@ -38,7 +38,7 @@
 #include "number2str.h"
 using mylog::cerr;
 using mylog::cout;
-
+using mylog::cwarn;
 
 
 namespace NS_IR2ICODE{
@@ -167,8 +167,36 @@ class icode *  func_function_definition_i(class comp_context* pcompi, class toke
 
 
         pcompi->level_enter();//函数体内部，level++
+
+        icode *function_arg_ic=NULL;
+        if(function_arg!=NULL)
+        {
+            function_arg_ic=pcompi->ast_to_icode(function_arg);
+        }
+        pcompi->level_leave();//函数体解析结束
+        pcompi->level_enter();//函数体内部，level++
+
+        ///新定义函数的参数，应该和之前的参数个数一致
+        if(function_arg_ic!=NULL)
+        {
+            assert(function_arg_ic->sub_icode.size()+1==VAR_NAME_IDENTIFIER_ic->sub_icode.size());
+        }
+        //i=0是返回值，从i=1开始是函数参数
         for(int i=1;i<VAR_NAME_IDENTIFIER_ic->sub_icode.size();++i)
         {
+            if(function_arg_ic!=NULL)
+            {
+                if(function_arg_ic->sub_icode[i-1]->name!=VAR_NAME_IDENTIFIER_ic->sub_icode[i]->name)
+                {
+                    ///函数声明时使用： extern int a(int b);
+                    /// 函数定义时使用： int a(int c)
+                    /// {
+                    /// return c;
+                    /// }
+                    /// 此处是将声明处的变量名称b 改为c
+                    VAR_NAME_IDENTIFIER_ic->sub_icode[i]->name = function_arg_ic->sub_icode[i-1]->name;
+                }
+            }
             pcompi->add_symbol(VAR_NAME_IDENTIFIER_ic->sub_icode[i]->name, VAR_NAME_IDENTIFIER_ic->sub_icode[i]);
         }
 
@@ -558,8 +586,15 @@ class icode *  func_IAN_FUNCTION_ARG_1(class comp_context* pcompi, class token_d
 	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg compound_statement FUNC_END VAR_REF ';'
 	// function_definition--> FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg compound_statement FUNC_END VAR_REF ';'
 	// function_arg--> function_arg def_arg
-return pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
 
+    icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
+    token_defs *def_arg=tdefs;
+    icode *def_arg_ic=pcompi->ast_to_icode(def_arg,need_result_icode, result_ic);
+    a->merge_icode(def_arg_ic);
+
+    return a;
+
+//return pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
 }
 
 class icode *  func_IAN_FUNCTION_ARG_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
@@ -601,9 +636,27 @@ icode* definition_one_var(comp_context* pcompi, token_defs* var_type, token_defs
 
     if(VAR_NAME_IDENTIFIER_ic!=NULL)
     {
-        icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
-        cerr<<"ret type name already used."<< VAR_NAME_IDENTIFIER->val_str<<"\n";
-        return a;
+        if((VAR_NAME_IDENTIFIER_ic->is_sbit)||
+                (VAR_NAME_IDENTIFIER_ic->is_sfr)||
+                (VAR_NAME_IDENTIFIER_ic->is_sfr16)||
+                (VAR_NAME_IDENTIFIER_ic->is_sfr32)
+                )
+        {
+            //可以多次定义
+            return VAR_NAME_IDENTIFIER_ic;
+        }
+        else if(VAR_NAME_IDENTIFIER_ic->is_extern)
+        {
+            //改为非extern
+            VAR_NAME_IDENTIFIER_ic->is_extern = 0;
+            return VAR_NAME_IDENTIFIER_ic;
+        }
+        else
+        {
+            icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
+            cerr<<"VAR name already used."<< VAR_NAME_IDENTIFIER->val_str<<"\n";
+            return a;
+        }
     }
     var_ret_ic->name = VAR_NAME_IDENTIFIER->val_str.substr(1);
 
@@ -1545,6 +1598,29 @@ class icode *  func_IAN_I_CONST_1(class comp_context* pcompi, class token_defs* 
 	//a->merge_icode(I_CONSTANT_ic);
     return I_CONSTANT_ic;
 }
+
+class icode *  func_IAN_I_CONST_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
+{
+	//0x1502-i_const->I_CONST_ID I_CONSTANT ':' I_CONSTANT 
+	//parent:
+	// constant--> i_const
+	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
+	token_defs *I_CONST_ID=tdefs->m_tk_elems[0];
+	token_defs *I_CONSTANT=tdefs->m_tk_elems[1];
+	//token_defs *':'=tdefs->m_tk_elems[2];
+	token_defs *I_CONSTANT_width=tdefs->m_tk_elems[3];
+	//icode *I_CONST_ID_ic=pcompi->ast_to_icode(I_CONST_ID);
+	icode *I_CONSTANT_ic=pcompi->ast_to_icode(I_CONSTANT);
+	//icode *':'_ic=pcompi->ast_to_icode(':');
+	icode *I_CONSTANT_width_ic=pcompi->ast_to_icode(I_CONSTANT_width);
+	//a->merge_icode(I_CONST_ID_ic);
+	//a->merge_icode(I_CONSTANT_ic);
+	//a->merge_icode(':'_ic);
+	//a->merge_icode(I_CONSTANT_ic);
+
+	I_CONSTANT_ic->m_bit_width = I_CONSTANT_width_ic->num;
+	return I_CONSTANT_ic;
+}
 class icode *  func_IAN_F_CONST_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
     /// 直接返回元素对应的icode
@@ -1576,6 +1652,39 @@ class icode *  func_IAN_F_CONST_2(class comp_context* pcompi, class token_defs* 
 	//a->merge_icode(I_CONSTANT_ic);
     return F_CONST_ID_ic;
 }
+
+class icode *  func_IAN_F_CONST_3(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
+{
+	//0x1603-f_const->F_CONST_ID I_CONSTANT ':' I_CONSTANT 
+	//parent:
+	// constant--> f_const
+    token_defs *F_CONST_ID=tdefs->m_tk_elems[0];
+    token_defs *I_CONSTANT=tdefs->m_tk_elems[1];
+    token_defs *I_CONSTANT_width=tdefs->m_tk_elems[3];
+    icode *F_CONST_ID_ic=pcompi->ast_to_icode(F_CONST_ID);
+    icode *I_CONSTANT_ic=pcompi->ast_to_icode(I_CONSTANT);
+    icode *I_CONSTANT_width_ic=pcompi->ast_to_icode(I_CONSTANT_width);
+
+    F_CONST_ID_ic->fnum = I_CONSTANT_ic->num;
+    F_CONST_ID_ic->m_bit_width = I_CONSTANT_width_ic->num;
+    return F_CONST_ID_ic;
+}
+class icode *  func_IAN_F_CONST_4(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
+{
+	//0x1604-f_const->F_CONST_ID F_CONSTANT ':' I_CONSTANT 
+	//parent:
+	// constant--> f_const
+    token_defs *F_CONSTANT=tdefs->m_tk_elems[1];
+    token_defs *I_CONSTANT_width=tdefs->m_tk_elems[3];
+
+    icode *F_CONSTANT_ic=pcompi->ast_to_icode(F_CONSTANT);
+    icode *I_CONSTANT_width_ic=pcompi->ast_to_icode(I_CONSTANT_width);
+
+    F_CONSTANT_ic->m_bit_width = I_CONSTANT_width_ic->num;
+
+    return F_CONSTANT_ic;
+}
+
 class icode *  func_IAN_STRING_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
     /// 直接返回元素对应的icode
@@ -1728,7 +1837,7 @@ class icode *  func_IAN_CONST_LIST_1(class comp_context* pcompi, class token_def
 
     CONST_LIST_ID_ic->merge_icode(opr_elem_seq_ic);
 
-
+    CONST_LIST_ID_ic->const_refresh_width();
     //a->merge_icode(CONST_LIST_ID_ic);
 	//a->merge_icode('['_ic);
 	//a->merge_icode(opr_elem_seq_ic);

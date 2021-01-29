@@ -774,6 +774,12 @@ case IAN_I_CONST_1: //0x1501-i_const->I_CONST_ID I_CONSTANT
 	return a;
 }
 break;
+case IAN_I_CONST_2: //0x1502-i_const->I_CONST_ID I_CONSTANT ':' I_CONSTANT 
+{
+	icode *a= func_IAN_I_CONST_2(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
 case IAN_F_CONST_1: //0x1601-f_const->F_CONST_ID F_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_1(this, tdefs, need_result_icode, result_ic);
@@ -783,6 +789,18 @@ break;
 case IAN_F_CONST_2: //0x1602-f_const->F_CONST_ID I_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_2(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_F_CONST_3: //0x1603-f_const->F_CONST_ID I_CONSTANT ':' I_CONSTANT 
+{
+	icode *a= func_IAN_F_CONST_3(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_F_CONST_4: //0x1604-f_const->F_CONST_ID F_CONSTANT ':' I_CONSTANT 
+{
+	icode *a= func_IAN_F_CONST_4(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
@@ -864,13 +882,13 @@ case IAN_OPR_ELEM_SEQ_2: //0x1e02-opr_elem_seq->opr_elem_seq opr_elem ';'
 	return a;
 }
 break;
-case IAN_LABEL_DEF_1: //0x1f01-label_def->LABEL_START I_CONSTANT ';' 
+case IAN_LABEL_DEF_1: //0x1f01-label_def->LABEL_START IDENTIFIER ';' 
 {
 	icode *a= func_IAN_LABEL_DEF_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_LABEL_REF_1: //0x2001-label_ref->LABEL_REF I_CONSTANT 
+case IAN_LABEL_REF_1: //0x2001-label_ref->LABEL_REF IDENTIFIER 
 {
 	icode *a= func_IAN_LABEL_REF_1(this, tdefs, need_result_icode, result_ic);
 	return a;
@@ -883,7 +901,7 @@ case IAN_INLINE_ASM_1: //0x2101-inline_asm->INLINE_ASM STRING_LITERAL ';'
 }
 break;
 
-}//switch end. case_cnt=5c
+}//switch end. case_cnt=60
 
 }
 

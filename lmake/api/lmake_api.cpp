@@ -308,7 +308,7 @@ int make(char * directory_path)
         std::string cmd_compi_one_c_file;
         std::string output_afile= src_c[i];
         output_afile = replace(replace(output_afile, ".c", ".mzo"), ".C", ".mzo");
-        cmd_compi_one_c_file = "\"" + ( G_PROG_NAME) +"\""  +" -x c8051 " +"-c -d ";
+        cmd_compi_one_c_file = "\"" + ( G_PROG_NAME) +"\""  +" -x c8051 " +"-c  ";
         cmd_compi_one_c_file =cmd_compi_one_c_file + " -I "+ std::string(directory_path) ;
         cmd_compi_one_c_file =cmd_compi_one_c_file + " -I \""+ std::string(get_path(G_PROG_NAME)+"\\inc\\c8051") +"\" ";
         cmd_compi_one_c_file =cmd_compi_one_c_file + " -IMZC8051";
@@ -338,7 +338,7 @@ int make(char * directory_path)
         std::string cmd_compi_one_c_file;
 
         std::string output_afile=  proj_name + "_mzo.a51";
-        cmd_compi_one_c_file = "\"" + ( G_PROG_NAME) +"\""  +" -x ir2asm8051 " +" -d " \
+        cmd_compi_one_c_file = "\"" + ( G_PROG_NAME) +"\""  +" -x ir2asm8051 " +"  " \
                 + " -I \""+ std::string(get_path(G_PROG_NAME)+"\\inc\\c8051") +"\" ";
         //cmd_compi_one_c_file = cmd_compi_one_c_file + " -I "+ std::string(directory_path) ;
         //cmd_compi_one_c_file = cmd_compi_one_c_file + " -I \""+ std::string(get_path(G_PROG_NAME)+"\\inc\\c8051") +"\" ";
@@ -372,7 +372,7 @@ int make(char * directory_path)
     {
         /// asm merge and to hex
         std::string cmd_compi_one_a;
-        cmd_compi_one_a = "\"" +G_PROG_NAME +"\""  +" -x asm8051 " +" -d  -D mzc ";
+        cmd_compi_one_a = "\"" +G_PROG_NAME +"\""  +" -x asm8051 " +"  -D mzc ";
         for(unsigned i=0;i<src_a51.size();++i)
         {
             cmd_compi_one_a = cmd_compi_one_a + " -i " + path_add(directory_path, src_a51[i].c_str())+" ";

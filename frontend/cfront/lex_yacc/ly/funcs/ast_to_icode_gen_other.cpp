@@ -266,7 +266,6 @@ class icode *  func_IAN_PARAMETER_DECLARATION_1(class comp_context* pcompi, clas
     icode *a = pcompi->new_icode();
     a->m_type=ICODE_TYPE_BLOCK;
 
-    ///FIXME 此处是否应该使用 pcompi->new_var???
     token_defs *declaration_specifiers = tdefs->m_tk_elems[0];
     token_defs *declarator = tdefs->m_tk_elems[1];
     icode * type_ic=pcompi->new_icode();
@@ -1129,13 +1128,18 @@ class icode *  func_IAN_INITIALIZER_1(class comp_context* pcompi, class token_de
 
     //初始值 int a[10]={1,2,3,4,5};
 
+
     token_defs * initializer_list = tdefs->m_tk_elems[1];
     icode *initializer_list_ic = pcompi->ast_to_icode(initializer_list, need_result_icode, result_ic);
+
+    icode *scope  =  pcompi->new_icode(ICODE_TYPE_SCOPE);
+    scope->merge_icode(initializer_list_ic->result);
+
 
     a->merge_icode(initializer_list_ic);
     if(need_result_icode)
     {
-        a->result = initializer_list_ic->result;
+        a->result = scope;//initializer_list_ic->result;
     }
 
     return a;
@@ -1157,10 +1161,14 @@ class icode *  func_IAN_INITIALIZER_2(class comp_context* pcompi, class token_de
     token_defs * initializer_list = tdefs->m_tk_elems[1];
     icode *initializer_list_ic = pcompi->ast_to_icode(initializer_list, need_result_icode, result_ic);
 
+    icode *scope  =  pcompi->new_icode(ICODE_TYPE_SCOPE);
+    scope->merge_icode(initializer_list_ic->result);
+
+
     a->merge_icode(initializer_list_ic);
     if(need_result_icode)
     {
-        a->result = initializer_list_ic->result;
+        a->result = scope;//initializer_list_ic->result;
     }
 
     return a;
@@ -1263,8 +1271,7 @@ class icode *  func_IAN_INITIALIZER_LIST_4(class comp_context* pcompi, class tok
     {
         if(ic1->result->m_type!=ICODE_TYPE_CONST_LIST)
         {
-            a->result = pcompi->new_icode();
-            a->result->m_type=ICODE_TYPE_CONST_LIST;
+            a->result = pcompi->new_icode(ICODE_TYPE_CONST_LIST);
             a->result->merge_icode(ic1->result);
         }
         else

@@ -58,6 +58,16 @@ void icode::set_width_from(icode *from)
         }
         return;
     }
+    if((from->m_type==ICODE_TYPE_DEF_VAR)||
+            (from->m_type==ICODE_TYPE_DEF_VAR_TMP)
+            )
+    {
+        if(this->m_bit_width < from->m_bit_width)
+        {
+            this->m_bit_width = from->m_bit_width;
+        }
+        return;
+    }
     assert(0);
 }
 

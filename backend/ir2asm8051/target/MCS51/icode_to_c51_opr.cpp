@@ -143,22 +143,37 @@ std::string icode_to_c51::to_asm_opr_init(icode *ic)
 
     ///==============================
     /// 此处处理sfr地址问题
-    if((result_t->m_type==DATA_TYPE_DIRECT)&&
-            (result_t->m_addr==UNKNOWN_ADDR))
-    {
+    if(((get_def_var( ic->result)->is_sfr)||
+            (get_def_var( ic->result)->is_sfr16)||
+            (get_def_var( ic->result)->is_sfr32)))
+    {//(result_t->m_addr==UNKNOWN_ADDR) (result_t->m_type==DATA_TYPE_DIRECT)
         ///此处是寄存器变量未赋值，则赋值
         /// sfr P0=0xC0;
-        result_t->m_addr = right_t->m_addr;
-        asm_str<<";sfr "<<pcompi->get_def_var(ic->result)->name<<". addr:0x"<<std::hex<<right_t->m_addr<<"\n";
+        if(result_t->m_addr==UNKNOWN_ADDR)
+        {
+            result_t->m_addr = right_t->m_addr;
+            asm_str<<";sfr "<<pcompi->get_def_var(ic->result)->name<<". addr:0x"<<std::hex<<right_t->m_addr<<"\n";
+        }
+        else if(result_t->m_addr != right_t->m_addr)
+        {
+            cerr<<"sfr address not equal err: 0x"<<std::hex<<result_t->m_addr<<". 0x"<<right_t->m_addr<<"\n";
+            asm_str<<";sfr_addr_err "<<pcompi->get_def_var(ic->result)->name<<". old_addr:0x"<<std::hex<<result_t->m_addr<<"new_addr:"<<right_t->m_addr<<"\n";
+        }
         return asm_str.str();
     }
-    else if((result_t->m_type==DATA_TYPE_BIT)&&
-            (result_t->m_addr==UNKNOWN_ADDR))
+    else if(get_def_var( ic->result)->is_sbit)//(result_t->m_type==DATA_TYPE_BIT)
     {
+        ///&&(result_t->m_addr==UNKNOWN_ADDR)
         ///sbit变量地址赋值
         /// sbit P01=0xC1;
-
-        result_t->m_addr = right_t->m_addr;
+        if(result_t->m_addr==UNKNOWN_ADDR)
+        {
+            result_t->m_addr = right_t->m_addr;
+        }
+        else if(result_t->m_addr != right_t->m_addr)
+        {
+            cerr<<"sbit address not equal err: 0x"<<std::hex<<result_t->m_addr<<". 0x"<<right_t->m_addr<<"\n";
+        }
         asm_str<<";sbit "<<pcompi->get_def_var(ic->result)->name<<". addr:0x"<<std::hex<<right_t->m_addr<<"\n";
         return asm_str.str();
     }

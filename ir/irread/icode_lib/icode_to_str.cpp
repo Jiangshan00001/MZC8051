@@ -25,10 +25,10 @@ std::string icode::to_str(int is_one_line, int is_dbg)
     {
 
     case ICODE_TYPE_I_CONST:
-        ret_str<<icode::get_type_str(this->m_type)<< ":0x"<<std::hex<<this->num;//<< ";"
+        ret_str<<icode::get_type_str(this->m_type)<< ":0x"<<std::hex<<this->num <<":0x"<<std::hex<<this->m_bit_width ; //<< ";"
     break;
     case ICODE_TYPE_F_CONST:
-        ret_str<<icode::get_type_str(this->m_type)<<":"<<this->fnum;//<<";"
+        ret_str<<icode::get_type_str(this->m_type)<<":"<<this->fnum <<":0x"<<std::hex<<this->m_bit_width ;//<<";"
     break;
     case ICODE_TYPE_CONST_STRING:
         ret_str<<icode::get_type_str(this->m_type)<<":\""<<string_to_printf(this->name)<<"\"";//<<";"

@@ -849,6 +849,8 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_6(class comp_context* pcompi, class t
     adda->right=pcompi->new_ref_icode(ptr_new);
     adda->left=pcompi->new_iconst_icode(bit_width_offset/8);
     adda->result = pcompi->new_ref_icode(ptr_new);
+
+    a->merge_icode(expr_ic);
     a->merge_icode(ptr_new);
     a->merge_icode(mova);
     a->merge_icode(adda);

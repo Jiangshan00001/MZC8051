@@ -296,6 +296,8 @@ public://icode label
     /// icode是标签时，需要获取标签标号字符串
     std::string get_block_start_label();
     std::string get_block_end_label();
+    //2021.1.28 label从icode_number字符串改为字符串。name
+
 
 public://icode struct union
     int is_struct:1;

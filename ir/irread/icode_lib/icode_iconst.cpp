@@ -122,6 +122,17 @@ void icode::const_refresh_width()
     {
         this->m_bit_width = 4*8;//FLOAT 4byte... FIXME 此处需要读取目标类型？
     }
+    else if(this->m_type==ICODE_TYPE_CONST_LIST)
+    {
+        //里面所有const的bitwidth加和
+        /// FIXME: 此处限定const_list为flat之后的。而不是带scope的。
+        this->m_bit_width = 0;
+        for(int i=0;i<this->sub_icode.size();++i)
+        {
+            this->m_bit_width += this->sub_icode[i]->m_bit_width;
+        }
+
+    }
     else
     {
         assert(0);

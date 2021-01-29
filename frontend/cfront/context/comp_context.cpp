@@ -12,6 +12,7 @@
 
 using mylog::cerr;
 using mylog::cout;
+using mylog::cwarn;
 
 namespace NS_C2IR{
 
@@ -120,6 +121,7 @@ icode* comp_context::ast_to_icode_func_definition(token_defs *tdefs, bool need_r
     }
 
     a = s->def_icode;
+    ///之前函数是extern声明，现在改为定义，去掉extern属性
     a->is_extern = 0;
 
 
@@ -213,6 +215,24 @@ int comp_context::ast_to_icode_func_decl(token_defs *declaration_specifiers, tok
             //检查extern 和当前类型是否一致
             //TODO: 符号重复定义。未检查
             //如果一致，则替换为之前函数声明
+
+            /// 此处从1开始，因为decl_ic中，0位置已经添加了一个空的返回值占位符
+            for(unsigned i=1;i<decl_ic->result->sub_icode.size();++i)
+            {
+                icode *arg1 = decl_ic->result->sub_icode[i];
+                arg1->m_type = ICODE_TYPE_FUNC_DEF_ARG;
+                if(s->def_icode->sub_icode[i]->m_bit_width!=arg1->m_bit_width)
+                {
+                    cerr<<"func:"<<s->name<<"decl different. arg:"<<i<<". bitwidth:"<<s->def_icode->sub_icode[i]->m_bit_width
+                       <<" VS "<< arg1->m_bit_width<<"\n";
+                }
+                if(s->def_icode->sub_icode[i]->name!=arg1->name)
+                {
+                    cwarn<<"func:"<<s->name<<"decl different. arg:"<<i<<". name:"<<s->def_icode->sub_icode[i]->name
+                       <<" VS "<< arg1->name <<"\n";
+                    s->def_icode->sub_icode[i]->name=arg1->name;
+                }
+            }
         }
         return 0;
     }
@@ -277,6 +297,83 @@ int comp_context::ast_to_icode_func_decl(token_defs *declaration_specifiers, tok
     return 0;
 }
 
+int get_initializer_scope_cnt(icode* initializer)
+{
+    int cnt=0;
+
+    while(1)
+    {
+        if(initializer->m_type==ICODE_TYPE_SCOPE)
+        {
+            cnt++;
+        }
+
+        if(initializer->sub_icode.size()>0)
+        {
+            initializer = initializer->sub_icode[0];
+        }
+        else
+        {
+            break;
+        }
+    }
+    return cnt;
+}
+
+void const_list_to_flat2(icode* initializer, icode * const_list, icode* array_in_type, int in_array, int array_cnt)
+{
+    for(int i=0;i<const_list->sub_icode.size();++i)
+    {
+        icode *curr_list = const_list->sub_icode[i];
+
+        if(curr_list->m_type==ICODE_TYPE_CONST_LIST)
+        {
+            if(in_array>array_cnt)
+            {
+                const_list_to_flat2(initializer, curr_list->sub_icode[0], array_in_type->m_struct_type[i], in_array+1, array_cnt);
+            }
+            else
+            {
+                const_list_to_flat2(initializer, curr_list, array_in_type, in_array, array_cnt);
+            }
+
+        }
+        else if(curr_list->m_type==ICODE_TYPE_SCOPE)
+        {
+            assert(curr_list->sub_icode.size()==1);
+            //const_list_to_flat2(initializer, curr_list->sub_icode[0], array_in_type, in_array+1, array_cnt);
+#if 1
+            if(in_array>array_cnt)
+            {
+                const_list_to_flat2(initializer, curr_list->sub_icode[0], array_in_type->m_struct_type[i], in_array+1, array_cnt);
+            }
+            else
+            {
+                const_list_to_flat2(initializer, curr_list->sub_icode[0], array_in_type, in_array+1, array_cnt);
+            }
+#endif
+        }
+        else if((curr_list->m_type==ICODE_TYPE_F_CONST)||
+                (curr_list->m_type==ICODE_TYPE_I_CONST)
+                )
+        {
+            if(in_array>array_cnt)
+            {
+                curr_list->m_bit_width = array_in_type->m_struct_type[i]->m_bit_width;
+            }
+            else
+            {
+                curr_list->m_bit_width = array_in_type->m_bit_width;
+            }
+            initializer->sub_icode.push_back(curr_list);
+        }
+        else
+        {
+            assert(0);
+        }
+    }
+}
+
 
 
 int comp_context::correct_initializer_width_from_declarator(icode *var, icode *initializer)
@@ -286,9 +383,73 @@ int comp_context::correct_initializer_width_from_declarator(icode *var, icode *i
     /// initializer ICODE_TYPE_I_CONST (1)
     assert(var->is_def_var());
 
+
+    /// 结构体的初始值：
+    /// struct A
+    /// {
+    /// int a;
+    /// char b;
+    /// } ;
+    /// struct A c={1,3};
+    /// struct A c[5]={{1,3},{2,4} };
     if(var->is_array)
     {
+        ///int a[][3][2]={ {{1,2},{3,4},{5,6}},{{1,2},{3,4},{5,6}},{{1,2},{3,4},{5,6}},{{1,2},{3,4},{5,6}}  };
+        /// 初始化数组。之前是const_list，现在改为scope，scope里面是const_list。 const_list里是scope或者const
         /// int a[5]={1,2,3,4};
+
+
+        if(initializer->m_type==ICODE_TYPE_SCOPE)
+        {
+
+            ///内部元素的宽度
+            int elem_bit_width = var->m_in_ptr_type->m_bit_width;
+
+            int init_scope_cnt = get_initializer_scope_cnt(initializer);
+
+            assert(init_scope_cnt>=var->is_array);
+
+            int target_total_bit_width = var->get_array_bit_width();
+            int first_cnt = initializer->sub_icode[0]->sub_icode.size();
+            if(target_total_bit_width==0)
+            {
+                assert(var->array_cnt.size()>0);
+                assert(var->array_cnt[0]->m_type==ICODE_TYPE_I_CONST);
+                assert(var->array_cnt[0]->num==0);
+                var->array_cnt[0]->num = first_cnt;
+                target_total_bit_width = var->get_array_bit_width();
+            }
+
+
+            assert(initializer->sub_icode.size()==1);
+            icode* const_list = initializer->sub_icode[0];
+            initializer->sub_icode.clear();
+            initializer->m_type=ICODE_TYPE_CONST_LIST;
+            const_list_to_flat2(initializer,const_list, var->m_in_ptr_type,1, var->is_array);
+            initializer->const_refresh_width();
+            int const_array_bit_width = initializer->m_bit_width;
+
+            /// 大小去除。如果初始化数据太多，则去除。如果太少，则补0
+            while(const_array_bit_width>target_total_bit_width)
+            {
+                initializer->sub_icode.pop_back();
+                initializer->const_refresh_width();
+                const_array_bit_width = initializer->m_bit_width;
+            }
+
+            while(const_array_bit_width<target_total_bit_width)
+            {
+                icode *nic = new_icode(ICODE_TYPE_I_CONST);
+                nic->m_bit_width = 8;
+                nic->num = 0;
+                initializer->sub_icode.push_back(nic);
+                initializer->const_refresh_width();
+                const_array_bit_width = initializer->m_bit_width;
+            }
+        }
+
+
+#if 0
         if(initializer->m_type==ICODE_TYPE_CONST_LIST)
         {
             int total_bit_width=0;
@@ -330,9 +491,12 @@ int comp_context::correct_initializer_width_from_declarator(icode *var, icode *i
             }
             initializer->m_bit_width = target_total_bit_width;
         }
-        else if((initializer->m_type==ICODE_TYPE_CONST_STRING)||
-                ((initializer->m_type==ICODE_TYPE_SYMBOL_REF)&&(initializer->result->m_type==ICODE_TYPE_CONST_STRING))
-                )
+
+#endif
+
+       else  if((initializer->m_type==ICODE_TYPE_CONST_STRING)||
+            ((initializer->m_type==ICODE_TYPE_SYMBOL_REF)&&(initializer->result->m_type==ICODE_TYPE_CONST_STRING))
+            )
         {
             if(initializer->m_type==ICODE_TYPE_SYMBOL_REF)
             {
@@ -382,6 +546,16 @@ int comp_context::correct_initializer_width_from_declarator(icode *var, icode *i
             //特殊功能寄存器，初始值是特殊的，此处不做bit_width限定！！！
             return 0;
         }
+
+        if(initializer->m_type==ICODE_TYPE_SCOPE)
+        {
+            icode *const_list = initializer->sub_icode[0];
+            initializer->sub_icode.clear();
+            initializer->m_type=ICODE_TYPE_CONST_LIST;
+            const_list_to_flat2(initializer,const_list, var,1, var->is_array);
+            initializer->const_refresh_width();
+        }
+
 
         if(initializer->m_bit_width > var->m_bit_width)
         {
@@ -490,7 +664,7 @@ icode* comp_context::ast_to_icode_a_op_b(token_defs *tdefs, bool need_result_ico
             b->result = e_ref;
             a->result = e_ref;
 
-            ///TODO: 2020.6.30 此处需要区分是关系运算符，还是算术运算符。如关系运算符，返回值只需要1bit数值
+            ///TODO: 优化：1bit 2020.6.30 此处需要区分是关系运算符，还是算术运算符。如关系运算符，返回值只需要1bit数值
             //此处需要区分是关系运算符，还是算术运算符。
             // 算术运算符没有问题，关系运算符，返回值只需要1bit数值
             // eg: 1+2 ==>3

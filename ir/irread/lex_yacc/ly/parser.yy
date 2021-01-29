@@ -655,6 +655,16 @@ i_const
 		$$.m_tk_elems.push_back(parser_ntoken($1));
 		$$.m_tk_elems.push_back(parser_ntoken($2));
 		}
+	|  I_CONST_ID  I_CONSTANT  ':'  I_CONSTANT 	{
+		$$=gempty_token();
+		$$.m_type=TOKEN_DEFS_TYPE_AST;
+		$$.m_tk_type_int = IAN_I_CONST_2;
+		$$.m_tk_type_int_list.push_back(IAN_I_CONST_2);
+		$$.m_tk_elems.push_back(parser_ntoken($1));
+		$$.m_tk_elems.push_back(parser_ntoken($2));
+		$$.m_tk_elems.push_back(parser_ntoken($3));
+		$$.m_tk_elems.push_back(parser_ntoken($4));
+		}
 	;
 f_const
 	:  F_CONST_ID  F_CONSTANT 	{
@@ -672,6 +682,26 @@ f_const
 		$$.m_tk_type_int_list.push_back(IAN_F_CONST_2);
 		$$.m_tk_elems.push_back(parser_ntoken($1));
 		$$.m_tk_elems.push_back(parser_ntoken($2));
+		}
+	|  F_CONST_ID  I_CONSTANT  ':'  I_CONSTANT 	{
+		$$=gempty_token();
+		$$.m_type=TOKEN_DEFS_TYPE_AST;
+		$$.m_tk_type_int = IAN_F_CONST_3;
+		$$.m_tk_type_int_list.push_back(IAN_F_CONST_3);
+		$$.m_tk_elems.push_back(parser_ntoken($1));
+		$$.m_tk_elems.push_back(parser_ntoken($2));
+		$$.m_tk_elems.push_back(parser_ntoken($3));
+		$$.m_tk_elems.push_back(parser_ntoken($4));
+		}
+	|  F_CONST_ID  F_CONSTANT  ':'  I_CONSTANT 	{
+		$$=gempty_token();
+		$$.m_type=TOKEN_DEFS_TYPE_AST;
+		$$.m_tk_type_int = IAN_F_CONST_4;
+		$$.m_tk_type_int_list.push_back(IAN_F_CONST_4);
+		$$.m_tk_elems.push_back(parser_ntoken($1));
+		$$.m_tk_elems.push_back(parser_ntoken($2));
+		$$.m_tk_elems.push_back(parser_ntoken($3));
+		$$.m_tk_elems.push_back(parser_ntoken($4));
 		}
 	;
 string
