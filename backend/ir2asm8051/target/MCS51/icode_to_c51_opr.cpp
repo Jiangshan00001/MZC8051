@@ -2900,8 +2900,15 @@ std::string icode_to_c51::is_equal(c51_addr *a1, c51_addr *a2, c51_addr *result)
         int byte_cnt=0;
         while(cmp_bitwidth>0)
         {
+		///FIXME: 此处可能会导致a被占用，而无法实现xrl_byte_with_a函数功能
+#if 0
+            //int mR = m_Rn.get_reg();
+            //asm_str<<this->mov_byte_to_ri(a1, byte_cnt,0, mR);
+            //asm_str<<xrl_byte_with_ri(a2,byte_cnt, mR);
+#else
             asm_str<<this->mov_byte_to_a(a1, byte_cnt);
             asm_str<<xrl_byte_with_a(a2,byte_cnt);
+#endif
             asm_str<<"JNZ " <<label_set_zero<<";\n";
             cmp_bitwidth-=8;
             byte_cnt++;
@@ -2960,6 +2967,8 @@ std::string icode_to_c51::orl_byte_with_a(c51_addr *a1, int addr_shift)
     return asm_str.str();
 }
 
+
+
 std::string icode_to_c51::xrl_byte_with_a(c51_addr *a1, int addr_shift)
 {
     std::stringstream asm_str;
@@ -2985,10 +2994,20 @@ std::string icode_to_c51::xrl_byte_with_a(c51_addr *a1, int addr_shift)
     }
     else if(a1->m_type==DATA_TYPE_J_DATA)
     {
-        asm_str<<"XRL A, #0x"<<std::hex<<(0xff&((((0x000000ff<<(addr_shift*8)))&a1->m_addr)>>(addr_shift*8)))<<";\n";
+        unsigned long data1=(((0x000000ff<<(addr_shift*8)))&a1->m_addr);
+        asm_str<<"XRL A, #0x"<<std::hex<<(0xff& ( data1>>(addr_shift*8)))<<";\n";
     }
+    else if(a1->m_type==DATA_TYPE_J_DATA_F)
+    {
+        unsigned long data1=(((0x000000ff<<(addr_shift*8)))& (*(unsigned long*)(&a1->fnum)));
+        asm_str<<"XRL A, #0x"<<std::hex<<(0xff& ( data1>>(addr_shift*8)))<<";\n";
+    }
+
     else// if(a1->m_type==DATA_TYPE_XDATA)
     {
+        ///FIXME 此处代码不对，因为A已经被占用，不能在调用mov_byte_to_ri。所以此处应该先把a放到ri中，再转移到ri
+        ///
+        assert(0);
         int mR = m_Rn.get_reg();
         asm_str<<this->mov_byte_to_ri(a1, addr_shift,0, mR);
         asm_str<<"XRL A, R"<< mR <<";\n";
@@ -3007,11 +3026,17 @@ std::string icode_to_c51::xrl_byte_with_a(c51_addr *a1, int addr_shift)
 
 std::string icode_to_c51::incA(c51_addr * varA)
 {
+    ///
+    /// INC A;
+    /// INC DIR;
+    /// INC @Ri;
+    /// INC Rn;
+    ///
     static int decALabel_num=0;
 
     static int label_used = 0;
     std::stringstream asm_str;
-    assert(varA->m_type==DATA_TYPE_DIRECT);
+    //assert(varA->m_type==DATA_TYPE_DIRECT);
 
     if(varA->m_type==DATA_TYPE_DIRECT)
     {
@@ -3039,7 +3064,6 @@ std::string icode_to_c51::incA(c51_addr * varA)
             label_used=1;
             asm_str<<"JNZ "<< tmp_label<<";\n";
             asm_str<<"INC 0x"<<std::hex<<varA->m_addr+2<<";\n";
-
         }
         if(varA->m_bit_width>=32)
         {
@@ -3058,15 +3082,38 @@ std::string icode_to_c51::incA(c51_addr * varA)
     }
     else
     {
-        cerr<<"ERROR: unsupported inc xdata?\n";
-        assert(0);
+        int bitwidth = varA->m_bit_width;
+        int byte_cnt=0;
+        std::string tmp_label;
+        tmp_label=get_tmp_label("incA");
+
+        while(bitwidth>0)
+        {
+            asm_str<<this->mov_byte_to_a(varA, byte_cnt);
+            asm_str<<"INC A;\n";
+            asm_str<<this->mov_byte_a_to(varA, byte_cnt);
+            asm_str<<"JNZ "<< tmp_label<<";\n";
+            byte_cnt++;
+            bitwidth-=8;
+        }
+        asm_str<<tmp_label<<":\n";
     }
 
     return asm_str.str();
+    cerr<<"ERROR: unsupported inc xdata?\n";
+    assert(0);
+
 }
 
 std::string icode_to_c51::decA(c51_addr *varA)
 {
+    /// DEC A;
+    /// DEC dir;
+    /// DEC @Ri;
+    /// DEC Rn;
+    ///
+    ///
+    ///
     static int decALabel_num=0;
 
     static int label_used = 0;
@@ -3113,8 +3160,26 @@ std::string icode_to_c51::decA(c51_addr *varA)
     }
     else
     {
-        cerr<<"decA type not supported\n";
-        assert(0);
+        int bitwidth = varA->m_bit_width;
+        int byte_cnt=0;
+        std::string tmp_label;
+        tmp_label=get_tmp_label("decA");
+
+        while(bitwidth>0)
+        {
+            int mR = this->m_Rn.get_reg();
+            asm_str<<this->mov_byte_to_a(varA, byte_cnt);
+            asm_str<<"MOV R"<<mR<<", A;\n";
+            asm_str<<"DEC R"<<mR<<"\n";
+            asm_str<<this->mov_byte_ri_to(varA, byte_cnt,0,mR);
+
+            asm_str<<"MOV A, R"<<mR<<";\n";
+            asm_str<<"JNZ "<< tmp_label<<";\n";
+            m_Rn.free_reg(mR);
+            byte_cnt++;
+            bitwidth-=8;
+        }
+        asm_str<<tmp_label<<":\n";
     }
 
     return asm_str.str();

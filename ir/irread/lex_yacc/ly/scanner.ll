@@ -203,6 +203,7 @@ typedef NS_IR2ICODE::Parser::token_type token_type;
 "*"    { TKEY_DEF( static_cast<token_type>('*') ,1, 0   );  }
 "["    { TKEY_DEF( static_cast<token_type>('[') ,1, 0   );  }
 "]"    { TKEY_DEF( static_cast<token_type>(']') ,1, 0   );  }
+"-"    { TKEY_DEF( static_cast<token_type>('-') ,1, 0   );  }
 {L}{A}*	{ /*各种标识符，修饰符等*/ TKEY_DEF( static_cast<token_type> (token::IDENTIFIER), 0, 0);}
 
 

@@ -1604,23 +1604,30 @@ class icode *  func_IAN_I_CONST_2(class comp_context* pcompi, class token_defs* 
 	//0x1502-i_const->I_CONST_ID I_CONSTANT ':' I_CONSTANT 
 	//parent:
 	// constant--> i_const
-	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
 	token_defs *I_CONST_ID=tdefs->m_tk_elems[0];
 	token_defs *I_CONSTANT=tdefs->m_tk_elems[1];
-	//token_defs *':'=tdefs->m_tk_elems[2];
 	token_defs *I_CONSTANT_width=tdefs->m_tk_elems[3];
-	//icode *I_CONST_ID_ic=pcompi->ast_to_icode(I_CONST_ID);
 	icode *I_CONSTANT_ic=pcompi->ast_to_icode(I_CONSTANT);
-	//icode *':'_ic=pcompi->ast_to_icode(':');
 	icode *I_CONSTANT_width_ic=pcompi->ast_to_icode(I_CONSTANT_width);
-	//a->merge_icode(I_CONST_ID_ic);
-	//a->merge_icode(I_CONSTANT_ic);
-	//a->merge_icode(':'_ic);
-	//a->merge_icode(I_CONSTANT_ic);
-
 	I_CONSTANT_ic->m_bit_width = I_CONSTANT_width_ic->num;
 	return I_CONSTANT_ic;
 }
+class icode *  func_IAN_I_CONST_3(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
+{
+	//0x1503-i_const->I_CONST_ID '-' I_CONSTANT ':' I_CONSTANT 
+	//parent:
+	// constant--> i_const
+    token_defs *I_CONST_ID=tdefs->m_tk_elems[0];
+    token_defs *I_CONSTANT=tdefs->m_tk_elems[2];
+    token_defs *I_CONSTANT_width=tdefs->m_tk_elems[4];
+    icode *I_CONSTANT_ic=pcompi->ast_to_icode(I_CONSTANT);
+    icode *I_CONSTANT_width_ic=pcompi->ast_to_icode(I_CONSTANT_width);
+
+    I_CONSTANT_ic->m_bit_width = I_CONSTANT_width_ic->num;
+    I_CONSTANT_ic->num = -I_CONSTANT_ic->num;
+    return I_CONSTANT_ic;
+}
+
 class icode *  func_IAN_F_CONST_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
     /// 直接返回元素对应的icode
@@ -1684,7 +1691,41 @@ class icode *  func_IAN_F_CONST_4(class comp_context* pcompi, class token_defs* 
 
     return F_CONSTANT_ic;
 }
+class icode *  func_IAN_F_CONST_5(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
+{
+	//0x1605-f_const->F_CONST_ID '-' I_CONSTANT ':' I_CONSTANT 
+	//parent:
+	// constant--> f_const
 
+    token_defs *F_CONST_ID=tdefs->m_tk_elems[0];
+    token_defs *I_CONSTANT=tdefs->m_tk_elems[2];
+    token_defs *I_CONSTANT_width=tdefs->m_tk_elems[4];
+    icode *F_CONST_ID_ic=pcompi->ast_to_icode(F_CONST_ID);
+    icode *I_CONSTANT_ic=pcompi->ast_to_icode(I_CONSTANT);
+    icode *I_CONSTANT_width_ic=pcompi->ast_to_icode(I_CONSTANT_width);
+
+    F_CONST_ID_ic->fnum = - I_CONSTANT_ic->num;
+    F_CONST_ID_ic->m_bit_width = I_CONSTANT_width_ic->num;
+    return F_CONST_ID_ic;
+}
+class icode *  func_IAN_F_CONST_6(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
+{
+	//0x1606-f_const->F_CONST_ID '-' F_CONSTANT ':' I_CONSTANT 
+	//parent:
+	// constant--> f_const
+
+    token_defs *F_CONSTANT=tdefs->m_tk_elems[2];
+    token_defs *I_CONSTANT_width=tdefs->m_tk_elems[4];
+
+    icode *F_CONSTANT_ic=pcompi->ast_to_icode(F_CONSTANT);
+    icode *I_CONSTANT_width_ic=pcompi->ast_to_icode(I_CONSTANT_width);
+
+    F_CONSTANT_ic->m_bit_width = I_CONSTANT_width_ic->num;
+
+    F_CONSTANT_ic->fnum = -F_CONSTANT_ic->fnum;
+    return F_CONSTANT_ic;
+
+}
 class icode *  func_IAN_STRING_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
     /// 直接返回元素对应的icode

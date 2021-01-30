@@ -13,6 +13,7 @@ class icode_float_cast : public icode_visitor
 {
 public:
     icode_float_cast();
+    void execute(icodes *ics);
 
     virtual int process_one_icode(class icode *ic, std::vector<class icode *> &parent, int index, void *user_data, class icode *iparent);
 

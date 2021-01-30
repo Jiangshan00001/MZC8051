@@ -166,6 +166,12 @@ icode *icodes::new_temp_var(icode *to_copy)
     *e = *to_copy;
     e->name = tmp_name;
     e->m_icode_number = tmp_num;
+
+    //e的类型一样，但是寄存器描述符不需要和原来你的一样，否则可能会导致指定了同一个寄存器
+    e->m_register_desc="";
+    e->m_reg_params_desc="";
+    e->is_register=0;
+    e->is_regparams = 0;
     return e;
 }
 

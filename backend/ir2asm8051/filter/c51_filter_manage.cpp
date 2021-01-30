@@ -83,8 +83,7 @@ void c51_filter_manage::do_filter(icodes *ics)
     /// 浮点数和整数的混合运算，需要先将整数转为浮点数
     /// 浮点数赋值给整数，需要先将浮点数转为整数
     icode_float_cast float_cast;
-    float_cast.pcompi = ics;
-    float_cast.process_topcode(m_top_icodes);
+    float_cast.execute(ics);
 
 
 

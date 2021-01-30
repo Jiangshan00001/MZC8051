@@ -780,6 +780,12 @@ case IAN_I_CONST_2: //0x1502-i_const->I_CONST_ID I_CONSTANT ':' I_CONSTANT
 	return a;
 }
 break;
+case IAN_I_CONST_3: //0x1503-i_const->I_CONST_ID '-' I_CONSTANT ':' I_CONSTANT 
+{
+	icode *a= func_IAN_I_CONST_3(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
 case IAN_F_CONST_1: //0x1601-f_const->F_CONST_ID F_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_1(this, tdefs, need_result_icode, result_ic);
@@ -801,6 +807,18 @@ break;
 case IAN_F_CONST_4: //0x1604-f_const->F_CONST_ID F_CONSTANT ':' I_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_4(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_F_CONST_5: //0x1605-f_const->F_CONST_ID '-' I_CONSTANT ':' I_CONSTANT 
+{
+	icode *a= func_IAN_F_CONST_5(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_F_CONST_6: //0x1606-f_const->F_CONST_ID '-' F_CONSTANT ':' I_CONSTANT 
+{
+	icode *a= func_IAN_F_CONST_6(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
@@ -901,7 +919,7 @@ case IAN_INLINE_ASM_1: //0x2101-inline_asm->INLINE_ASM STRING_LITERAL ';'
 }
 break;
 
-}//switch end. case_cnt=60
+}//switch end. case_cnt=63
 
 }
 

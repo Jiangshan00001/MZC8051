@@ -188,12 +188,15 @@ constant
 
 i_const : I_CONST_ID I_CONSTANT
         | I_CONST_ID I_CONSTANT ':' I_CONSTANT
+        | I_CONST_ID '-' I_CONSTANT ':' I_CONSTANT
         ;
 
 f_const : F_CONST_ID F_CONSTANT
         | F_CONST_ID I_CONSTANT
         | F_CONST_ID I_CONSTANT ':' I_CONSTANT
         | F_CONST_ID F_CONSTANT ':' I_CONSTANT
+        | F_CONST_ID '-' I_CONSTANT ':' I_CONSTANT
+        | F_CONST_ID '-' F_CONSTANT ':' I_CONSTANT
     ;
 
 string :   STRING_ID STRING_LITERAL

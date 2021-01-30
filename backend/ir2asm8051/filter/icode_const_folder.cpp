@@ -366,7 +366,9 @@ int icode_const_folder::first_folder(icode *ic, std::vector<icode *> &parent, in
         return 0;
     }
 
-    if(ic->name=="=")
+    if((ic->name=="=")||
+            (ic->name=="init")
+            )
     {
         ///赋值表达式，不能再求折叠
         return 0;
