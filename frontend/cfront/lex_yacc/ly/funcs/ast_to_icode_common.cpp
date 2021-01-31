@@ -184,7 +184,7 @@ class icode *func_token_F_CONSTANT(class comp_context* pcompi, class token_defs*
     b->m_type = ICODE_TYPE_F_CONST;
     b->name = tdefs->val_str;
     b->fnum = StrToFloat(tdefs->val_str);
-    b->m_bit_width = pcompi->m_target->get_basic_type_bit_width("float");
+    b->m_bit_width = pcompi->m_top_icodes->m_target->get_basic_type_bit_width("float");
     //a->sub_icode.push_back(b);
     b->is_float32 = 1;
     b->const_refresh_width();

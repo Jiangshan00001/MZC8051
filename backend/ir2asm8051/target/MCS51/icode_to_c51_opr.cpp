@@ -191,7 +191,6 @@ std::string icode_to_c51::to_asm_opr_init(icode *ic)
                 /// int code a[]={1,2,3,5};
                 /// code char a[] = "aabbcc";
                 /// code不可能赋值，只有1此添加初始值的机会
-                /// TODO: result_t中添加变量： is_inited;确定是否已经附过初始值
                 //result_t->labelA = left_t->labelA;
 
                 //此处初始值初始化，只是将数组标签改为变量标签。因为变量默认都是没有空间的。
@@ -2478,7 +2477,7 @@ std::string icode_to_c51::rotate_shiftR(c51_addr *a1, c51_addr *a2, c51_addr *re
         asm_str<<"MOV A, R1;\n";
         asm_str<<"JZ "<< lab_end;
         asm_str<<"DEC R1;\n";
-        asm_str<<"MOV R0, #0xff\n"; ///FIXME : 此处是否是少了1次？？？2020.6.30
+        asm_str<<"MOV R0, #0xff\n"; ///此处是否是少了1次？？？2020.6.30--此处已确认正确
         asm_str<<"SJMP "<<lab0<<";\n";
         asm_str<<lab_end<<":\n";
 
@@ -2900,11 +2899,12 @@ std::string icode_to_c51::is_equal(c51_addr *a1, c51_addr *a2, c51_addr *result)
         int byte_cnt=0;
         while(cmp_bitwidth>0)
         {
-		///FIXME: 此处可能会导致a被占用，而无法实现xrl_byte_with_a函数功能
+        ///--已修正： 此处可能会导致a被占用，而无法实现xrl_byte_with_a函数功能
 #if 0
-            //int mR = m_Rn.get_reg();
-            //asm_str<<this->mov_byte_to_ri(a1, byte_cnt,0, mR);
-            //asm_str<<xrl_byte_with_ri(a2,byte_cnt, mR);
+            int mR = m_Rn.get_reg();
+            asm_str<<this->mov_byte_to_ri(a1, byte_cnt,0, mR);
+            asm_str<<xrl_byte_with_ri(a2,byte_cnt, mR);
+            m_Rn.free_reg(mR);
 #else
             asm_str<<this->mov_byte_to_a(a1, byte_cnt);
             asm_str<<xrl_byte_with_a(a2,byte_cnt);
@@ -2968,9 +2968,27 @@ std::string icode_to_c51::orl_byte_with_a(c51_addr *a1, int addr_shift)
 }
 
 
+std::string icode_to_c51::xrl_byte_with_ri(c51_addr *a1, int addr_shift, int Rn)
+{
+
+    std::stringstream asm_str;
+
+    //XRL	A,Rn	Exclusive-OR register to Accumulator
+    //XRL	A,direct	Exclusive-OR direct byte to Accumulator
+    //XRL	A,@Ri	Exclusive-OR indirect RAM to Accumulator
+    //XRL	A,#data	Exclusive-OR immediate data to Accumulator
+    //XRL	direct,A	Exclusive-OR Accumulator to direct byte
+    //XRL	direct,#data	Exclusive-OR immediate data to direct byte
+
+    asm_str<<this->mov_byte_to_a(a1, addr_shift);
+    asm_str<<"XRL A, R"<<Rn<<";\n";
+
+    return asm_str.str();
+}
 
 std::string icode_to_c51::xrl_byte_with_a(c51_addr *a1, int addr_shift)
 {
+
     std::stringstream asm_str;
 
     //XRL	A,Rn	Exclusive-OR register to Accumulator
@@ -3005,11 +3023,13 @@ std::string icode_to_c51::xrl_byte_with_a(c51_addr *a1, int addr_shift)
 
     else// if(a1->m_type==DATA_TYPE_XDATA)
     {
-        ///FIXME 此处代码不对，因为A已经被占用，不能在调用mov_byte_to_ri。所以此处应该先把a放到ri中，再转移到ri
+        /// 2021.1.30已修正
+        /// 此处代码不对，因为A已经被占用，不能在调用mov_byte_to_ri。所以此处应该先把a放到ri中，再转移到ri
         ///
         assert(0);
         int mR = m_Rn.get_reg();
-        asm_str<<this->mov_byte_to_ri(a1, addr_shift,0, mR);
+        asm_str<<"MOV R"<<mR<<", A;\n";
+        asm_str<<this->mov_byte_to_a(a1, addr_shift);
         asm_str<<"XRL A, R"<< mR <<";\n";
         m_Rn.free_reg(mR);
     }

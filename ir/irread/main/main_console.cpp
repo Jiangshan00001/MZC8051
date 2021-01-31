@@ -9,7 +9,7 @@
 
 void main_t1()
 {
-    NS_IR2ICODE::comp_context calc;
+    NS_IR2ICODE::comp_context calc(E_8051_TARGET);
     NS_IR2ICODE::Driver driver(calc);
 	
 	
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
 
 
-    NS_IR2ICODE::comp_context calc;
+    NS_IR2ICODE::comp_context calc(E_8051_TARGET);
     NS_IR2ICODE::Driver driver(calc);
     bool readfile = false;
 

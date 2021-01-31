@@ -13,7 +13,7 @@
 class icode_manage
 {
 public:
-    icode_manage();
+    icode_manage(int target_typ);
 
     virtual ~icode_manage();
 
@@ -117,7 +117,6 @@ public:
     int m_tmp_var_name_index;
 public:
     ///需要对应的数据类型长度等函数信息，是和后端相关的
-    class target_base *m_target;
 
 
 public:

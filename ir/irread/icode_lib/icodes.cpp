@@ -2,16 +2,19 @@
 #include "icodes.h"
 #include "target_base.h"
 
-icodes::icodes()
+icodes::icodes(int target_typ)
 {
     m_icode_index = 0;
     m_top_icodes = new_icode(ICODE_TYPE_BLOCK);
+    m_target = new target_base((enum TAG_E_TARGET_BASE_TYPE)target_typ);
 }
 
 icodes::~icodes()
 {
     clear_all_icode();
     //delete m_top_icodes;
+
+    delete m_target;
 }
 
 int icodes::new_icode_number()
@@ -149,7 +152,7 @@ icode *icodes::new_temp_var()
     icode *e = new_icode();
 
 
-    ss<<(unsigned long long)e;
+    ss<<std::hex<<(unsigned long long)e;
 
     e->m_type = ICODE_TYPE_DEF_VAR_TMP;
     e->name = "TMP_" + ss.str(); //get_temp_name();
@@ -167,7 +170,7 @@ icode *icodes::new_temp_var(icode *to_copy)
     e->name = tmp_name;
     e->m_icode_number = tmp_num;
 
-    //e的类型一样，但是寄存器描述符不需要和原来你的一样，否则可能会导致指定了同一个寄存器
+    //e的类型一样，但是寄存器描述符不能和原来你的一样，否则可能会导致指定了同一个寄存器
     e->m_register_desc="";
     e->m_reg_params_desc="";
     e->is_register=0;
@@ -258,11 +261,11 @@ icode *icodes::new_var_in_var_tmp_icode(icode *to_ref)
     return e_ref;
 }
 
-icode *icodes::new_temp_ptr_var(icode *in_ptr_type, target_base* mtarget)
+icode *icodes::new_temp_ptr_var(icode *in_ptr_type)
 {
 
     icode *result_new = new_temp_var();
-    result_new->m_bit_width = mtarget->get_basic_type_bit_width("GENERIC_PTR");;/// FIXME 通用指针长度需要通过m_target获取。而m_target不在此处访问？ this->m_target->get_basic_type_bit_width("GENERIC_PTR");
+    result_new->m_bit_width = m_target->get_basic_type_bit_width("GENERIC_PTR");;/// FIXME 通用指针长度需要通过m_target获取。而m_target不在此处访问？ this->m_target->get_basic_type_bit_width("GENERIC_PTR");
     result_new->is_ptr=1;//1维指针
     result_new->is_signed = 0;
     result_new->m_in_ptr_type = new_icode( * in_ptr_type );//指针指向的数据类型
@@ -271,12 +274,12 @@ icode *icodes::new_temp_ptr_var(icode *in_ptr_type, target_base* mtarget)
     return result_new;
 }
 
-icode *icodes::new_temp_ptr_ptr_var(target_base* mtarget)
+icode *icodes::new_temp_ptr_ptr_var()
 {
     icode *ptr_type_ic = new_temp_var();
-    ptr_type_ic->m_bit_width = mtarget->get_basic_type_bit_width("GENERIC_PTR");
+    ptr_type_ic->m_bit_width = m_target->get_basic_type_bit_width("GENERIC_PTR");
     ptr_type_ic->is_signed = 0;
-    return new_temp_ptr_var(ptr_type_ic, mtarget);
+    return new_temp_ptr_var(ptr_type_ic);
 }
 
 icode *icodes::get_function(std::string func_name)

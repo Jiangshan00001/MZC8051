@@ -40,7 +40,7 @@ int icode_ptr_calc::process_array_result(icode *ic, std::vector<icode *> &parent
     icode *result_brief = ic;
 
     //申请一个通用指针的变量
-    icode * result_new = pcompi->new_temp_ptr_var(ic->result->m_in_ptr_type, &m_target);
+    icode * result_new = pcompi->new_temp_ptr_var(ic->result->m_in_ptr_type);
 
 
     /// temp1=a;
@@ -60,7 +60,7 @@ int icode_ptr_calc::process_array_result(icode *ic, std::vector<icode *> &parent
     {
         icode *tmp1 = pcompi->new_temp_var();
         /// \todo 此处指针，直接手写为16bit 2020.8.18 因为c51中地址最大为2byte，此处只需要2byte，最高byte类型在计算过程中不可能改变 2020.9.8
-        tmp1->m_bit_width = 16;///@FIXME 此处暂时改为8bit，因为16bit需要库函数支持 16;// pcompi->m_to_asm.get_basic_type_bit_width("GENERIC_PTR");
+        tmp1->m_bit_width = pcompi->m_target->get_basic_type_bit_width("GENERIC_PTR");///@FIXME 此处暂时改为8bit，因为16bit需要库函数支持 16;// pcompi->m_to_asm.get_basic_type_bit_width("GENERIC_PTR");
         tmp1->is_signed = 0;
 
         /// temp2=2[int bit width]*1
@@ -193,11 +193,11 @@ int icode_ptr_calc::process_ptr_result(icode *ic, std::vector<icode *> &parent, 
     icode * result_new = NULL;
     if(curr_ptr_idx==1)
     {
-        result_new = pcompi->new_temp_ptr_var(ic->result->m_in_ptr_type, &m_target);
+        result_new = pcompi->new_temp_ptr_var(ic->result->m_in_ptr_type);
     }
     else
     {
-        result_new = pcompi->new_temp_ptr_ptr_var(&m_target);
+        result_new = pcompi->new_temp_ptr_ptr_var();
     }
 
     /// temp1=a;
@@ -242,11 +242,11 @@ int icode_ptr_calc::process_ptr_result(icode *ic, std::vector<icode *> &parent, 
 
             if(curr_ptr_idx==1)
             {
-                result_new = pcompi->new_temp_ptr_var(result_brief->result->m_in_ptr_type, &m_target);
+                result_new = pcompi->new_temp_ptr_var(result_brief->result->m_in_ptr_type);
             }
             else
             {
-                result_new = pcompi->new_temp_ptr_ptr_var(&m_target);
+                result_new = pcompi->new_temp_ptr_ptr_var();
             }
             icode *movB = pcompi->new_copy_icode_gen(pcompi->new_ref_icode(result_new_tmp1), pcompi->new_ref_icode(result_new));
 

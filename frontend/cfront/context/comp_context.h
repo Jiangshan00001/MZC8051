@@ -23,7 +23,7 @@ namespace NS_C2IR{
     class comp_context:public icode_manage
 	{
     public:
-        comp_context();
+        comp_context(int target_typ);
         virtual ~comp_context();
     public:
 

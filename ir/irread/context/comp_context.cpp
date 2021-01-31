@@ -15,9 +15,8 @@ using mylog::cout;
 
 namespace NS_IR2ICODE{
 
-comp_context::comp_context()
+comp_context::comp_context(int target_typ):icode_manage(target_typ)
 {
-    //m_target = new icode_to_c51(this);
 }
 
 

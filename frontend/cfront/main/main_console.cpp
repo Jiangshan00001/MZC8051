@@ -5,11 +5,11 @@
 
 #include "driver.h"
 #include "comp_context.h"
-
+#include "target_base.h"
 
 void main_t1()
 {
-    NS_C2IR::comp_context calc;
+    NS_C2IR::comp_context calc(E_8051_TARGET);
     NS_C2IR::Driver driver(calc);
 	
 	
@@ -29,7 +29,7 @@ int main2(int argc, char *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    NS_C2IR::comp_context calc;
+    NS_C2IR::comp_context calc(E_8051_TARGET);
     NS_C2IR::Driver driver(calc);
     bool readfile = false;
 

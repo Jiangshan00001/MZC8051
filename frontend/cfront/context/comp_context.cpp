@@ -16,15 +16,14 @@ using mylog::cwarn;
 
 namespace NS_C2IR{
 
-comp_context::comp_context()
+comp_context::comp_context(int target_typ):
+    icode_manage(target_typ)
 {
     m_just_ret_tree = 0;
-    m_target = new target_base();
 }
 
 comp_context::~comp_context()
 {
-    delete m_target;
 }
 
 void comp_context::clearExpressions()
@@ -603,7 +602,7 @@ std::string comp_context::get_func_ret_var_name(std::string func_name)
 
 icode *comp_context::new_temp_ptr_var(icode *in_ptr_type)
 {
-    return m_top_icodes->new_temp_ptr_var(in_ptr_type, this->m_target);
+    return m_top_icodes->new_temp_ptr_var(in_ptr_type);
 
 }
 

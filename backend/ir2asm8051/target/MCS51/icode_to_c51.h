@@ -108,22 +108,13 @@
 
 class icodes;
 
-class icode_to_c51: public target_base
+class icode_to_c51//: public target_base
 {
 public:
     icode_to_c51(icodes * mpcompi);
     virtual ~icode_to_c51();
     std::string to_asm(std::vector<class icode *> &ic, std::vector<icode *> &str_ic);
     std::string to_asm(class icodes *ics);
-
-
-
-    ///每种数据类型，占用的byte数。其中bit是特殊的，只占用1bit，其他都是字节
-    /// bit时，返回
-    int get_basic_type_bit_width(const std::string &type_str);
-
-
-    std::map<std::string, int> m_type_bit_list;
 
 
 
@@ -300,6 +291,7 @@ private:
     //求bit或
     std::string orl_byte_with_a(c51_addr* a1, int addr_shift);
     //求bit 异或：相同为0，不同为1
+    std::string xrl_byte_with_ri(c51_addr* a1, int addr_shift, int Rn);
     std::string xrl_byte_with_a(c51_addr* a1, int addr_shift);
 
 

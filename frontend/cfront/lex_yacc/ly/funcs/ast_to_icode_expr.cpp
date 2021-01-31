@@ -334,7 +334,7 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class t
 
         //def_var_tmp:$tmp2;,u24;
         icode *tmp2 = pcompi->new_temp_var();
-        tmp2->m_bit_width = pcompi->m_target->get_basic_type_bit_width("GENERIC_PTR");
+        tmp2->m_bit_width = pcompi->m_top_icodes->m_target->get_basic_type_bit_width("GENERIC_PTR");
         tmp2->is_signed = 0;
 
         //opr:"*";,const:11;, const:3;, %tmp2;
@@ -425,7 +425,7 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class t
             icode *movB = pcompi->new_opr_icode("=", NULL, post_ic->result, tmp_1);
 
             icode *tmp2 = pcompi->new_temp_var();
-            tmp2->m_bit_width = pcompi->m_target->get_basic_type_bit_width("GENERIC_PTR");
+            tmp2->m_bit_width = pcompi->m_top_icodes->m_target->get_basic_type_bit_width("GENERIC_PTR");
             tmp2->is_signed = 0;
 
             icode *movA = pcompi->new_opr_icode("*",NULL, expr_ic->result,  tmp2);
@@ -436,7 +436,7 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class t
             else
             {
                 //不是最后一层，每一层都是指针的长度
-                movA->left = pcompi->new_iconst_icode((pcompi->m_target->get_basic_type_bit_width("GENERIC_PTR")+7)/8);
+                movA->left = pcompi->new_iconst_icode((pcompi->m_top_icodes->m_target->get_basic_type_bit_width("GENERIC_PTR")+7)/8);
             }
 
             icode *addA = pcompi->new_opr_icode("+",tmp2, tmp_1, tmp_1 );
@@ -523,7 +523,7 @@ class icode *  func_IAN_POSTFIX_EXPRESSION_2(class comp_context* pcompi, class t
 
         //def_var_tmp:$tmp2;,u24;
         icode *tmp2 = pcompi->new_temp_var();
-        tmp2->m_bit_width = pcompi->m_target->get_basic_type_bit_width("GENERIC_PTR");
+        tmp2->m_bit_width = pcompi->m_top_icodes->m_target->get_basic_type_bit_width("GENERIC_PTR");
         tmp2->is_signed = 0;
 
         //opr:"*";,const:11;, const:3;, %tmp2;

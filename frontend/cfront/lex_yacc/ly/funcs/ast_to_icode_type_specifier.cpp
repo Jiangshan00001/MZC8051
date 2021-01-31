@@ -282,7 +282,7 @@ icode *func_common_basic_type(class comp_context* pcompi, class token_defs* tdef
     icode *a=result_ic;
 
     //a->m_type = ICODE_TYPE_DEF_VAR;
-    a->m_bit_width = pcompi->m_target->get_basic_type_bit_width(tdefs->val_str);
+    a->m_bit_width = pcompi->m_top_icodes->m_target->get_basic_type_bit_width(tdefs->val_str);
     a->m_type_str = a->m_type_str+" "+ tdefs->val_str;
 
     return NULL;

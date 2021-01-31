@@ -5,12 +5,12 @@
 #include <list>
 #include "icode.h"
 #include "sym_manage.h"
-
-class target_base;
+#include "target_base.h"
+//class target_base;
 class icodes
 {
 public:
-    icodes();
+    icodes(int target_typ);
     virtual ~icodes();
 
     std::list<icode*> m_icodes;
@@ -38,8 +38,8 @@ public:
     icode *new_copy_icode_gen(icode *from, icode *to);
     icode *new_var_in_var_icode(icode *to_ref);
     icode *new_var_in_var_tmp_icode(icode *to_ref);
-    icode *new_temp_ptr_var(icode *in_ptr_type, target_base* mtarget);
-    icode *new_temp_ptr_ptr_var(target_base *mtarget);
+    icode *new_temp_ptr_var(icode *in_ptr_type);
+    icode *new_temp_ptr_ptr_var();
     icode* get_function(std::string func_name);
 
 
@@ -50,13 +50,7 @@ public:
     sym_manage m_sym_manage;
 
 
-#if 0
-    icode* operator->() const
-    {
-        return m_top_icodes;
-    }
-#endif
-
+    target_base *m_target;
 };
 
 #endif // ICODES_H

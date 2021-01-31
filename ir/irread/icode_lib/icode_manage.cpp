@@ -6,13 +6,13 @@
 using mylog::cout;
 using mylog::cerr;
 
-icode_manage::icode_manage()
+icode_manage::icode_manage(int target_typ)
 {
     //m_icode_index = 0;
 
     m_label_index=0;
     m_curr_func = NULL;
-    m_top_icodes =  new icodes();
+    m_top_icodes =  new icodes(target_typ);
     m_top_icodes_need_free=0;
 }
 
@@ -200,7 +200,7 @@ icode *icode_manage::new_var(icode *def_ic, icode *typedec, int &is_already_exis
 
         //指针元素，总体无符号
         a->is_signed = 0;
-        a->m_bit_width = this->m_target->get_basic_type_bit_width("GENERIC_PTR");
+        a->m_bit_width = this->m_top_icodes->m_target->get_basic_type_bit_width("GENERIC_PTR");
         a->is_ptr = def_ic->is_ptr;
     }
 
@@ -296,20 +296,5 @@ std::string icode_manage::get_temp_label_name(std::string str1)
 icode *icode_manage::get_def_var(icode *ic)
 {
     return m_top_icodes->get_def_var(ic);
-#if 0
-    if(ic==NULL)return NULL;
-    if((ic->m_type==ICODE_TYPE_SYMBOL_REF)&&ic->result)
-    {
-        ic=ic->result;
-    }
-    else if((ic->m_type==ICODE_TYPE_BLOCK)&&(ic->result!=NULL))
-    {
-        if(ic->result->m_type==ICODE_TYPE_SYMBOL_REF)
-        {
-            ic=ic->result->result;
-        }
-    }
 
-    return ic;
-#endif
 }

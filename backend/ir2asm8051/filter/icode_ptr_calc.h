@@ -5,7 +5,6 @@
 #include <string>
 
 #include <icode_visitor.h>
-#include "target_base.h"
 
 
 ///
@@ -85,7 +84,6 @@ public:
     ///
     int process_ptr_result(icode *ic, std::vector<icode *> &parent, int index, void *user_data, icode *iparent);
 
-    target_base m_target;
 };
 
 #endif // ICODE_PTR_CALC_H

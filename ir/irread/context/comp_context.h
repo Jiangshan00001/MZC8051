@@ -23,7 +23,7 @@ namespace NS_IR2ICODE{
     class comp_context:public icode_manage
 	{
     public:
-        comp_context();
+        comp_context(int target_typ);
     public:
 
         ///
