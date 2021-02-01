@@ -14,7 +14,7 @@
 #include "dir_file.h"
 #include "mylog.h"
 #include "icodes.h"
-
+#include "target_base.h"
 
 using mylog::cout;
 using mylog::cerr;
@@ -23,7 +23,7 @@ using mylog::cerr;
 
 icodes* c8051_api::c_to_icode(std::istream & istr, std::string file_name, int is_debug)
 {
-    NS_C2IR::comp_context calc;
+    NS_C2IR::comp_context calc(E_8051_TARGET);
     NS_C2IR::Driver driver(calc);
 
 
@@ -48,7 +48,7 @@ icodes* c8051_api::c_to_icode(std::string file_str, std::string file_name, int i
 
 std::string c8051_api::c_to_yy(std::istream &istr, std::string file_name, int is_debug)
 {
-    NS_C2IR::comp_context calc;
+    NS_C2IR::comp_context calc(E_8051_TARGET);
     NS_C2IR::Driver driver(calc);
 
 
