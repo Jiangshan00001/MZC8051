@@ -2,7 +2,7 @@
 #include "icode.h"
 #include "icodes.h"
 #include "icode_const_folder.h"
-
+#include "icode_ref_number.h"
 using mylog::cerr;
 
 icode_const_folder::icode_const_folder()
@@ -16,6 +16,12 @@ icode_const_folder::~icode_const_folder()
 
 void icode_const_folder::execute(icodes *ics)
 {
+    /// 常量折叠前，需要先更新各变量的引用计数
+    /// 因为引用计数可能不对。
+    icode_ref_number m_ref_number;
+    m_ref_number.execute(ics);
+
+
     this->pcompi = ics;
     //通过循环，知道所有常量都处理完成。
     int ret = process_topcode(ics->m_top_icodes);

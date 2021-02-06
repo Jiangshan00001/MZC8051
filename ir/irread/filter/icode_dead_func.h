@@ -15,8 +15,12 @@ public:
     icode_dead_func();
 
 
+
     virtual int process_topcode(class icode *top_ic, void *user_data=NULL, class icode *iparent=NULL);
     virtual int process_one_icode(class icode *ic, std::vector<class icode *> &parent, int index, void *user_data, class icode *iparent);
+
+    void execute(icodes *ics);
+
 
 
     int second_cleanup(std::vector<icode *> &top_icodes);

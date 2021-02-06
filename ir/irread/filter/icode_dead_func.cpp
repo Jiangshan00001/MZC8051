@@ -1,4 +1,5 @@
 #include "icode.h"
+#include "icodes.h"
 #include "icode_dead_func.h"
 
 
@@ -74,6 +75,16 @@ int icode_dead_func::process_one_icode(icode *ic, std::vector<icode *> &parent, 
         a_call_b(m_curr_func, ic->result->result->name);
     }
     return 0;
+}
+
+void icode_dead_func::execute(icodes *ics)
+{
+    pcompi = ics;
+    process_topcode(ics->m_top_icodes);//计算调用次数
+    int clean_up_folder_tmp=1;
+    process_topcode(ics->m_top_icodes, &clean_up_folder_tmp);//清理调用不到的函数
+
+
 }
 
 

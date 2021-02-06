@@ -116,7 +116,7 @@ int icode_float_func_opr::opr_1_func_ex(std::string func_name, icode *ic, std::v
         //左右都不是float，只有result是float
         //此时需要将结果放入临时变量int32，将临时变量转为float，再将float写入result
         icode * tmp_var = pcompi->new_temp_var();
-        tmp_var->m_bit_width = 32;//FIXME 此处使用了常数，因为转为float最多只能是32bit的
+        tmp_var->m_bit_width =  32;//FIXME 此处使用了常数，因为转为float最多只能是32bit的
 
         ic->result = pcompi->new_ref_icode(tmp_var);
 

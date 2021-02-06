@@ -37,9 +37,6 @@ void c51_filter_manage::do_filter(icodes *ics)
     tmp_var_opt1.execute(ics);
 
 
-    icode_ref_number m_ref_number;
-    m_ref_number.execute(ics);
-
     icode_const_folder m_const_folder;
     m_const_folder.execute(ics);
 
@@ -53,7 +50,6 @@ void c51_filter_manage::do_filter(icodes *ics)
 
     /// 1- 将全局变量的初始化收集到函数中。作为第一个运行和编译的函数
     icode_global_func m_global_func;
-
     m_global_func.execute(ics);
 
 
@@ -115,11 +111,6 @@ void c51_filter_manage::do_filter(icodes *ics)
 
     /// 9-计算函数调用次数，去掉调用不到的函数
     icode_dead_func dead_func;
-    dead_func.pcompi = ics;
-    dead_func.process_topcode(m_top_icodes);//计算调用次数
-    clean_up_folder_tmp=1;
-    dead_func.process_topcode(m_top_icodes, &clean_up_folder_tmp);//清理调用不到的函数
-
-
+    dead_func.execute(ics);
 
 }

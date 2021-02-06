@@ -337,7 +337,7 @@ c51_addr *c51_var_manage::alloc_variable_str(icode *ic)
     ad->ptr_target->m_bit_width_array_comp = 8;
 
     ///--------------------
-    ///FIXME 此处是补丁
+    /// 此处是补丁
     /// 将str放入code区
     ///--------------------
 

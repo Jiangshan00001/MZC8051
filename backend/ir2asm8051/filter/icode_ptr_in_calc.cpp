@@ -17,7 +17,6 @@ int icode_ptr_in_calc::process_one_icode(icode *ic, std::vector<icode *> &parent
     }
 
     int to_ptr=ic->is_ptr;
-    /// TODO: 重叠指针符号的拆分
     /// char ***a;
     /// ***a=1;
     ///
