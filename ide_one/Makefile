@@ -39,7 +39,7 @@ INCS = -I$(CURR_DIR) 	   \
 		-I$(CURR_DIR)/../frontend/cfront/api/  \
 		-I$(CURR_DIR)/../lmake/api/   \
 		-I$(CURR_DIR)/../sim8051/api/ \
-		-I$(CURR_DIR)/../sim8051/inc/ \		
+		-I$(CURR_DIR)/../sim8051/inc/ \
 		-I$(CURR_DIR)/../ir/irread/icode_lib \
 		-I$(CURR_DIR)/../misc/cpp_lib  \
 		-I$(CURR_DIR)/../misc/json_lib \
