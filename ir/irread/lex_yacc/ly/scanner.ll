@@ -184,7 +184,7 @@ typedef NS_IR2ICODE::Parser::token_type token_type;
 "\"\"\""                            {  return multi_line_string(yylval, yylloc); }
 
 
-"u"{NZ}{D}+ { TKEY_DEF(token::U_NUM,0,0); }
+"u"{NZ}{D}* { TKEY_DEF(token::U_NUM,0,0); }
 
 
 

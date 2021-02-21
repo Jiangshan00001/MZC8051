@@ -80,6 +80,10 @@ int Flash::ParseHexStream(std::istream &hex_stream)
           if (addr < size)
           {
             Write(addr, val);
+            if(m_written_max_addr<addr)
+            {
+                m_written_max_addr=addr;
+            }
           }
         }
       }

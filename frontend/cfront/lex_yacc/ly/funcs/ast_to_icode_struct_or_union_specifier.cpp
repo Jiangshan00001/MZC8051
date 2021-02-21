@@ -425,10 +425,20 @@ class icode *  func_IAN_STRUCT_DECLARATOR_2(class comp_context* pcompi, class to
     // struct_declarator_list--> struct_declarator
     // struct_declarator_list--> struct_declarator_list ',' struct_declarator
 
-    /// TODO: 此处忽略了const_expression的值
-    //根据declarator的代码，将结果存入m_struct_union_name  m_struct_union_type
-    icode *decl = pcompi->ast_to_icode(tdefs,1);
+    token_defs* declarator = tdefs->m_tk_elems[0];
+    token_defs* constant_expression = tdefs->m_tk_elems[2];
 
+
+    /// TODO: 结构体的bit filed.  此处忽略了const_expression的值
+    /// struct A
+    /// {
+    /// int a:1;
+    /// int b:7;
+    ///
+    /// };
+    //根据declarator的代码，将结果存入m_struct_union_name  m_struct_union_type
+    icode *decl = pcompi->ast_to_icode(tdefs->m_tk_elems[0],1);
+    icode *constant_expression_ic = pcompi->ast_to_icode(constant_expression, 1);
     assert(decl->result->m_type==ICODE_TYPE_SYMBOL_REF);
 
     std::string name = decl->result->name;
@@ -444,6 +454,8 @@ class icode *  func_IAN_STRUCT_DECLARATOR_2(class comp_context* pcompi, class to
 
     icode * type_ic = pcompi->new_icode( *result_ic);
     type_ic->name = name;
+    type_ic->is_signed = 0;//此处因为是bit field。所以把符号去掉
+    type_ic->m_bit_width = constant_expression_ic->result->num;
     pcompi->m_struct_union_name[pcompi->m_curr_struct_union_name].push_back(name);
     pcompi->m_struct_union_type[pcompi->m_curr_struct_union_name].push_back(type_ic);
 

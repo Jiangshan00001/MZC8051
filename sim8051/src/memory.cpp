@@ -24,7 +24,11 @@
 Memory::Memory(std::string n, std::uint16_t s) : name(n), size(s)
 {
   data = new std::uint8_t[s];
-  m_written_max_addr = -1;
+
+}
+
+Memory::Memory(std::string iname, unsigned isize, unsigned istart_addr)
+{
 
 }
 
@@ -47,10 +51,7 @@ void Memory::Write(std::uint16_t address, std::uint8_t value)
   if (address < size)
   {
     data[address] = value;
-    if(address>m_written_max_addr)
-    {
-        m_written_max_addr=address;
-    }
+
   }
   else
   {
@@ -59,10 +60,6 @@ void Memory::Write(std::uint16_t address, std::uint8_t value)
   }
 }
 
-int Memory::get_written_max_addr()
-{
-    return m_written_max_addr;
-}
 
 std::uint16_t Memory::GetSize() const
 {

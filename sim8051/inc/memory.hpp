@@ -24,21 +24,23 @@
 
 class Memory
 {
-  private:
-    std::uint8_t *data;
-    std::string name;
-  protected:
-    std::uint16_t size;
+public:
+    Memory(std::string name, std::uint16_t size);
+    Memory(std::string iname, unsigned isize, unsigned istart_addr);
+
+
   public:
     std::uint16_t GetSize() const;
-    Memory(std::string name, std::uint16_t size);
     std::uint8_t Read(std::uint16_t address) const;
     void Write(std::uint16_t address, std::uint8_t value);
 
-    int get_written_max_addr();
+protected:
+    unsigned m_start_address;
+//private:
+    std::uint8_t *data;
+    std::uint16_t size;
 
-    int m_written_max_addr;
-
+    std::string name;
 };
 
 #endif

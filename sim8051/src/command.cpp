@@ -58,6 +58,7 @@ constexpr auto loadCmd = "load";
 constexpr auto disassembleCmd = "disassemble";
 constexpr auto flashCmd = "flash";
 constexpr auto iramCmd = "iram";
+constexpr auto runtCmd = "run_t";//添加指令，用于运行时间
 
 Command::Command(Shell &s) :
   instructionCount(0),
@@ -83,6 +84,7 @@ Command::Command(Shell &s) :
   shell.RegisterCommand(stepCmd, this);
   shell.RegisterCommand(stepInstructionsCmd, this, {ParameterType::Numeric});
   shell.RegisterCommand(runCmd, this);
+  shell.RegisterCommand(runtCmd, this, {ParameterType::Numeric});
   shell.RegisterCommand(goCmd, this, {ParameterType::Numeric});
 
   shell.RegisterCommand(loadstrCmd, this, {ParameterType::String});
@@ -237,6 +239,17 @@ void Command::OnCommand(Cpu8051 &cpu, std::string command, std::vector<Parameter
     breakCount = 0;
     breakLimit = 1;
     while (breakCount < breakLimit)
+    {
+      cpu.Tick();
+    }
+  }
+  else if (!command.compare(runtCmd))
+  {
+    breakLimit = 0;
+    breakCount = 0;
+    instructionCount = 0;
+    instructionLimit = parameters[0]->number;
+    while (instructionCount != instructionLimit)
     {
       cpu.Tick();
     }

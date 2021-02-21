@@ -30,6 +30,10 @@ class Flash : public Memory
     int ParseHex(std::string fileName);
     int ParseHexStr(std::string hex_format_str);
     int ParseHexStream(std::istream & hex_stream );
+
+public:
+    int get_written_max_addr(){return m_written_max_addr;}
+    int m_written_max_addr;
 };
 
 #endif

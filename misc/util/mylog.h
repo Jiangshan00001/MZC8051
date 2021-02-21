@@ -49,6 +49,10 @@ public:
     int set_log_file(std::string file_name="");
     int close_log_file();
     int set_cout_output(int is_out);
+
+    //字符输出为hex格式。5个一行
+    MyLog& print_hex(std::string istr, int num_of_one_line=5);
+
 private:
     std::string m_log_file_name;
     std::ofstream m_log_stream;
@@ -59,6 +63,9 @@ private:
     MyStreamBuf m_stream_buf;
 public:
     int m_line_count;
+
+private:
+    unsigned char char_to_hex_disp(unsigned char ia);
 };
 
 

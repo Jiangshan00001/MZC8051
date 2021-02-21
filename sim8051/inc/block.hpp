@@ -40,11 +40,13 @@ class Block
     virtual void Reset();
     void Tick(int ticks);
     void RegisterSfr(Sfr *sfr);
-    Alu &alu;
+
     const std::string &GetName() const;
     int GetTicks();
     virtual int CalculateRemainingTicks();
     void ReportActive();
+
+    Alu &alu;
     int remainingTicks;
     Scheduler &scheduler;
   protected:
