@@ -1,5 +1,5 @@
-#ifndef C8051_API_H
-#define C8051_API_H
+#ifndef C_API_H
+#define C_API_H
 
 #include <vector>
 #include <string>
@@ -15,7 +15,7 @@
 
 class icodes;
 
-class c8051_api
+class c_api
 {
 public:
 

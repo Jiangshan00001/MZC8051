@@ -1,4 +1,4 @@
-#include "c8051_api.h"
+#include "c_api.h"
 
 #include <iostream>
 #include <fstream>
@@ -21,9 +21,9 @@ using mylog::cerr;
 
 
 
-icodes* c8051_api::c_to_icode(std::istream & istr, std::string file_name, int is_debug)
+icodes* c_api::c_to_icode(std::istream & istr, std::string file_name, int is_debug)
 {
-    NS_C2IR::comp_context calc(E_8051_TARGET);
+    NS_C2IR::comp_context calc(E_WIN32_TARGET);
     NS_C2IR::Driver driver(calc);
 
 
@@ -34,21 +34,21 @@ icodes* c8051_api::c_to_icode(std::istream & istr, std::string file_name, int is
     return calc.m_top_icodes;
 }
 
-icodes* c8051_api::c_to_icode(std::string file_name, int is_debug)
+icodes* c_api::c_to_icode(std::string file_name, int is_debug)
 {
     std::ifstream fin(file_name);
     return c_to_icode(fin, file_name, is_debug);
 }
 
-icodes* c8051_api::c_to_icode(std::string file_str, std::string file_name, int is_debug)
+icodes* c_api::c_to_icode(std::string file_str, std::string file_name, int is_debug)
 {
     std::stringstream ss(file_str);
     return c_to_icode(ss, file_name, is_debug);
 }
 
-std::string c8051_api::c_to_yy(std::istream &istr, std::string file_name, int is_debug)
+std::string c_api::c_to_yy(std::istream &istr, std::string file_name, int is_debug)
 {
-    NS_C2IR::comp_context calc(E_8051_TARGET);
+    NS_C2IR::comp_context calc(E_WIN32_TARGET);
     NS_C2IR::Driver driver(calc);
 
 
@@ -60,13 +60,13 @@ std::string c8051_api::c_to_yy(std::istream &istr, std::string file_name, int is
     return calc.m_yy_tree;
 }
 
-std::string c8051_api::c_to_yy(std::string file_name, int is_debug)
+std::string c_api::c_to_yy(std::string file_name, int is_debug)
 {
     std::ifstream fin(file_name);
     return c_to_yy(fin, file_name, is_debug);
 }
 
-std::string c8051_api::c_to_yy(std::string file_str, std::string file_name, int is_debug)
+std::string c_api::c_to_yy(std::string file_str, std::string file_name, int is_debug)
 {
     std::stringstream ss(file_str);
     return c_to_yy(ss, file_name, is_debug);
