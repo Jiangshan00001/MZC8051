@@ -109,6 +109,21 @@ public://icode base
     // 目标指令相关内容可以放到这里，由目标指令生成
     class c51_addr * target;
 
+    ///之前使用target来确定ir->asm的信息
+    /// 现在改为m_var_info，用于通用多后端的信息
+    struct target_var_info
+    {
+    public:
+        target_var_info(){
+            m_type=0;
+            m_addr=0;
+            m_user_info = 0;
+        }
+        int m_type;
+        unsigned long long m_addr;
+        int m_user_info;
+        std::string m_name;
+    } m_var_info;
 
     // 变量被引用次数.未用
     int m_ref_number;

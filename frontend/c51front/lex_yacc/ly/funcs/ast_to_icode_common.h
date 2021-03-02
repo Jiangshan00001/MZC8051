@@ -1,0 +1,5 @@
+#ifndef AST_TO_ICODE_COMMON_H
+#define AST_TO_ICODE_COMMON_H
+
+
+#endif // AST_TO_ICODE_COMMON_H

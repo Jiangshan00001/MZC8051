@@ -1,3 +1,5 @@
+#include <map>
+#include "replace.h"
 #include "str2number.h"
 #include "string_eval.h"
 
@@ -165,4 +167,40 @@ std::string string_eval(std::string str_raw)
     str_raw = str_cont;
 
     return str_raw;
+}
+
+
+std::string string_pack(std::string strA)
+{
+
+    std::string retA=strA;
+    replace(retA, "\n", "\\n");
+    replace(retA, "\r", "\\r");
+    replace(retA, "\t", "\\t");
+    replace(retA, "\v", "\\v");
+    replace(retA, "\f", "\\f");
+    replace(retA, "\"", "\\\"");
+
+    return retA;
+#if 0
+    std::map<std::string, std::string> m_rep_list;
+
+    m_rep_list["\v"]="\\v";
+    m_rep_list["\a"]="\\a";
+    m_rep_list["\b"]="\\b";
+    m_rep_list["\f"]="\\f";
+    m_rep_list["\n"]="\\n";
+    m_rep_list["\r"]="\\r";
+    m_rep_list["\t"]="\\t";
+    m_rep_list["\v"]="\\v";
+    m_rep_list["\0"]="\\0";
+    //m_rep_list["\\"]="\\\\";
+
+    for(auto i=m_rep_list.begin();i!=m_rep_list.end();++i)
+    {
+        stri = replace(stri, i->first, i->second);
+    }
+
+    return stri;
+#endif
 }

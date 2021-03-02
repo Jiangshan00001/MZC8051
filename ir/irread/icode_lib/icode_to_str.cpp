@@ -1,10 +1,12 @@
 #include "icode_to_str.h"
 #include "replace.h"
-
+#include "string_eval.h"
 
 
 static std::string string_to_printf(std::string strA)
 {
+    return string_pack(strA);
+#if 0
     std::string retA=strA;
     replace(retA, "\n", "\\n");
     replace(retA, "\r", "\\r");
@@ -14,6 +16,7 @@ static std::string string_to_printf(std::string strA)
     replace(retA, "\"", "\\\"");
 
     return retA;
+#endif
 }
 
 std::string icode::to_str(int is_one_line, int is_dbg)

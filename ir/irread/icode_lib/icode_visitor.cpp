@@ -7,8 +7,10 @@ using mylog::cerr;
 
 icode_visitor::icode_visitor()
 {
+    m_level = 0;
     m_to_rep_ic = NULL;
     m_to_erase_ic = false;
+    m_curr_func = NULL;
 }
 
 icode_visitor::~icode_visitor()
@@ -18,6 +20,7 @@ icode_visitor::~icode_visitor()
 
 int icode_visitor::process_topcode(class icode *top_icode, void *user_data)
 {
+#if 0
     std::vector<icode *> &top_icodes = top_icode->sub_icode;
     std::set<class icode*> set_curr;
     m_icode_number_set.push_back(set_curr);
@@ -32,6 +35,14 @@ int icode_visitor::process_topcode(class icode *top_icode, void *user_data)
     }
     m_icode_number_set.pop_back();
     return ret;
+#endif
+
+    int ret = 0;
+    m_level = 0;
+    ret += enum_one(top_icode, top_icode->sub_icode, 0, user_data, NULL);
+    ret += enum_all_child( top_icode, top_icode->sub_icode, 0, user_data, NULL);
+    return 0;
+
 }
 
 int icode_visitor::enum_one(icode *ic, std::vector<icode *> &parent, int index, void *user_data, icode *iparent)
@@ -40,7 +51,8 @@ int icode_visitor::enum_one(icode *ic, std::vector<icode *> &parent, int index, 
     {
         return 0;
     }
-    std::set<class icode*> &set_curr = m_icode_number_set[m_icode_number_set.size()-1];
+
+    std::set<class icode*> &set_curr = m_icode_number_set;
     if(set_curr.find(ic)!=set_curr.end())
     {
         ///已经枚举过一遍了，直接返回
@@ -48,7 +60,16 @@ int icode_visitor::enum_one(icode *ic, std::vector<icode *> &parent, int index, 
     }
 
     set_curr.insert(ic);
-    return process_one_icode(ic, parent, index, user_data, iparent);
+
+    if(ic->m_type==ICODE_TYPE_FUNC)
+    {
+        this->m_curr_func = ic;
+    }
+    int ret = process_one_icode(ic, parent, index, user_data, iparent);
+
+    return ret;
+
+
 }
 
 int icode_visitor::process_one_icode(icode *ic, std::vector<icode *> &parent, int index, void *user_data, class icode *iparent)
@@ -65,6 +86,19 @@ void icode_visitor::level_enter()
 
 void icode_visitor::level_leave()
 {
+
+}
+
+void icode_visitor::reset()
+{
+    m_level = 0;
+    m_to_rep_ic = NULL;
+    m_to_erase_ic = false;
+    m_curr_func = NULL;
+
+    m_icode_number_set.clear();
+    m_icode_to_insert_before_inst.clear();
+    m_icode_to_insert_after_inst.clear();
 
 }
 
@@ -190,6 +224,9 @@ int icode_visitor::enum_all_child(icode *ic, std::vector<icode *> &parent, int i
     case ICODE_TYPE_FUNC:
         {
 
+
+            this->m_curr_func = ic;
+
             //m_level++;
             //level_enter();
             ///FIXME 此处函数参数要拆分出来？？？
@@ -215,6 +252,7 @@ int icode_visitor::enum_all_child(icode *ic, std::vector<icode *> &parent, int i
                 enum_all_child(ic->result, parent, index, user_data, ic);
             }
 
+            this->m_curr_func = NULL;
             //level_leave();
             //m_level--;
         }

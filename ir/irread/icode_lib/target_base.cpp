@@ -2,6 +2,8 @@
 
 target_base::target_base(TAG_E_TARGET_BASE_TYPE typ)
 {
+
+    //https://blog.csdn.net/lg1259156776/article/details/52807133
     m_target_type = typ;//E_8051_TARGET;
 
     m_type_bit_list_c51=
@@ -37,6 +39,39 @@ target_base::target_base(TAG_E_TARGET_BASE_TYPE typ)
         {"GENERIC_PTR", 3*8},
     };
 
+    m_type_bit_list_win32 =
+    {
+        {"void", 0},
+        {"bit", 1},
+        {"bool", 32},
+        {"char", 8},
+        {"signed char", 8},
+        {"unsigned char", 8},
+        {"enum", 32},
+        {"short", 16},
+        {"signed short", 32},
+        {"unsigned short", 32},
+        {"short int", 32},
+        {"signed short int", 32},
+        {"unsigned short int", 32},
+        {"int", 32},
+        {"signed int", 32},
+        {"unsigned int", 32},
+        {"long", 32},
+        {"long long", 64},
+        {"signed long", 32},
+        {"unsigned long", 32},
+        {"long int", 32},
+        {"signed long int", 32},
+        {"unsigned long int", 32},
+        {"float", 32},
+        {"double", 64},
+        {"sbit", 1},
+        {"sfr", 8},
+        {"sfr16", 16},
+        {"sfr32", 32},
+        {"GENERIC_PTR", 4*8},
+    };
 
     m_type_bit_list_win64 =
     {
@@ -56,14 +91,15 @@ target_base::target_base(TAG_E_TARGET_BASE_TYPE typ)
         {"int", 32},
         {"signed int", 32},
         {"unsigned int", 32},
-        {"long", 32},
+        {"long", 64},
+        {"long long", 64},
         {"signed long", 32},
         {"unsigned long", 32},
         {"long int", 32},
         {"signed long int", 32},
         {"unsigned long int", 32},
         {"float", 32},
-        {"double", 32},
+        {"double", 64},
         {"sbit", 1},
         {"sfr", 8},
         {"sfr16", 16},
@@ -94,9 +130,21 @@ int target_base::get_basic_type_bit_width(const std::string &type_str)
     }
         break;
     case E_WIN64_TARGET:
+    case E_LINUX64_TARGET:
     {
         auto it = m_type_bit_list_win64.find(type_str);
         if(it!=m_type_bit_list_win64.end())
+        {
+            return it->second;
+        }
+
+        return 32;
+    }
+    case E_WIN32_TARGET:
+    case E_LINUX32_TARGET:
+    {
+        auto it = m_type_bit_list_win32.find(type_str);
+        if(it!=m_type_bit_list_win32.end())
         {
             return it->second;
         }

@@ -440,7 +440,7 @@
 //#include "comp_context.h"
 
 #include "replace.h"
-
+#include "string_eval.h"
 
 #define set_if_true(k) if(k){j[#k] = 1;}
 #define set_if_false(k) if(!k){j[#k] = 0;}
@@ -672,15 +672,7 @@ icode *icode::merge_atrr(icode *child)
 
 std::string string_to_printf(std::string strA)
 {
-    std::string retA=strA;
-    replace(retA, "\n", "\\n");
-    replace(retA, "\r", "\\r");
-    replace(retA, "\t", "\\t");
-    replace(retA, "\v", "\\v");
-    replace(retA, "\f", "\\f");
-    replace(retA, "\"", "\\\"");
-
-    return retA;
+    return string_pack(strA);
 }
 
 

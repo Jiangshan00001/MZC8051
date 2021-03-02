@@ -7,7 +7,7 @@ SRCS_LEXYACC= lex_yacc/parser.cpp lex_yacc/scanner.cpp  lex_yacc/ly/comp_context
 
 
 
-SRCS_CPP = 		lex_yacc_adapt/driver.cpp  context/comp_context.cpp context/token_defs.cpp  api/c8051_api.cpp	
+SRCS_CPP = 		lex_yacc_adapt/driver.cpp  context/comp_context.cpp context/token_defs.cpp  api/c_api.cpp	
 
 SRCS_TARGET = 		target/MCS51/bit_addr_parse.cpp target/MCS51/c51_addr.cpp  target/MCS51/c51_var_manage.cpp \
 			 target/MCS51/get_j_data_byte.cpp  target/MCS51/icode_to_c51.cpp \

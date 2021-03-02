@@ -12,7 +12,7 @@ class icode_collect_str: public icode_visitor
 {
 public:
     icode_collect_str();
-    ~icode_collect_str();
+    virtual ~icode_collect_str();
 
     int process_one_icode(class icode *ic, std::vector<class icode *> &parent, int index, void *user_data, class icode *iparent);
 

@@ -15,6 +15,7 @@
 
 #include "argv.h"
 #include "asm8051_api.h"
+#include "c_api.h"
 #include "c8051_api.h"
 #include "lmake_api.h"
 #include "sim8051_api.h"
@@ -41,15 +42,17 @@ void usage_exit()
     cout<<"cmd_str could be: c8051/asm8051/lmake\n";
     cout<<"options for lmake: -m  create/make/clean   -i directory_here -o project_name \n";
     cout<<"prog -x lmake -m make -i directory_containing_makefile\n";
+    cout<<"prog -x cpp -i input_c_file -o output_file_name  -D define_sym -I includ_path  -n include_file\n";
+    cout<<"prog -x c2ir -t c8051/win32/win64/linux32/linux64 -i input_c_file -o output_file_name\n";
+    cout<<"prog -x ir2ir -i input_ir_file [-i input_ir_file2 ] -o output_file_name\n";
+    cout<<"prog -x ir2asm -t 8051/win32/win64/linux32/linux64 -i input_ir_file [-i input_ir_file2 ] -o output_file_name\n";
+    cout<<"prog -x ir2asm8051  -i input_ir_file  [-i input_ir_file2 ] -o output_file_name\n";
+
     cout<<"prog -x c8051 -i input_c_file  -c(just output .o) -o output_asm_file  -D define_sym -I includ_path  -n include_file  \n";
     cout<<"prog -x asm8051 -i input_asm_file -o output_hex_file \n";
     cout<<"prog -x sim8051 -i input_hex_file\n";
     cout<<"prog -x dis8051 -i input_hex_file -o output_asm_file\n";
     cout<<"prog -x c2 -i input_c_file -o output_file_name -t output_type(c/)  -O number\n";
-    cout<<"prog -x cpp -i input_c_file -o output_file_name  -D define_sym -I includ_path  -n include_file\n";
-    cout<<"prog -x c2ir -i input_c_file -o output_file_name\n";
-    cout<<"prog -x ir2ir -i input_ir_file [-i input_ir_file2 ] -o output_file_name\n";
-    cout<<"prog -x ir2asm8051  -i input_ir_file  [-i input_ir_file2 ] -o output_file_name\n";
 
     exit(0);
 }
@@ -161,7 +164,11 @@ int main(int argc, char * argv[])
     std::vector<std::string> include_file = arg.GetOptionVec('n');
     std::vector<std::string> defined_sym = arg.GetOptionVec('D');
     std::vector<std::string> include_path = arg.GetOptionVec('I');
-
+    std::string target_typ = arg.GetOption('t');
+    if(target_typ.empty())
+    {
+        target_typ = "c8051";
+    }
 
 
 
@@ -219,12 +226,25 @@ int main(int argc, char * argv[])
     }
     else if(cmd_str=="c2ir")
     {
-        c8051_api m_api;
-        icodes* ics = m_api.c_to_icode(input_file[0],is_debug_flag);
-        std::ofstream fout(output_file);
-        fout<<ics->m_top_icodes->to_str();
-        fout.close();
-        delete ics;
+        if(target_typ=="c8051")
+        {
+            cdbg<<"target_type:"<<target_typ<<"\n";
+            c8051_api m_api;
+            icodes* ics = m_api.c_to_icode(input_file[0],is_debug_flag);
+            std::ofstream fout(output_file);
+            fout<<ics->m_top_icodes->to_str();
+            fout.close();
+            delete ics;
+        }
+        else
+        {
+            c_api m_api;
+            icodes* ics = m_api.c_to_icode(input_file[0],is_debug_flag);
+            std::ofstream fout(output_file);
+            fout<<ics->m_top_icodes->to_str();
+            fout.close();
+            delete ics;
+        }
     }
     else if(cmd_str=="ir2ir")
     {

@@ -3,9 +3,11 @@ PROG=$(BUILD_DIR)MZC8051.exe
 PROG_LIB=$(BUILD_DIR)MZC8051.a
 
 
-IMPORT_LIB = $(BUILD_DIR)../cfront/cfront.a  $(BUILD_DIR)../ir2asm8051/ir2asm8051.a\
+IMPORT_LIB = $(BUILD_DIR)../cfront/cfront.a $(BUILD_DIR)../c51front/c51front.a  \
+                 $(BUILD_DIR)../ir2asm8051/ir2asm8051.a\
 				 $(BUILD_DIR)../irread/irread.a   $(BUILD_DIR)../sim8051/sim8051.a     \
-				  $(BUILD_DIR)../asm8051/asm8051.a   $(BUILD_DIR)../lmake/lmake.a    $(BUILD_DIR)../misc/misc.a 
+				  $(BUILD_DIR)../asm8051/asm8051.a   $(BUILD_DIR)../lmake/lmake.a \
+ 				  $(BUILD_DIR)../misc/misc.a 
 				  
 
 
@@ -37,6 +39,7 @@ AR=ar
 INCS = -I$(CURR_DIR) 	   \
 		-I$(CURR_DIR)/../asm8051/src/api/  \
 		-I$(CURR_DIR)/../frontend/cfront/api/  \
+		-I$(CURR_DIR)/../frontend/c51front/api/  \
 		-I$(CURR_DIR)/../lmake/api/   \
 		-I$(CURR_DIR)/../sim8051/api/ \
 		-I$(CURR_DIR)/../sim8051/inc/ \

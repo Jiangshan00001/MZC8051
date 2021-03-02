@@ -148,20 +148,6 @@ typedef NS_C2IR::Parser::token_type token_type;
 "_Static_assert"                        { TKEY_DEF( token::STATIC_ASSERT,1, 0 )   ; }
 "_Thread_local"                         { TKEY_DEF( token::THREAD_LOCAL,1, 0 ); }
 "__func__"                              { TKEY_DEF( token::FUNC_NAME ,1, 0   ); }
-"sfr32"								{ TKEY_DEF( token::SFR32 ,1, 0   ); }
-"sfr16"								{ TKEY_DEF( token::SFR16 ,1, 0   ); }
-"sbit"								{ TKEY_DEF( token::SBIT ,1, 0   ); }
-"bit"								{ TKEY_DEF( token::BIT ,1, 0   ); }
-"sfr"								{ TKEY_DEF( token::SFR ,1, 0   ); }
-"interrupt"						{ TKEY_DEF( token::INTERRUPT ,1, 0   ); }
-"using"						{ TKEY_DEF( token::USING ,1, 0   ); }
-"reentrant"						{ TKEY_DEF( token::REENTRANT ,1, 0   ); }
-"__regparams__"        { TKEY_DEF( token::REGPARAMS ,1, 0   ); }
-"data"  { TKEY_DEF( token::STORAGE_SPEC_C51 ,1, 0   ); }
-"idata" { TKEY_DEF( token::STORAGE_SPEC_C51 ,1, 0   ); }
-"pdata" { TKEY_DEF( token::STORAGE_SPEC_C51 ,1, 0   ); }
-"xdata" { TKEY_DEF( token::STORAGE_SPEC_C51 ,1, 0   ); }
-"code" { TKEY_DEF( token::STORAGE_SPEC_C51 ,1, 0   ); }
 
 
 

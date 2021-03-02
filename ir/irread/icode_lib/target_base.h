@@ -25,6 +25,7 @@ public:
     virtual int get_basic_type_bit_width(const std::string &type_str);
 
     std::map<std::string, int> m_type_bit_list_c51;
+    std::map<std::string, int> m_type_bit_list_win32;
     std::map<std::string, int> m_type_bit_list_win64;
 
 enum TAG_E_TARGET_BASE_TYPE m_target_type;
