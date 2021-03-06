@@ -54,6 +54,8 @@ int icode_global_func::add_function(icodes *ics)
         init_func->sub_icode[0]->m_bit_width = 0;
         init_func->sub_icode[0]->is_signed=0;
         init_func->sub_icode[0]->name = "void";
+        init_func->sub_icode.push_back(pcompi->new_icode(ICODE_TYPE_SCOPE));
+
         //此处确保initfunction 在最前面第一个函数
         top_icodes.insert(top_icodes.begin(), init_func);
 
@@ -118,7 +120,9 @@ int icode_global_func::process_one_icode(icode *ic, std::vector<icode *> &parent
     }
     if(ic->m_type==ICODE_TYPE_EXP_OP)
     {
-        m_init_func->merge_icode(ic);
+        assert(m_init_func->sub_icode.size()>1);
+        assert(m_init_func->sub_icode[1]->m_type==ICODE_TYPE_SCOPE);
+        m_init_func->sub_icode[1]->merge_icode(ic);
         m_to_erase_ic = true;
     }
 

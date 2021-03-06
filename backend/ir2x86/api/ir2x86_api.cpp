@@ -1,4 +1,5 @@
 #include <sstream>
+#include "replace.h"
 #include "ir2x86_api.h"
 
 //#include "icode_collect_global_var.h"
@@ -20,6 +21,8 @@ std::string ir2x86_api::icode_to_asm(icodes *ics)
     code_gen_x86 m_code_gen;
 
     m_code_gen.execute(ics, istr);
+    std::string strout = istr.str();
 
-    return istr.str();
+    strout = replace(strout, "mov eax, eax;\n", "");
+    return strout;
 }

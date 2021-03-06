@@ -113,17 +113,18 @@ class icode_to_c51//: public target_base
 public:
     icode_to_c51(icodes * mpcompi);
     virtual ~icode_to_c51();
-    std::string to_asm(std::vector<class icode *> &ic, std::vector<icode *> &str_ic);
-    std::string to_asm(class icodes *ics);
+    ///此函数废弃，改为一个参数的同名函数icodes *ics
+    std::string to_asm(std::vector<icode *> &ic, std::vector<icode *> &str_ic);
+    std::string to_asm(icodes *ics);
 
 
 
 
-    std::string icode_to_asm(class icode* ic);
+    std::string icode_to_asm(icode* ic);
 
 
-    std::string icode_to_asm_op(class icode *ic);
-    std::string generate_interrupt_ljmp(std::vector<class icode *> &ic);
+    std::string icode_to_asm_op(icode *ic);
+    std::string generate_interrupt_ljmp(std::vector<icode *> &ic);
 
 
     std::set<std::string> m_inline_sys_func_needed;

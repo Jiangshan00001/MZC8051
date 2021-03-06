@@ -685,11 +685,9 @@ std::string icode::get_var_type()
     {
         if(this->is_float32)
         {
-            return "f32";
+            ss1<< "f";
         }
-
-
-        if(this->is_signed)
+        else if(this->is_signed)
         {
             ss1<<"i";
         }
@@ -1086,3 +1084,14 @@ std::ostream &operator<<(std::ostream &out, const icode &s)
     out<<"}";
     return out;
 }
+
+int icode::get_bit_width()
+{
+    if((m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||
+            (m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP) )
+    {
+        return this->result->m_in_ptr_type->m_bit_width;
+    }
+    return this->m_bit_width;
+}
+

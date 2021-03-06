@@ -2262,7 +2262,7 @@ std::string RLC_33::Disassemble(std::uint16_t address) const
 
 void RLC_33::Execute() const
 {
-  std::uint16_t result = alu.GetA() << 1;
+  std::uint16_t result = ((std::uint16_t)alu.GetA()) << 1;
   bool c = alu.GetC();
 
   if (result & 0x100)

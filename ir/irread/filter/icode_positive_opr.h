@@ -13,6 +13,7 @@ public:
 
     virtual int process_one_icode(class icode *ic, std::vector<class icode *> &parent, int index, void *user_data, class icode *iparent);
 
+    std::string m_negative_func;
 };
 
 #endif // ICODE_POSITIVE_OPR_H

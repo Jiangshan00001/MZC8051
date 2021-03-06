@@ -532,6 +532,10 @@ class icode *  func_IAN_FUNC_ATTRIB1_2(class comp_context* pcompi, class token_d
     {
         result_ic->is_const = 1;
     }
+    else if(IDENTIFIER->val_str=="NAKED")
+    {
+        result_ic->is_naked = 1;
+    }
     else
     {
         assert(0);

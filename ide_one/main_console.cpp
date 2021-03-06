@@ -26,7 +26,7 @@
 #include "icodes.h"
 #include "ir_api.h"
 #include "ir2asm8051_api.h"
-
+#include "ir2x86_api.h"
 
 using mylog::cout;
 using mylog::cerr;
@@ -105,6 +105,61 @@ void argv_print(int argc, char *argv[])
     }
     cout<<"\n";
     return;
+}
+
+
+void ir2asm8051(std::string output_file, bool is_debug_flag, std::vector<std::string> input_file, std::vector<std::string> include_path)
+{
+    ///fixme: 此处寻找3个文件：
+    /// _sys_func_def.ir
+    /// _simtrap.ir
+    /// intrins.ir
+    /// 认为在第一个include目录中
+
+
+    //input_file.push_back(path_add(include_path[0] , "_sys_func_def.ir"));
+    //input_file.push_back(path_add(include_path[0] , "_simtrap.ir"));
+    //input_file.push_back(path_add(include_path[0] , "intrins.ir"));
+
+
+    ir_api m_ir;
+    icodes *ics = m_ir.ir_to_icode(input_file, is_debug_flag);
+
+    if(is_debug_flag)
+    {
+        std::ofstream fout1(output_file+".tmp");
+        fout1<<ics->m_top_icodes->to_str();
+        fout1.close();
+    }
+
+    ir2asm8051_api m_asm;
+    std::string out_str = m_asm.icode_to_asm8051(ics);
+    std::ofstream fout(output_file);
+    fout<<out_str;
+    fout.close();
+    delete ics;
+}
+
+void ir2asmwin32x86(std::string output_file, bool is_debug_flag, std::vector<std::string> input_file, std::vector<std::string> include_path)
+{
+    //input_file.push_back(path_add(include_path[0] , "_io.ir"));
+
+    ir_api m_ir;
+    icodes *ics = m_ir.ir_to_icode(input_file, is_debug_flag);
+
+    if(is_debug_flag)
+    {
+        std::ofstream fout1(output_file+".tmp");
+        fout1<<ics->m_top_icodes->to_str();
+        fout1.close();
+    }
+
+    ir2x86_api m_asm;
+    std::string out_str = m_asm.icode_to_asm(ics);
+    std::ofstream fout(output_file);
+    fout<<out_str;
+    fout.close();
+    delete ics;
 }
 
 #ifdef QT_WIDGETS_LIB
@@ -245,6 +300,25 @@ int main(int argc, char * argv[])
             fout.close();
             delete ics;
         }
+
+    }
+    else if(cmd_str=="ir2asm")
+    {
+        if(target_typ=="c8051")
+        {
+            ir2asm8051(output_file, is_debug_flag, input_file, include_path);
+        }
+        else
+        {
+            ir2asmwin32x86(output_file, is_debug_flag, input_file, include_path);
+        }
+    }
+    else if(cmd_str=="ir2asm8051")
+    {
+
+
+        ir2asm8051(output_file, is_debug_flag, input_file, include_path);
+        return -cerr.m_line_count;
     }
     else if(cmd_str=="ir2ir")
     {
@@ -267,38 +341,6 @@ int main(int argc, char * argv[])
             fout.close();
             delete ics;
         }
-    }
-    else if(cmd_str=="ir2asm8051")
-    {
-        ///fixme: 此处寻找3个文件：
-        /// _sys_func_def.ir
-        /// _simtrap.ir
-        /// intrins.ir
-        /// 认为在第一个include目录中
-
-
-        input_file.push_back(path_add(include_path[0] , "_sys_func_def.ir"));
-        input_file.push_back(path_add(include_path[0] , "_simtrap.ir"));
-        input_file.push_back(path_add(include_path[0] , "intrins.ir"));
-
-
-        ir_api m_ir;
-        icodes *ics = m_ir.ir_to_icode(input_file, is_debug_flag);
-
-        if(is_debug_flag)
-        {
-            std::ofstream fout1(output_file+".tmp");
-            fout1<<ics->m_top_icodes->to_str();
-            fout1.close();
-        }
-
-        ir2asm8051_api m_asm;
-        std::string out_str = m_asm.icode_to_asm8051(ics);
-        std::ofstream fout(output_file);
-        fout<<out_str;
-        fout.close();
-        delete ics;
-        return -cerr.m_line_count;
     }
     else if(cmd_str=="c8051")
     {
@@ -358,7 +400,7 @@ int main(int argc, char * argv[])
     else if(cmd_str=="sim8051")
     {
         // sim8051
-        sim8051_run(input_file[0]);
+        sim8051_run(input_file[0], is_debug_flag);
     }
     else if(cmd_str=="dis8051")
     {//int dis_compile_file(std::string in_file, std::string out_file, int is_debug);
@@ -379,7 +421,7 @@ int main(int argc, char * argv[])
     }
 
 
-    if(cerr.m_line_count>0)
+    if(cerr.m_line_count!=0)
     {
         csummary<<"ERRCNT:"<<cerr.m_line_count<<"\n";
         return -cerr.m_line_count;

@@ -5,7 +5,19 @@
 
 icode_float_func_opr::icode_float_func_opr()
 {
+    m_float_add_func ="_sys_fpadd";
+    m_float_sub_func="_sys_fpsub";
+    m_float_mul_func="_sys_fpmul";
+    m_float_div_func="_sys_fpdiv";
 
+
+    m_i16_mul_func = "_sys_imul_byte2";
+    m_i32_mul_func = "_sys_lmul_byte4";
+
+    m_i16_idiv_func = "_sys_idiv_byte2";
+    m_u16_udiv_func = "_sys_udiv_byte2";
+    m_i32_idiv_func  = "_sys_ldiv_byte4";
+    m_u32_udiv_func  = "_sys_uldiv_byte4";
 }
 
 int icode_float_func_opr::process_topcode(class icode * top_ic, void *user_data, class icode *iparent)
@@ -51,40 +63,39 @@ int icode_float_func_opr::process_one_icode(icode *ic, std::vector<icode *> &par
 
     if((ic->name=="+"))
     {
-        opr_1_func_ex("_sys_fpadd", ic,parent, index);
+        opr_1_func_ex(m_float_add_func, ic,parent, index);
     }
     if(ic->name=="+=")
     {
-        opr_1_func_ex_assign("_sys_fpadd", ic,parent, index);
+        opr_1_func_ex_assign(m_float_add_func, ic,parent, index);
     }
     if((ic->name=="-"))
     {
-        opr_1_func_ex("_sys_fpsub", ic,parent, index);
+        opr_1_func_ex(m_float_sub_func, ic,parent, index);
     }
     if(ic->name=="-=")
     {
-        opr_1_func_ex_assign("_sys_fpsub", ic,parent, index);
+        opr_1_func_ex_assign(m_float_sub_func, ic,parent, index);
     }
 
     if((ic->name=="*"))
     {
-        opr_1_func_ex("_sys_fpmul", ic,parent, index);
+        opr_1_func_ex(m_float_mul_func, ic,parent, index);
     }
     if((ic->name=="*="))
     {
-         opr_1_func_ex_assign("_sys_fpmul", ic,parent, index);
+         opr_1_func_ex_assign(m_float_mul_func, ic,parent, index);
     }
 
 
     if((ic->name=="/"))
     {
-        opr_1_func_ex("_sys_fpdiv", ic,parent, index);
+        opr_1_func_ex(m_float_div_func, ic,parent, index);
     }
     if(ic->name=="/=")
     {
-        opr_1_func_ex_assign("_sys_fpdiv", ic,parent, index);
+        opr_1_func_ex_assign(m_float_div_func, ic,parent, index);
     }
-
 
     return 0;
 }
@@ -419,7 +430,7 @@ int icode_float_func_opr::process_imul(icode *ic, std::vector<icode *> &parent, 
         ic->left = NULL;
         ic->right = NULL;
         ic->result = NULL;
-        ic->result = pcompi->new_ref_icode(pcompi->get_function("_sys_imul_byte2"));
+        ic->result = pcompi->new_ref_icode(pcompi->get_function(m_i16_mul_func));
         assert(ic->result->result!=NULL);//2020.9.9 此处未include _sys_func_def.h时程序退出
 
         icode *ret_op_ic = pcompi->new_copy_icode_gen(pcompi->new_ref_icode(ic->result->result->sub_icode[0]), pcompi->new_ref_icode(real_result));
@@ -444,7 +455,7 @@ int icode_float_func_opr::process_imul(icode *ic, std::vector<icode *> &parent, 
         ic->left = NULL;
         ic->right = NULL;
         ic->result = NULL;
-        ic->result = pcompi->new_ref_icode(pcompi->get_function("_sys_lmul_byte4"));
+        ic->result = pcompi->new_ref_icode(pcompi->get_function(m_i32_mul_func));
         assert(ic->result->result!=NULL);
 
         icode *ret_op_ic = pcompi->new_copy_icode_gen(pcompi->new_ref_icode(ic->result->result->sub_icode[0]), pcompi->new_ref_icode(real_result));
@@ -489,8 +500,8 @@ int icode_float_func_opr::process_idiv(icode *ic, std::vector<icode *> &parent, 
 
 
     if(((ic->name=="/")||(ic->name=="/=")) &&
-        (( left_def->m_bit_width==8)||(right_def->m_bit_width==8))&&
-            ((left_def->m_bit_width<=8)&&(right_def->m_bit_width<=8))&&
+        (( left_def->get_bit_width()==8)||(right_def->get_bit_width()==8))&&
+            ((left_def->get_bit_width()<=8)&&(right_def->get_bit_width()<=8))&&
             (!left_def->is_float())&&(!right_def->is_float())
             )
     {
@@ -512,7 +523,7 @@ int icode_float_func_opr::process_idiv(icode *ic, std::vector<icode *> &parent, 
 
 
         ///有符号除法
-        ic->result = pcompi->new_ref_icode(pcompi->get_function("_sys_idiv_byte2"));
+        ic->result = pcompi->new_ref_icode(pcompi->get_function(m_i16_idiv_func));
 
 
         assert(ic->result->result!=NULL);
@@ -544,12 +555,12 @@ int icode_float_func_opr::process_idiv(icode *ic, std::vector<icode *> &parent, 
         if(left_def->is_signed|| right_def->is_signed)
         {
             ///有符号除法
-            ic->result = pcompi->new_ref_icode(pcompi->get_function("_sys_idiv_byte2"));
+            ic->result = pcompi->new_ref_icode(pcompi->get_function(m_i16_idiv_func));
         }
         else
         {
             ///无符号除法
-            ic->result = pcompi->new_ref_icode(pcompi->get_function("_sys_udiv_byte2"));
+            ic->result = pcompi->new_ref_icode(pcompi->get_function(m_u16_udiv_func));
         }
 
         assert(ic->result->result!=NULL);
@@ -580,12 +591,12 @@ int icode_float_func_opr::process_idiv(icode *ic, std::vector<icode *> &parent, 
         if(left_def->is_signed|| right_def->is_signed)
         {
             ///有符号除法
-            ic->result = pcompi->new_ref_icode(pcompi->get_function("_sys_ldiv_byte4"));
+            ic->result = pcompi->new_ref_icode(pcompi->get_function(m_i32_idiv_func));
         }
         else
         {
             ///无符号除法
-            ic->result = pcompi->new_ref_icode(pcompi->get_function("_sys_uldiv_byte4"));
+            ic->result = pcompi->new_ref_icode(pcompi->get_function(m_u32_udiv_func));
         }
 
         assert(ic->result->result!=NULL);

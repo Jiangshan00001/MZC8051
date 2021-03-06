@@ -13,9 +13,9 @@
 /// idata :0x80-0xff.  stc8 的128-256的ram地址 idata:  只能间接访问：. 因为直接访问为sfr。
 ///  idata访问： mov a, @Ri; mov @Ri, A;
 ///  sfr访问： 只能直接访问，因为和idata地址重合，只能通过寻址方式区分 mov A, direct;  mov direct, A;
-/// stc8 的sfr 地址0x7f->0xff 只能直接寻址方式访问
+/// stc8 的sfr 地址0x80->0xff 只能直接寻址方式访问
 /// stc8 的bit寻址：ram的20h->2fh  16个寄存器可位寻址，对应位地址：00-7fh
-/// stc8 的bit寻址：ram种sfr，地址能被8整除的16个寄存器可位寻址，对应位地址:0x80-0xff
+/// stc8 的bit寻址：ram中sfr，地址能被8整除的16个寄存器可位寻址，对应位地址:0x80-0xff
 /// ===================
 /// sfr中，ACC->e0h B->f0h sp->81h dpl->82h dph->83h
 ///

@@ -171,6 +171,8 @@ public://icode array
 
 public://icode_var
 
+    ///添加函数，获取bitwidth。用于var_in变量的bit_width正确获取
+    int get_bit_width();
     ///ICODE_TYPE_DEF_VAR
     int m_bit_width;//位宽度，char 的位宽是8
     std::string m_type_str;//变量的类型字符串

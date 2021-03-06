@@ -75,11 +75,19 @@ void icode_to_c51::load_sys_func_def()
 
     /// ptr byte to a
     /// ptr input: r1 r2 r3
-    std::string func_ptr_byte_to_a =  "CJNE R3, #4, _SYS_FUNC_PTR_BYTE_TO_A_3;\n"
+    std::string func_ptr_byte_to_a =  "CJNE R3, #4, _SYS_FUNC_PTR_BYTE_TO_A_5;\n"
                                     "MOV 0x82, R1;\n"
                                     "MOV 0x83, R2;\n"
                                     "MOVX A, @DPTR;\n"
                                     "RET;\n"
+
+                                      "_SYS_FUNC_PTR_BYTE_TO_A_5:\n"
+                                      "CJNE R3, #5, _SYS_FUNC_PTR_BYTE_TO_A_3;\n"
+                                      "MOV 0x82, R1;\n"
+                                      "MOV 0x83, R2;\n"
+                                      "MOV A, #0;\n"
+                                      "MOVC A, @A+DPTR;\n"
+                                        "RET;\n"
                                     "_SYS_FUNC_PTR_BYTE_TO_A_3:\n"
                                     "CJNE R3, #3, _SYS_FUNC_PTR_BYTE_TO_A_2;\n"
                                     "MOVX A, @R1;\n"
@@ -89,15 +97,10 @@ void icode_to_c51::load_sys_func_def()
                                     "MOV A, @R1;\n"
                                     "RET;\n"
                                     "_SYS_FUNC_PTR_BYTE_TO_A_1:\n"
-                                    "CJNE R3, #1, _SYS_FUNC_PTR_BYTE_TO_A_5;\n"
+                                    ";CJNE R3, #1, _SYS_FUNC_PTR_BYTE_TO_A_5;\n"
                                     "MOV  A, @R1;\n"
                                     "RET;\n"
-                                    "_SYS_FUNC_PTR_BYTE_TO_A_5:\n"
-                                      "MOV 0x82, R1;\n"
-                                      "MOV 0x83, R2;\n"
-                                      "MOV A, #0;\n"
-                                      "MOVC A, @A+DPTR;\n"
-                                    "RET;\n";
+                                    ;
     m_inline_sys_func["__sys_func_byte_to_ptr"] =func_byte_to_ptr;
     m_inline_sys_func["__sys_func_ptr_byte_to_a"] =func_ptr_byte_to_a;
 

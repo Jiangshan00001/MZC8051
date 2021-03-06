@@ -8,6 +8,15 @@ code_gen_x86::code_gen_x86()
 {
     m_ebp = 0;
     m_esp = 0;
+
+    m_Reg.add_reg("eax");
+    m_Reg.add_reg("ebx");
+    m_Reg.add_reg("ecx");
+    m_Reg.add_reg("edx");
+
+
+
+
 }
 
 int code_gen_x86::execute(icodes *ics, std::stringstream &istr)
@@ -198,7 +207,7 @@ void code_gen_x86::code_gen_cdecl_func(icode *ic, std::stringstream&  istr)
     /// <=32 eax传递返回值
     assert(ret_ic->m_bit_width<=32);
     ret_ic->m_var_info.m_type =X86_VAR_TYPE_REG;
-    ret_ic->m_var_info.m_name = "EAX";
+    ret_ic->m_var_info.m_name = "eax";
 
 
     /// ret arg0 arg1. arg_cnt=3
@@ -237,7 +246,12 @@ void code_gen_x86::code_gen_cdecl_func(icode *ic, std::stringstream&  istr)
     istr<<";enter\n";
     istr<<"push ebp;\n";
     istr<<"mov ebp, esp;\n";
-    this->m_esp = this->m_func_stack.size();
+
+    ///ebp
+    m_func_stack.push_back(0);
+    m_func_stack_byte_width.push_back(4);
+
+    this->m_esp = this->m_func_stack.size()-1;
     this->m_ebp = this->m_esp;
 }
 
@@ -262,8 +276,8 @@ void code_gen_x86::code_gen_cdecl_func_call(icode *ic, std::stringstream &istr)
 
     for(int i=ic->sub_icode.size();i>0;--i)
     {
-        std::string opr1 = opr_get( ic->sub_icode[i-1], istr);
-        istr<<"push "<<opr1<<"\n";
+        std::string opr1 = opr_get( ic->sub_icode[i-1], istr, 0);
+        istr<<"push dword "<<opr1<<"\n";
     }
 
     istr<<"call _"<<func->name<<"\n";
@@ -343,7 +357,38 @@ std::string code_gen_x86::get_var_size_qualifier(int ibitwidth)
     return size_comment_str;
 }
 
-std::string code_gen_x86::opr_get(icode *ic, std::stringstream &istr)
+
+
+int code_gen_x86::get_stack_pos(icode *var)
+{
+    assert(var->m_var_info.m_type==X86_VAR_TYPE_STACK);
+
+    ///堆栈参数
+    /// 找到参数所在堆栈位置
+    /// 通过sp访问
+    ///
+    auto it1 = std::find(m_func_stack.begin(), m_func_stack.end(), var);
+    assert(it1!=m_func_stack.end());
+
+    //这个是第几个
+    int dist = it1 -m_func_stack.begin() ;
+    if(m_ebp>=dist)
+    {
+        int cnt = std::accumulate(m_func_stack_byte_width.begin()+dist,m_func_stack_byte_width.begin()+m_ebp, 0);
+        //return size_qualifier+std::string(" [")+"ebp+" + NumberToStr(cnt) +"]";
+        return cnt;
+    }
+    //m_ebp<dist
+
+    int cnt = std::accumulate(m_func_stack_byte_width.begin()+m_ebp,m_func_stack_byte_width.begin()+dist, 0);
+    //return size_qualifier+std::string(" [")+"ebp-" + NumberToStr(cnt) +"]";
+    return -cnt;
+
+}
+
+
+
+std::string code_gen_x86::opr_get(icode *ic, std::stringstream &istr, bool add_size_quali)
 {
     if(ic->m_type==ICODE_TYPE_SYMBOL_REF)
     {
@@ -357,27 +402,17 @@ std::string code_gen_x86::opr_get(icode *ic, std::stringstream &istr)
             icode * var = ic->result;
             if(var->m_var_info.m_type==X86_VAR_TYPE_STACK)
             {
+                int pos = get_stack_pos(var);
                 std::string size_qualifier = get_var_size_qualifier(var->m_bit_width);
-
-
-                ///堆栈参数
-                /// 找到参数所在堆栈位置
-                /// 通过sp访问
-                ///
-                auto it1 = std::find(m_func_stack.begin(), m_func_stack.end(), var);
-                assert(it1!=m_func_stack.end());
-
-                //这个是第几个
-                int dist = it1 -m_func_stack.begin() ;
-                if(m_ebp>=dist)
+                if(add_size_quali)
                 {
-                    int cnt = std::accumulate(m_func_stack_byte_width.begin()+dist,m_func_stack_byte_width.begin()+m_ebp, 0);
-                    return size_qualifier+std::string(" [")+"ebp+" + NumberToStr(cnt) +"]";
+                    return size_qualifier+std::string(" [")+"ebp+(" + NumberToStrDec(pos) +")]";
                 }
-                //m_ebp<dist
+                else
+                {
+                    return std::string(" [")+"ebp+(" + NumberToStrDec(pos) +")] ";
+                }
 
-                int cnt = std::accumulate(m_func_stack_byte_width.begin()+m_ebp,m_func_stack_byte_width.begin()+dist, 0);
-                return size_qualifier+std::string(" [")+"ebp-" + NumberToStr(cnt) +"]";
             }
             else if(var->m_var_info.m_type==X86_VAR_TYPE_REG)
             {
@@ -407,30 +442,10 @@ std::string code_gen_x86::opr_get(icode *ic, std::stringstream &istr)
             icode * var = ic->result;
             if(var->m_var_info.m_type==X86_VAR_TYPE_STACK)
             {
+                int pos = get_stack_pos(var);
                 std::string size_qualifier = get_var_size_qualifier(var->m_bit_width);
+                opr1 = size_qualifier+std::string(" [")+"ebp+(" + NumberToStrDec(pos) +")]";
 
-
-                ///堆栈参数
-                /// 找到参数所在堆栈位置
-                /// 通过sp访问
-                ///
-                auto it1 = std::find(m_func_stack.begin(), m_func_stack.end(), var);
-                assert(it1!=m_func_stack.end());
-
-                //这个是第几个
-                int dist = it1 -m_func_stack.begin() ;
-                if(m_ebp>=dist)
-                {
-                    int cnt = std::accumulate(m_func_stack_byte_width.begin()+dist,m_func_stack_byte_width.begin()+m_ebp, 0);
-                    opr1 = size_qualifier+std::string(" [")+"ebp+" + NumberToStr(cnt) +"]";
-                }
-                else
-                {
-                    //m_ebp<dist
-
-                    int cnt = std::accumulate(m_func_stack_byte_width.begin()+m_ebp,m_func_stack_byte_width.begin()+dist, 0);
-                    opr1 =  size_qualifier+std::string(" [")+"ebp-" + NumberToStr(cnt) +"]";
-                }
             }
             else if(var->m_var_info.m_type==X86_VAR_TYPE_REG)
             {
@@ -442,7 +457,15 @@ std::string code_gen_x86::opr_get(icode *ic, std::stringstream &istr)
             }
         }
         istr<<"mov ebx,"<< opr1 <<"\n";
-        return get_var_size_qualifier(ic->result->m_bit_width)+ " [ebx]";
+        if(add_size_quali)
+        {
+            return get_var_size_qualifier(ic->result->m_bit_width)+ " [ebx]";
+        }
+        else
+        {
+            return " [ebx] ";
+        }
+
     }
     else if(ic->m_type==ICODE_TYPE_LABELED_BLOCK_START_REF)
     {
@@ -504,8 +527,6 @@ int code_gen_x86::get_bitwidth(icode *ic)
 
     return 32;
 }
-
-
 
 
 
@@ -577,7 +598,23 @@ int code_gen_x86::process_one_icode_start(icode *ic, void *user_data, icode *ipa
             std::string right_str = opr_get(ic->right, istr);
             std::string result_str = opr_get(ic->result, istr);
             istr<<"mov eax, "<< right_str<<";\n";
-            istr<<"mov "<< result_str<<", eax;\n";
+
+            if(get_bitwidth(ic->result)==32)
+            {
+                istr<<"mov "<< result_str<<", eax;\n";
+            }
+            else if(get_bitwidth(ic->result)==16)
+            {
+                istr<<"mov "<< result_str<<", ax;\n";
+            }
+            else if(get_bitwidth(ic->result)==8)
+            {
+                istr<<"mov "<< result_str<<", al;\n";
+            }
+            else
+            {
+                assert(0);
+            }
             return 0;
         }
         else if(ic->name=="+")
@@ -700,6 +737,8 @@ int code_gen_x86::process_one_icode_start(icode *ic, void *user_data, icode *ipa
             istr<<"mov esp, ebp\n";
             istr<<"pop ebp\n";
             istr<<"ret;\n";
+            this->m_ebp = 0;
+            this->m_esp = 0;
         }
     }
         break;

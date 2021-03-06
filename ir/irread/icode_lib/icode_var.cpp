@@ -1,6 +1,8 @@
 #include "icode.h"
 #include "icode_var.h"
+#include "mylog.h"
 
+using mylog::cerr;
 
 bool icode::is_def_var()
 {
@@ -23,7 +25,10 @@ void icode::set_width_from(icode *from)
     ///根据from的值，设置当前width值
 
 
-    if(from->m_type==ICODE_TYPE_SYMBOL_REF)
+    if((from->m_type==ICODE_TYPE_SYMBOL_REF)||
+            (from->m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP)||
+                        (from->m_type==ICODE_TYPE_DEF_VAR_IN_VAR)
+                        )
     {
         if(from->result)
         {
@@ -42,6 +47,7 @@ void icode::set_width_from(icode *from)
 
         return;
     }
+
     if(from->m_type==ICODE_TYPE_I_CONST)
     {
         if(this->m_bit_width < from->m_bit_width)
@@ -68,6 +74,7 @@ void icode::set_width_from(icode *from)
         }
         return;
     }
+    cerr<<"icode::set_width_from err"<< from->to_str(1)<<"\n";
     assert(0);
 }
 

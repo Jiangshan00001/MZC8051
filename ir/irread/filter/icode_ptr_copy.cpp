@@ -4,6 +4,7 @@
 
 icode_ptr_copy::icode_ptr_copy()
 {
+    m_copy_func = "__byte_copy";
 }
 
 int icode_ptr_copy::process_one_icode(icode *ic, std::vector<icode *> &parent, int index, void *user_data, class icode *iparent)
@@ -69,7 +70,7 @@ int icode_ptr_copy::process_one_icode(icode *ic, std::vector<icode *> &parent, i
     ic->result->is_array = 0;
     ic->result->is_ptr = 0;
 
-    ic->result = pcompi->new_ref_icode( pcompi->get_function("__byte_copy"));
+    ic->result = pcompi->new_ref_icode( pcompi->get_function(m_copy_func));
     assert(ic->result->result!=NULL);
 
     return 1;

@@ -6,7 +6,7 @@ IMPORT_LIB = $(BUILD_DIR)../irread/irread.a  $(BUILD_DIR)../misc/misc.a
 
 SRCS_LEXYACC= 
 
-SRCS_CPP = 	 api/ir2x86_api.cpp
+SRCS_CPP = 	 api/ir2x86_api.cpp filter/code_gen_x86.cpp  filter/var_manage_x86.cpp 
 
 			
 SRCS_COMMON_ICODE = 

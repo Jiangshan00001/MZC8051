@@ -15,13 +15,23 @@ SRCS_COMMON_ICODE =  icode_lib/ast_base.cpp icode_lib/icode.cpp \
 			  icode_lib/icode_string.cpp  icode_lib/icode_struct_union.cpp \
 			  icode_lib/icode_to_str.cpp  icode_lib/icode_var.cpp \
 			  icode_lib/icode_visitor.cpp  icode_lib/mem_alloc.cpp \
-			  icode_lib/reg_alloc.cpp  icode_lib/sym.cpp \
+			  icode_lib/icode_visitor_const.cpp \
+			  icode_lib/var_manage_base.cpp \
+			  icode_lib/reg_alloc.cpp icode_lib/reg_alloc2.cpp icode_lib/sym.cpp \
 			  icode_lib/sym_manage.cpp  icode_lib/target_base.cpp  icode_lib/icodes.cpp \
 			  filter/icode_collect_str.cpp filter/icode_const_folder.cpp \
 			  filter/icode_dead_func.cpp filter/icode_global_func.cpp \
 			  filter/icode_inline.cpp filter/icode_positive_opr.cpp \
 			  filter/icode_ref_number.cpp filter/icode_tmp_var_opt1.cpp \
-			  filter/icode_unresolved.cpp filter/icode_var_scope.cpp  
+			  filter/icode_unresolved.cpp filter/icode_var_scope.cpp  \
+			 filter/icode_float_cast.cpp filter/icode_float_func_opr.cpp \
+			 filter/icode_func_var_register.cpp  \
+			 filter/icode_ptr_calc.cpp filter/icode_ptr_copy.cpp \
+			 filter/icode_replace.cpp \
+			 filter/icode_ptr_in_calc.cpp \
+			 filter/icode_high_to_low.cpp \
+			  
+			  
 			  
 
 

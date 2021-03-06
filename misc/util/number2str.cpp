@@ -9,3 +9,12 @@ std::string NumberToStr(long num)
     return s.str();
 }
 
+
+
+std::string NumberToStrDec(long num)
+{
+    std::stringstream s;
+    std::string ss;
+    s<<std::dec<<num;
+    return s.str();
+}

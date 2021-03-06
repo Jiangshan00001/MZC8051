@@ -5,7 +5,7 @@
 #include <stack>
 #include <deque>
 #include "icode_visitor_const.h"
-
+#include "reg_alloc2.h"
 
 class code_gen_x86 : public icode_visitor_const
 {
@@ -26,7 +26,7 @@ private:
     virtual int process_one_icode_end(class icode *ic, void *user_data, class icode *iparent);
 
 
-    std::string opr_get(icode * ic, std::stringstream &istr);
+    std::string opr_get(icode * ic, std::stringstream &istr, bool add_size_quali=1);
     int get_bitwidth(icode *ic);
 
     std::deque<icode*> m_func_stack;
@@ -34,6 +34,11 @@ private:
     int m_esp;//stack pointer top
     int m_ebp;//stack base pointer
 
+
+    ///返回数据相对ebp的位置
+    int get_stack_pos(icode*var);
+
+    reg_alloc2<std::string> m_Reg;
 
 
 };

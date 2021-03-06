@@ -64,8 +64,14 @@ public:
 
     int m_level;
 
+
+
+    ///因为可能会在调用过程中，再次调用，所以需要添加堆栈类型变量
+    /// 需求为 icode_tmp_var_opt1.cpp
+    ///  对于只读写了各一次的临时变量，找到写ir后，再查找读ir，将读ir和写ir两个做修改才能实现优化掉此变量
+    std::vector<std::set<class icode*> > m_icode_number_set_list;
     ///每个类型的变量，第一次是定义，后面都是引用，所以此处只需要将遍历过的number记下来，保证每个icode只遍历一次
-    std::set<class icode*> m_icode_number_set;
+    std::set<class icode*> *m_icode_number_set;
 
     ///当前所在的函数，在函数外部时，为NULL
     icode *m_curr_func;

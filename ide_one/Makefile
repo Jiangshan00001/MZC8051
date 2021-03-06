@@ -5,6 +5,7 @@ PROG_LIB=$(BUILD_DIR)MZC8051.a
 
 IMPORT_LIB = $(BUILD_DIR)../cfront/cfront.a $(BUILD_DIR)../c51front/c51front.a  \
                  $(BUILD_DIR)../ir2asm8051/ir2asm8051.a\
+				 $(BUILD_DIR)../ir2x86/ir2x86.a\
 				 $(BUILD_DIR)../irread/irread.a   $(BUILD_DIR)../sim8051/sim8051.a     \
 				  $(BUILD_DIR)../asm8051/asm8051.a   $(BUILD_DIR)../lmake/lmake.a \
  				  $(BUILD_DIR)../misc/misc.a 
@@ -48,7 +49,8 @@ INCS = -I$(CURR_DIR) 	   \
 		-I$(CURR_DIR)/../misc/json_lib \
 		 -I$(CURR_DIR)/../misc/util \
 		 -I$(CURR_DIR)/../ir/irread/api/  \
-		 -I$(CURR_DIR)/../backend/ir2asm8051/api/  
+		 -I$(CURR_DIR)/../backend/ir2asm8051/api/  \
+		 -I$(CURR_DIR)/../backend/ir2x86/api/  
 		
 #  
 all: $(BUILD_PATH)  $(PROG)

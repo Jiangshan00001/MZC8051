@@ -29,6 +29,11 @@ opr: "init", NULL, result_tmp,result2
 opr "opr", left, right, result_tmp;
 opr: "=", NULL, result_tmp,result2
 类型的result_tmp去掉。
+
+变为：
+opr "opr", left, right, result2;
+
+
 ---
 
 

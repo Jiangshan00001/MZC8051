@@ -111,6 +111,11 @@ std::string icode::to_str(int is_one_line, int is_dbg)
             ret_str<<",";
             ret_str<<"STATIC("<<1<<")";
         }
+        if(this->is_naked)
+        {
+            ret_str<<",";
+            ret_str<<"NAKED("<<1<<")";
+        }
 
 
         ret_str<<";";

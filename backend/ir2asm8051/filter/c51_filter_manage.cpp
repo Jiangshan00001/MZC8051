@@ -1,29 +1,5 @@
 #include "c51_filter_manage.h"
-
-#include "icode_pass1.h"
-//#include "icode_add_init_func.h"
-#include "icode_global_func.h"
-#include "icode_ptr_calc.h"
-#include "icode_collect_str.h"
-#include "icode_unresolved.h"
-#include "icode_inline.h"
-//#include "icode_in_asm.h"
-#include "icode_ref_number.h"
-#include "icode_const_folder.h"
-#include "icode_dead_func.h"
-#include "icode_float_func_opr.h"
-#include "icode_func_var_register.h"
-#include "icode_positive_opr.h"
-#include "icode_float_cast.h"
-#include "icode_ptr_copy.h"
-#include "icode_var_scope.h"
-#include "icode_merge_same_number.h"
-#include "icode_renumber.h"
-#include "icode_sym_rebuild.h"
-#include "icode_replace.h"
-#include "icode_refresh_number_dict.h"
-#include "icode_ptr_in_calc.h"
-#include "icode_tmp_var_opt1.h"
+#include "icode_high_to_low.h"
 
 c51_filter_manage::c51_filter_manage()
 {
@@ -31,6 +7,38 @@ c51_filter_manage::c51_filter_manage()
 
 void c51_filter_manage::do_filter(icodes *ics)
 {
+
+    icode_high_to_low m_high_low;
+    m_high_low.m_collect_var_init_code_func = "__init_global_var";
+
+    m_high_low.m_array_to_ptr = 1;
+    m_high_low.m_negative_func = "_sys_negative";
+    m_high_low.m_float_to_int_func = "_sys_castf";
+    m_high_low.m_int_to_float_func = "_sys_fcast";
+
+    m_high_low.m_float_add_func = "_sys_fpadd";
+    m_high_low.m_float_sub_func = "_sys_fpsub";
+    m_high_low.m_float_mul_func = "_sys_fpmul";
+    m_high_low.m_float_div_func = "_sys_fpdiv";
+
+    m_high_low.m_i16_mul_func = "_sys_imul_byte2";
+    m_high_low.m_i32_mul_func = "_sys_lmul_byte4";
+
+    m_high_low.m_i16_idiv_func = "_sys_idiv_byte2";
+    m_high_low.m_u16_udiv_func = "_sys_udiv_byte2";
+    m_high_low.m_i32_idiv_func  = "_sys_ldiv_byte4";
+    m_high_low.m_u32_udiv_func  = "_sys_uldiv_byte4";
+
+    m_high_low.m_copy_func = "__byte_copy";
+
+    m_high_low.m_inline_ext = 1;
+    m_high_low.m_remove_dead = 1;
+
+
+
+    m_high_low.execute(ics);
+
+#if 0
     icode * m_top_icodes = ics->m_top_icodes;
 
     icode_tmp_var_opt1 tmp_var_opt1;
@@ -112,5 +120,5 @@ void c51_filter_manage::do_filter(icodes *ics)
     /// 9-计算函数调用次数，去掉调用不到的函数
     icode_dead_func dead_func;
     dead_func.execute(ics);
-
+#endif
 }

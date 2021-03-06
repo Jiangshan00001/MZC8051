@@ -3,7 +3,7 @@
 
 #include <string>
 
-int sim8051_run(std::string hex_file);
+int sim8051_run(std::string hex_file, bool is_debug);
 int sim8051_run_str(std::string hex_str);
 
 class sim8051{

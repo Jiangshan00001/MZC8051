@@ -5,7 +5,7 @@
 #include "argv.h"
 #include "number2str.h"
 
-int sim8051_run(std::string hex_file)
+int sim8051_run(std::string hex_file, bool is_debug)
 {
     Shell shell;
     Command command(shell);
@@ -26,7 +26,19 @@ int sim8051_run(std::string hex_file)
     //shell.RunCommand("disassemble", params);
 
     params.clear();
-    shell.RunCommand("run", params);
+    if(!is_debug)
+    {
+        shell.RunCommand("run", params);
+    }
+    else
+    {
+        while(1)
+        {
+
+            shell.RunCommand("step once", params);
+        }
+    }
+
 
     return 0;
 }
@@ -91,9 +103,6 @@ void sim8051::reset_all()
         delete ((SCC*)(m_handle));
     }
     m_handle = (void*)new SCC();
-
-
-
 }
 
 void sim8051::load_str(std::string hex_str)

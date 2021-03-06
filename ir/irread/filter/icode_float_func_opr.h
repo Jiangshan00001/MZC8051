@@ -39,8 +39,18 @@ public:
     int process_idiv(icode *ic, std::vector<icode *> &parent, int index);
     int process_imod(icode *ic, std::vector<icode *> &parent, int index);
 
+    std::string m_float_add_func;
+    std::string m_float_sub_func;
+    std::string m_float_mul_func;
+    std::string m_float_div_func;
 
-
+    std::string m_i16_mul_func;//_sys_imul_byte2
+    std::string m_i32_mul_func;//
+    std::string m_i32_div_func;//
+    std::string m_i16_idiv_func;//
+    std::string m_u16_udiv_func;//
+    std::string m_i32_idiv_func;//
+    std::string m_u32_udiv_func;//
 };
 
 #endif // ICODE_FLOAT_FUNC_OPR_H

@@ -292,8 +292,12 @@ void icode_to_c51::to_asm_call(icode *ic, std::stringstream &asm_str)
 
     ///------------------
     /// 填入函数参数
+    /// 0对应返回值，所以此处直接忽略
     for(unsigned i=0;i<ic->sub_icode.size();++i)
     {
+        /// ic->sub_icode[i] 代表参数
+        /// func_to_call->sub_icode[i+1] 代表目的地址
+
         if(func_to_call->sub_icode.size()<=i+1){
             break;
         }
@@ -304,9 +308,11 @@ void icode_to_c51::to_asm_call(icode *ic, std::stringstream &asm_str)
             break;
         }
 
-        if(this->get_def_var( ic->sub_icode[i])->m_bit_width==0)
+        if(this->get_def_var( ic->sub_icode[i])->get_bit_width()==0)
         {
             //void等0长度位宽参数，不需要传递
+            cerr<<"param bit width zero error."<<ic->sub_icode[i]->to_str()<<"\n";
+            assert(0);
             continue;
         }
 

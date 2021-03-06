@@ -10,13 +10,8 @@ SRCS_CPP = 	 api/ir2asm8051_api.cpp \
 			 target/MCS51/bit_addr_parse.cpp target/MCS51/c51_addr.cpp  target/MCS51/c51_var_manage.cpp \
 			 target/MCS51/get_j_data_byte.cpp  target/MCS51/icode_to_c51.cpp \
 			 target/MCS51/icode_to_c51_opr.cpp  target/MCS51/icode_to_c51_sys_func.cpp \
-			 target/MCS51/icode_to_c51_mov.cpp \
-			 filter/c51_filter_manage.cpp  \
-			 filter/icode_float_cast.cpp filter/icode_float_func_opr.cpp \
-			 filter/icode_func_var_register.cpp  \
-			 filter/icode_ptr_calc.cpp filter/icode_ptr_copy.cpp \
-			 filter/icode_replace.cpp \
-			 filter/icode_ptr_in_calc.cpp
+			 target/MCS51/icode_to_c51_mov.cpp target/MCS51/c51_asm_opt.cpp \
+			 filter/c51_filter_manage.cpp  
 
 			
 SRCS_COMMON_ICODE = 

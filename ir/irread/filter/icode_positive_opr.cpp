@@ -4,6 +4,7 @@
 
 icode_positive_opr::icode_positive_opr()
 {
+    m_negative_func = "_sys_negative";
 }
 
 void icode_positive_opr::execute(icodes *ics)
@@ -28,14 +29,16 @@ int icode_positive_opr::process_one_icode(icode *ic, std::vector<icode *> &paren
     }
 
 
-    if(ic->name=="negative")
+    if((ic->name=="negative")&&
+            (!m_negative_func.empty())
+            )
     {
         icode *real_right = ic->right;
         icode * real_result = ic->result;
 
         ic->m_type=ICODE_TYPE_CALL;
         ic->sub_icode.push_back(real_right);
-        ic->result = pcompi->new_ref_icode( pcompi->get_function("_sys_negative"));
+        ic->result = pcompi->new_ref_icode( pcompi->get_function(m_negative_func));
 
         icode *new_mov = pcompi->new_copy_icode_gen(ic->result->result->sub_icode[0], real_result);
         this->m_icode_to_insert_after_inst.push_back(new_mov);

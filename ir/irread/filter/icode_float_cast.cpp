@@ -7,6 +7,8 @@ using mylog::cerr;
 
 icode_float_cast::icode_float_cast()
 {
+    m_float_to_int = "_sys_castf";
+    m_int_to_float = "_sys_fcast";
 }
 
 void icode_float_cast::execute(icodes *ics)
@@ -26,7 +28,7 @@ icode *icode_float_cast::new_to_float_icode(icode *ic, icode ** tmp_val)
     call_cast->sub_icode.clear();
     call_cast->sub_icode.push_back(pcompi->new_ref_icode(ic));
 
-    sym* s = pcompi->m_sym_manage.find_symbol("_sys_fcast");
+    sym* s = pcompi->m_sym_manage.find_symbol(m_int_to_float);
 
     call_cast->result = pcompi->new_ref_icode( s->def_icode);
     assert(call_cast->result->result!=NULL);
@@ -57,7 +59,7 @@ icode *icode_float_cast::new_float_to_int_icode(icode *ic, icode ** tmp_val)
     call_cast->sub_icode.push_back(pcompi->new_ref_icode(ic));
 
 
-    sym* s = pcompi->m_sym_manage.find_symbol("_sys_castf");
+    sym* s = pcompi->m_sym_manage.find_symbol(m_float_to_int);
 
     assert(s!=NULL);
     call_cast->result = pcompi->new_ref_icode( s->def_icode );

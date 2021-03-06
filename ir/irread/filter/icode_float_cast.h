@@ -20,6 +20,10 @@ public:
 
     icode *new_to_float_icode(icode *ic, icode **tmp_val);
     icode *new_float_to_int_icode(icode *ic, icode **tmp_val);
+
+    std::string m_float_to_int;
+    std::string m_int_to_float;
+
 };
 
 #endif // ICODE_FLOAT_CAST_H

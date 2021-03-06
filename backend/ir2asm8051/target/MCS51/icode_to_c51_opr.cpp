@@ -1403,6 +1403,11 @@ std::string icode_to_c51::add(c51_addr* a1, c51_addr* a2, c51_addr *result)
 
 std::string icode_to_c51::sub(c51_addr *a1, c51_addr *a2, c51_addr *result, int is_set_c)
 {
+    ///2021.3.6
+    /// 添加没有result的情况。
+    /// 此情况是在两个数值做比较时，会调用sub函数。但是实际上相减的数值不需要复制，
+    /// 只会通过CY结果判断大小
+
 
     /// SUBB	A,Rn	Subtract Register from Acc with borrow
     /// SUBB	A,direct	Subtract direct byte from Acc with borrow
@@ -1426,12 +1431,21 @@ std::string icode_to_c51::sub(c51_addr *a1, c51_addr *a2, c51_addr *result, int 
         a3.m_type = DATA_TYPE_J_DATA;
         a3.m_bit_width = a1->m_bit_width>a2->m_bit_width?a1->m_bit_width:a2->m_bit_width;
         a3.m_addr = a1->m_addr - a2->m_addr;
-        asm_str<<this->mov(&a3, result);
+        if(result!=NULL)
+        {
+            asm_str<<this->mov(&a3, result);
+        }
+
+
     }
     else if((a2->m_type==DATA_TYPE_DIRECT))//(a1->m_type==DATA_TYPE_DIRECT)||
     {
 
-        int mov_bit=result->m_bit_width;
+        int mov_bit=a1->m_bit_width > a2->m_bit_width? a1->m_bit_width:a2->m_bit_width;
+        if(result)
+        {
+            mov_bit = result->m_bit_width;
+        }
         int mov_byte_shift=0;
         c51_addr *dir_reg = a2;
 
@@ -1440,7 +1454,10 @@ std::string icode_to_c51::sub(c51_addr *a1, c51_addr *a2, c51_addr *result, int 
             asm_str<<mov_byte_to_a(a1, mov_byte_shift);
 
             asm_str<<"SUBB A, 0x" <<std::hex<< dir_reg->m_addr+mov_byte_shift<<";\n";
-            asm_str<<mov_byte_a_to(result,  mov_byte_shift);
+            if(result!=NULL)
+            {
+                asm_str<<mov_byte_a_to(result,  mov_byte_shift);
+            }
             mov_byte_shift++;
             mov_bit-=8;
         }
@@ -1448,7 +1465,11 @@ std::string icode_to_c51::sub(c51_addr *a1, c51_addr *a2, c51_addr *result, int 
     else
     {
         //没有direct，复制到A, R2 然后加
-        int mov_bit=result->m_bit_width;
+        int mov_bit=a1->m_bit_width>a2->m_bit_width?a1->m_bit_width:a2->m_bit_width;
+        if(result)
+        {
+            mov_bit = result->m_bit_width;
+        }
         int mov_byte_shift=0;
         while(mov_bit>0)
         {
@@ -1457,7 +1478,10 @@ std::string icode_to_c51::sub(c51_addr *a1, c51_addr *a2, c51_addr *result, int 
             asm_str<<"MOV R2, A;\n";
             asm_str<<mov_byte_to_a(a1, mov_byte_shift);
             asm_str<<"SUBB A, R2;\n";
-            asm_str<<mov_byte_a_to(result,  mov_byte_shift);
+            if(result!=NULL)
+            {
+                asm_str<<mov_byte_a_to(result,  mov_byte_shift);
+            }
 
             mov_byte_shift++;
             mov_bit-=8;
@@ -1503,11 +1527,30 @@ std::string icode_to_c51::mulA(c51_addr *a1, c51_addr *a2, c51_addr *result)
         asm_str<<"MUL AB;\n";
 
         //此处必须先移动A，再移动B，因为移动B时会覆盖A
+
         asm_str<<this->mov_byte_a_to(result, 0);
         if(result->m_bit_width>8)
         {
             asm_str<<this->mov_byte_b_to(result, 1);
         }
+        if(result->m_bit_width>16)
+        {
+            asm_str<<"MOV A, 0x0;\n";
+            asm_str<<this->mov_byte_a_to(result, 2)<<"\n";
+        }
+        if(result->m_bit_width>24)
+        {
+            asm_str<<"MOV A, 0x0;\n";
+            asm_str<<this->mov_byte_a_to(result, 3)<<"\n";
+        }
+        if(result->m_bit_width>32)
+        {
+            cerr<<"mul result not support>32bit \n";
+            assert(0);
+        }
+
+
+
     }
     else
     {
@@ -1701,6 +1744,14 @@ std::string icode_to_c51::lessA(c51_addr *a1, c51_addr *a2, c51_addr *result, bo
     /// 如果a1<(a2+1)， 就认为是a1<=a2有借位
     asm_str<<this->sub(a1,a2, result, include_eq);
 
+    /// 直接将C移动到A中。省略跳转
+    ///
+    asm_str<<"mov A, #0\n";
+    asm_str<<"RLC A\n";
+    asm_str<<this->mov_byte_a_to(result)<<";\n";
+
+    #if 0
+
     asm_str<<"JC "<<l1<<";\n"; //a1<a2
     asm_str<<this->mov_0_to(result)<<";\n";//a1>=a2
     asm_str<<"SJMP "<<l2<<";\n";
@@ -1710,7 +1761,7 @@ std::string icode_to_c51::lessA(c51_addr *a1, c51_addr *a2, c51_addr *result, bo
     asm_str<<this->mov_1_to(result)<<";\n";
 
     asm_str<<l2<<":\n";
-
+#endif
 
     return asm_str.str();
 }
@@ -1734,8 +1785,10 @@ std::string icode_to_c51::greaterA(c51_addr *a1, c51_addr *a2, c51_addr *result,
     /// 没有借位，则认为a1>a2
     ///
     ///
-    asm_str<<this->sub(a1,a2, result, !include_eq);
+    asm_str<<this->sub(a1,a2, NULL, !include_eq);
 
+
+#if 0
     asm_str<<"JNC "<<l1<<";\n"; //a1<a2
     asm_str<<this->mov_0_to(result)<<";\n";//a1>=a2
     asm_str<<"SJMP "<<l2<<";\n";
@@ -1745,7 +1798,13 @@ std::string icode_to_c51::greaterA(c51_addr *a1, c51_addr *a2, c51_addr *result,
     asm_str<<this->mov_1_to(result)<<";\n";
 
     asm_str<<l2<<":\n";
+#else
 
+    asm_str<<"MOV A, #0xff;\n";
+    asm_str<<"RLC A;\n";//C->A0 A7->C
+    asm_str<<"CPL A;\n";
+    asm_str<<this->mov_byte_a_to(result)<<";\n";
+#endif
     return asm_str.str();
 }
 
@@ -2475,7 +2534,7 @@ std::string icode_to_c51::rotate_shiftR(c51_addr *a1, c51_addr *a2, c51_addr *re
         //循环判断语句
         asm_str<<"DJNZ R0, "<<lab0<<";\n";
         asm_str<<"MOV A, R1;\n";
-        asm_str<<"JZ "<< lab_end;
+        asm_str<<"JZ "<< lab_end<<";\n";;
         asm_str<<"DEC R1;\n";
         asm_str<<"MOV R0, #0xff\n"; ///此处是否是少了1次？？？2020.6.30--此处已确认正确
         asm_str<<"SJMP "<<lab0<<";\n";

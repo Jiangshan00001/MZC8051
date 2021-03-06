@@ -610,11 +610,11 @@ std::string icode_to_c51::mov_byte_b_to(c51_addr * to, int addr_shift)
 
     if((to->m_type==DATA_TYPE_RN)||(to->m_type==DATA_TYPE_RI))
     {
-        asm_str<<"MOV R"<<to->m_addr<<", 0x"<<std::hex<<REG_ADDR_B<<  ";\n";
+        asm_str<<"MOV R"<<to->m_addr+addr_shift<<", 0x"<<std::hex<<REG_ADDR_B<<  ";\n";
     }
     else if(to->m_type==DATA_TYPE_DIRECT)
     {
-        asm_str<<"MOV 0x"<<std::hex<<to->m_addr<<", 0x"<<std::hex<<REG_ADDR_B<<  ";\n";
+        asm_str<<"MOV 0x"<<std::hex<<to->m_addr+addr_shift<<", 0x"<<std::hex<<REG_ADDR_B<<  ";\n";
     }
     else
     {

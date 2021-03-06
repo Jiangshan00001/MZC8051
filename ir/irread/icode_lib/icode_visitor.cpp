@@ -11,6 +11,7 @@ icode_visitor::icode_visitor()
     m_to_rep_ic = NULL;
     m_to_erase_ic = false;
     m_curr_func = NULL;
+    m_icode_number_set = NULL;
 }
 
 icode_visitor::~icode_visitor()
@@ -39,8 +40,16 @@ int icode_visitor::process_topcode(class icode *top_icode, void *user_data)
 
     int ret = 0;
     m_level = 0;
+
+    std::set<class icode*> nempty;
+    m_icode_number_set_list.push_back(nempty);
+    m_icode_number_set = &m_icode_number_set_list[m_icode_number_set_list.size()-1];
+
     ret += enum_one(top_icode, top_icode->sub_icode, 0, user_data, NULL);
     ret += enum_all_child( top_icode, top_icode->sub_icode, 0, user_data, NULL);
+
+    m_icode_number_set_list.pop_back();
+    m_icode_number_set = &m_icode_number_set_list[m_icode_number_set_list.size()-1];
     return 0;
 
 }
@@ -52,7 +61,7 @@ int icode_visitor::enum_one(icode *ic, std::vector<icode *> &parent, int index, 
         return 0;
     }
 
-    std::set<class icode*> &set_curr = m_icode_number_set;
+    std::set<class icode*> &set_curr = *m_icode_number_set;
     if(set_curr.find(ic)!=set_curr.end())
     {
         ///已经枚举过一遍了，直接返回
@@ -96,7 +105,7 @@ void icode_visitor::reset()
     m_to_erase_ic = false;
     m_curr_func = NULL;
 
-    m_icode_number_set.clear();
+    m_icode_number_set_list.clear();
     m_icode_to_insert_before_inst.clear();
     m_icode_to_insert_after_inst.clear();
 
