@@ -71,19 +71,6 @@ RET;
 
 
 
-# 需要的帮助
-- 在github项目上点赞和fork
-- 对项目方向代码结构等方面提出各种问题
-- 测试并提交异常问题或正常通过的例程代码
-- 添加项目文档
-- 添加前端/后端代码
-- 提供使用或者特定开发需求
-- 提供资金支持
-
-
-
-
-
 
 欢迎任何人参与和完善：一个人可以走的很快，但是一群人却可以走的更远。
 
@@ -126,6 +113,24 @@ some code is from github:
 - simplecpp: https://github.com/danmar/simplecpp
 
 if there is any license issue, please contact me.
+
+
+
+
+
+# 需要的帮助
+- 在github项目上点赞和fork
+- 对项目方向代码结构等方面提出各种问题
+- 测试并提交异常问题或正常通过的例程代码
+- 添加项目文档
+- 添加前端/后端代码
+- 提供使用或者特定开发需求
+- 提供资金支持
+
+
+
+
+
 
 some resource I find useful:
 -   LCC: A Retargetable C Compiler: Design and Implementation
