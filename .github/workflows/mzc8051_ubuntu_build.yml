@@ -16,7 +16,10 @@ jobs:
     - name: make clean
       run: make clean
     - name: apt-get install flex bison
-      run: sudo apt-get install -y flex bison libfl-dev
+      run:  |
+        sudo apt-get update
+        sudo apt-cache search bison
+        sudo apt-get install -y flex bison libfl-dev
     - name: make
       run: make all
     - name: make test
