@@ -13,23 +13,10 @@ a c compiler for mcu8051.
 
 
 ```
-#include "io.h"
-
-int puts(const char *s)
+void main()
 {
-while(*s !=0){
-putc(*s);
-++s;
+int a=4;
 }
-}
-
-
-int main()
-{
-puts("hellowrold\n");
-return 0;
-}
-
 
 ```
 
@@ -37,53 +24,61 @@ return 0;
 生成对应的ir
 
 ```
-func:$putc,EXTERN(1);
-	ret_type: $__putc_ret,i32;
-	def_arg: $a,u8;
-func_end:%putc;
-
-
-func:$puts;
-	ret_type: $__puts_ret,i32;
-	def_arg: $s,u32*1*[u8, CONST(1) ];
-	{:
-#BS:_labelc_puts_0H;
-def_var_tmp: $TMP_17f011d0,u8;
-opr: "!=", var_in:%s*1;, iconst:0x0:0x8;, %TMP_17f011d0;
-opr: "JZ", %TMP_17f011d0;, null;, @BS:_labelc_puts_1H;
-{:
-call:%putc;
-var_in:%s*1;
-call_end:%putc;
-opr: "++", null;, null;, %s;
-};
-opr: "JMP", null;, null;, @BS:_labelc_puts_0H;
-#BS:_labelc_puts_1H;
-};
-func_end:%puts;
-
-
-
 func:$main;
-	ret_type: $__main_ret,i32;
+	ret_type: $__main_ret,u0;
 	{:
-call:%puts;
-cstring:"hellowrold\n";
-call_end:%puts;
-opr: "=", null;, iconst:0x0:0x8;, %__main_ret;
-return;
+def_var: $a,i16;
+opr: "init", null;, iconst:0x4:0x10;, %a;
 };
 func_end:%main;
 
+
+```
+
+生成对应的8051asm:
+```
+ORG 0000H; program entry
+LJMP __main_before;
+__main_before:
+MOV 0x81, #0x7f; sp<-#0x7f
+NOP;
+NOP;
+NOP;
+LCALL _func___init_global_var;
+LJMP _func_main;
+_func___init_global_var:
+_func___init_global_var_ret_LABEL:
+RET;
+_func_main:
+;def_var: $a,i16;
+;addr: 0x8
+;opr: "init", null;, iconst:0x4:0x8;, %a;
+
+MOV 0x8, #0x4;
+MOV 0x9, #0x0;
+_func_main_ret_LABEL:
+RET;
+```
+
+
+生成对应的hex:
+```
+:1000000002000375817F00000012000F0200102221
+:0700100075080475090022C8
+:00000001FF
 ```
 
 
 
 
-
-
-
-
+# 需要的帮助
+- 在github项目上点赞和fork
+- 对项目方向代码结构等方面提出各种问题
+- 测试并提交异常问题或正常通过的例程代码
+- 添加项目文档
+- 添加前端/后端代码
+- 提供使用或者特定开发需求
+- 提供资金支持
 
 
 
@@ -97,18 +92,6 @@ func_end:%main;
 
 当前有3个例程在release中：
 example_test: led01 led02 shumaguan01
-
-以led01为例，说明代码编译流程：
-```
-cd led01;
-../MZC8051.exe -x lmake -m clean -i .
-../MZC8051.exe -x lmake -m make -i .
-../MZC8051.exe -x sim8051 -i led01.hex
-```
-仿真运行结果：
-![led01-p2.0闪烁](doc/led01.gif)
-![led02-p2口跑马灯](doc/led02.gif)
-
 
 [程序使用说明](doc/usage.md)
 
