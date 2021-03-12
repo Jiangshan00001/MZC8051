@@ -371,7 +371,7 @@ int main(int argc, char * argv[])
     }
     else if(cmd_str=="asm8051")
     {
-        translate_asm_to_hex(input_file, parse_str, output_file, is_debug_flag);
+        NS_AMS8051HEX::translate_asm_to_hex(input_file, parse_str, output_file, is_debug_flag);
     }
     else if(cmd_str=="lmake")
     {
