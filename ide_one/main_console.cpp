@@ -33,6 +33,7 @@ using mylog::cerr;
 using mylog::cdbg;
 using mylog::csummary;
 
+using namespace NS_AMS8051HEX;
 ///
 /// \brief usage_exit
 /// 命令行，帮助内容
@@ -371,7 +372,7 @@ int main(int argc, char * argv[])
     }
     else if(cmd_str=="asm8051")
     {
-        NS_AMS8051HEX::translate_asm_to_hex(input_file, parse_str, output_file, is_debug_flag);
+        translate_asm_to_hex(input_file, parse_str, output_file, is_debug_flag);
     }
     else if(cmd_str=="lmake")
     {
