@@ -1,7 +1,8 @@
 #ifndef TEXT_BLOCK_H
 #define TEXT_BLOCK_H
 #include <string>
-#include "asm_token.h"
+#include <vector>
+//#include "asm_token.h"
 
 class T_HEX_TEXT_BLOCK
 {
@@ -36,7 +37,7 @@ public:
     int m_current_line_oscillator_period;
 
 
-    std::vector<asm_token> m_tokens;
+    //std::vector<asm_token> m_tokens;
 
 };
 

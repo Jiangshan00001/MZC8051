@@ -255,7 +255,7 @@ std::string hex_data_to_hex_file(std::vector<hex_block> hex_data)
     return ret.str();
 }
 
-
+#if 0
 std::string hex_generator_str(T_ASM_CONTEXT *mCtx)
 {
 
@@ -331,7 +331,7 @@ std::string hex_generator_str(T_ASM_CONTEXT *mCtx)
     return ret.str();
     #endif
 }
-
+#endif
 #if 0
 bool operator <(hex_block &a, hex_block &b)
 {

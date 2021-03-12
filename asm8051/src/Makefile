@@ -4,14 +4,17 @@ PROG_LIB=$(BUILD_DIR)asm8051.a
 
 IMPORT_LIB=$(BUILD_DIR)../misc/misc.a
 
-SRCS_ASM8051_LIB= asm8051.cpp asm8051_lex.cpp asm_context.cpp \
-            asm_keywords.cpp  asm_table.cpp asm_token.cpp dis8051.cpp \
-            dis_keywords.cpp hex_generator.cpp \
-             text_block.cpp  api/asm8051_api.cpp  asm_extend_keywords.cpp asm_macro_keywords.cpp
+SRCS_ASM8051_LIB= asm_to.cpp to_asm.cpp \
+			hex_generator.cpp dis_funcs.cpp asm_funcs.cpp text_block.cpp\
+			asmc51_predefined_symbol.cpp  bit_addr_parse.cpp asm_extend_jmp.cpp\
+            api/asm8051_api.cpp  context/comp_context.cpp context/icode.cpp
 
 SRCS_COMMON= 
 
-SRCS_LEXYACC= lex_yacc/parser.cpp lex_yacc/scanner.cpp  lex_yacc/driver.cpp
+SRCS_LEXYACC= lex_yacc/parser.cpp lex_yacc/scanner.cpp  lex_yacc_adapt/driver.cpp \
+            lex_yacc_adapt/token_defs.cpp  lex_yacc_adapt/comp_context_yy_debug.cpp \
+			lex_yacc/ly/comp_context_gen.cpp lex_yacc/ly/comp_context_gen_funcs.cpp \
+			lex_yacc/ly/comp_context_gen_funcs_token.cpp
 
 SRCS_MAIN=main_console.cpp
 
@@ -31,10 +34,11 @@ CXX_FLAGS:= -g -Wall  -fpermissive -O0
 AR=ar
 STRIP=strip
 
-INCS = -I$(CURR_DIR)  -I$(CURR_DIR)/lex_yacc/   -I$(CURR_DIR)/../../misc/util/ -I$(CURR_DIR)/api/ -I/include/
+INCS = -I$(CURR_DIR)  -I$(CURR_DIR)/context/  -I$(CURR_DIR)/lex_yacc/  -I$(CURR_DIR)/lex_yacc/ly/  -I$(CURR_DIR)/lex_yacc_adapt/   -I$(CURR_DIR)/../../misc/util/ -I$(CURR_DIR)/api/ -I/include/
 
 
 all:  $(BUILD_PATH) $(PROG_LIB)  $(PROG)
+	make -C lex_yacc
 	echo "finish!"
 
 $(BUILD_PATH):

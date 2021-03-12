@@ -1,0 +1,33 @@
+operand,type,type_ic,mask,comment
+#data,TOKEN_IMM8,TOKENI_IMM,0xff,8-bit constant
+#data16,TOKEN_IMM16,TOKENI_IMM,0xffff,16-bit constant
+/bit,TOKEN_NBIT,TOKENI_NBIT,0xff,complement of the bit
+/bit addr,TOKEN_NBIT,TOKENI_NBIT,0xff,
+@A+DPTR,TOKEN_AT_A_PLUS_DPTR,TOKENI_AT_A_PLUS_DPTR,0x00,
+@A+PC,TOKEN_AT_A_PLUS_PC,TOKENI_AT_A_PLUS_PC,0x00,
+@DPTR,TOKEN_AT_DPTR,TOKENI_AT_DPTR,0x00,
+@R0,TOKEN_AT_RI,TOKENI_AT_RI,0x00,8-bit internal data RAM location (0-255) addressed indirectly through register R1or R0.
+@R1,TOKEN_AT_RI,TOKENI_AT_RI,0x00,
+@Ri,TOKEN_AT_RI,TOKENI_AT_RI,0xff,
+A,TOKEN_ACC,TOKENI_ACC,0x00,reg a
+AB,TOKEN_AB,TOKENI_AB,0x00,reg ab
+C,TOKEN_C,TOKENI_C,0x00,bit c
+DPTR,TOKEN_DPTR,TOKENI_DPTR,0x00,16bit-dptr reg
+R0,TOKEN_RN,TOKENI_RN,0xff,r0-r7
+R1,TOKEN_RN,TOKENI_RN,0xff,
+R2,TOKEN_RN,TOKENI_RN,0xff,
+R3,TOKEN_RN,TOKENI_RN,0xff,
+R4,TOKEN_RN,TOKENI_RN,0xff,
+R5,TOKEN_RN,TOKENI_RN,0xff,
+R6,TOKEN_RN,TOKENI_RN,0xff,
+R7,TOKEN_RN,TOKENI_RN,0xff,
+Rn,TOKEN_RN,TOKENI_RN,0xff,
+abs code addr,TOKEN_ADDR11,TOKENI_VAL,0x7ff,11bit abs code addr.
+addr11,TOKEN_ADDR11,TOKENI_VAL,0x7ff,
+addr16,TOKEN_ADDR16,TOKENI_VAL,0xffff,16bit abs code addr
+bit,TOKEN_BIT,TOKENI_DOTBIT/TOKENI_VAL,0xff,Direct Addressed bit in Internal Data RAM or Special Function Register.
+bit addr,TOKEN_BIT,TOKENI_DOTBIT/TOKENI_VAL,0xff,
+data addr,TOKEN_DIRECT,TOKENI_VAL,0xff,
+direct,TOKEN_DIRECT,TOKENI_VAL,0xff,"8-bit internal data location¡¯s address. This could be an Internal Data RAM location (0-127) or a SFR [i.e., I/O. port, control register, status register, etc. (128-255)]."
+rel,TOKEN_REL,TOKENI_VAL,0xff,Signed (two¡¯s complement) 8-bit offset byte. Used by SJMP and all conditional jumps. Range is -128 to +127
+rel code addr,TOKEN_REL,TOKENI_VAL,0xff,

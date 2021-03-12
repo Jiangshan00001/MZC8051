@@ -1,3 +1,59 @@
+一个8051单片机的汇编器/反汇编器。
+
+代码生产工具：
+yacc_to_front_code: yy_no_code-->parser.yy comp_context_gen
+								comp_context_gen_defs comp_context_yy_debug
+lexpp: scanner_no_code --> scanner.ll
+asm_csv_to_code: dis_list.csv  asm_list.csv--> cmd_list.txt operand_list.txt
+				dis_list.csv operand_list.csv -->	dis_funcs.cpp/h
+
+v4
+添加asm和hex接口
+
+
+v3:
+可以生成yy文字，说明解析asm文本正常。
+ ../../../build/asm8051/asm8051.exe -yy -d asm_test1.a51 asm_test1_yy.a51
+下一步计划添加实际生成hex的文字。
+
+
+
+
+
+此处记录下汇编器的生成过程，以便生成其他汇编器时仿照。
+
+1 预处理：去除注释，替换部分宏定义。--手写
+2 词法分析，语法分析。--flex+bison
+3 对应汇编代码生成。---
+4 生成指定格式：hex格式。---手写代码
+
+
+
+1 添加域名空间： NS_AMS8051HEX
+2 添加文件token_defs。修改其中的命名空间为 NS_AMS8051HEX
+3 scanner.ll 
+	修改命名空间为：NS_AMS8051HEX。 
+	scanner基类名称：ASMFlexLexer
+3 修改parser.ll 
+	命名空间：NS_AMS8051HEX
+	%name-prefix="NS_AMS8051HEX"
+	%define "parser_class_name" "Parser" 类名
+4 添加lex_yacc_adapt
+	driver.cpp/h
+	scanner.cpp/h
+	修改命名空间：NS_AMS8051HEX
+	
+	
+	
+	
+
+
+
+
+
+
+
+
 this is a 8051 
 
 

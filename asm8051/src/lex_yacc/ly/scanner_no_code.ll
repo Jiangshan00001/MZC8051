@@ -16,71 +16,8 @@ ES  (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
 WS  [ \t\v\f]
 /*remove \n from WS*/
 
+%%
 
-
-
-%{ /*** C/C++ Declarations ***/
-
-#include <string>
-
-#include "token_defs.h"
-#define YYSTYPE token_defs
-
-#include "scanner.h"
-
-/* import the parser's token type into a local typedef */
-typedef NS_AMS8051HEX::Parser::token token;
-typedef NS_AMS8051HEX::Parser::token_type token_type;
-
-/* By default yylex returns int, we use token_type. Unfortunately yyterminate
-* by default returns 0, which is not of token_type. */
-#define yyterminate() return token::END
-
-/* This disables inclusion of unistd.h, which is not available under Visual C++
-* on Win32. The C++ scanner uses STL streams instead. */
-#define YY_NO_UNISTD_H
-
-
-%}
-
-/*** Flex Declarations and Options ***/
-
-/* enable c++ scanner class generation */
-%option c++
-
-/* change the name of the scanner class. results in "ExampleFlexLexer" --Example */
-%option prefix="ASM"
-
-/* the manual says "somewhat more optimized" */
-%option batch
-
-/* enable scanner to generate debug output. disable this for release
-* versions. */
-%option debug
-
-/* no support for include files is planned */
-%option yywrap nounput
-
-/* enables the use of start condition stacks */
-%option stack
-
-/* The following paragraph suffices to track locations accurately. Each time
-* yylex is invoked, the begin position is moved onto the end position. */
-%{
-#define YY_USER_ACTION  yylloc->columns(yyleng);
-%}
-
-/* code to place at the beginning of yylex() */
-%{
-// reset location
-//yylloc->step();
-%}
-
-/*** BEGIN EXAMPLE - Change the example lexer rules below ***/
-
-%% /*** Regular Expressions Part ***/
-
-            
 ";"         { skip_comment(yylloc); TKEY_DEF( token::EOL,1,0);}
 "\n" {TKEY_DEF( token::EOL,1,0);}
 
@@ -197,7 +134,7 @@ typedef NS_AMS8051HEX::Parser::token_type token_type;
 
 
 {L}{A}*					{ /*各种标识符，修饰符等*/   TKEY_DEF( token::TK_KEYWORD,0,0);
-}
+                            }
 
 
 {HP}{H}+{IS}?				{  TKEY_DEF( token::I_CONSTANT,1,0); }
@@ -240,70 +177,3 @@ typedef NS_AMS8051HEX::Parser::token_type token_type;
 {WS}+					{ /* whitespace separates tokens */ }
 
 
-
-%%
-namespace NS_AMS8051HEX
-             {
-
-
-            Scanner::Scanner(class Driver &drv, std::istream* in,
-                     std::ostream* out)
-                : ASMFlexLexer(in, out)
-            , driver(drv)
-            {
-            }
-
-            Scanner::~Scanner()
-            {
-            }
-
-
-            void Scanner::set_debug(bool b)
-            {
-                yy_flex_debug = b;
-            }
-
-
-            void Scanner::skip_comment(Parser::location_type* yylloc)
-            {
-                int c;
-
-                while ((c = yyinput()) != 0)
-                {
-                    if (c == '\n')
-                    {
-
-                            return;
-                    }
-                }
-                std::cout<<"ERROR:"<<"unterminated comment"<<"line:"<<lineno();
-            }
-
-
-            }
-
-            /* This implementation of ASMFlexLexer::yylex() is required to fill the
-             * vtable of the class ASMFlexLexer. We define the scanner's main yylex
-             * function via YY_DECL to reside in the Scanner class instead. */
-
-            #ifdef yylex
-            #undef yylex
-            #endif
-
-            int ASMFlexLexer::yylex()
-            {
-                std::cerr << "in ASMFlexLexer::yylex() !" << std::endl;
-                return 0;
-            }
-
-            /* When the scanner receives an end-of-file indication from YY_INPUT, it then
-             * checks the yywrap() function. If yywrap() returns false (zero), then it is
-             * assumed that the function has gone ahead and set up `yyin' to point to
-             * another input file, and scanning continues. If it returns true (non-zero),
-             * then the scanner terminates, returning 0 to its caller. */
-
-            int ASMFlexLexer::yywrap()
-            {
-                return 1;
-            }
-            
