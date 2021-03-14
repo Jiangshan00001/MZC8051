@@ -85,6 +85,12 @@ std::string to_asm::hex_to_code2()
             }
             istr<<"\n";
         }
+        unsigned block_end_addr = m_blocks[i][m_blocks[i].size()-1].m_address + m_blocks[i][m_blocks[i].size()-1].m_hex_text.size();
+        if(m_label_code_address.find(block_end_addr)!=m_label_code_address.end())
+        {
+            istr<<m_label_code_address[block_end_addr]<<":\n";
+        }
+
     }
 
     return istr.str();
