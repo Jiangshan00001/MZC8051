@@ -24,6 +24,7 @@ asm_to::asm_to()
     m_is_debug = 0;
     m_inst = NULL;
     m_address = 0;
+    m_top_icode = NULL;
     cdbg.set_cout_output(0);
 
 }
@@ -36,7 +37,15 @@ int asm_to::compile()
 int asm_to::add_src(std::string code_src, std::string file_name)
 {
     comp_context calc;
+
+    if(m_top_icode!=NULL)
+    {
+        calc.m_top_icode = m_top_icode;
+    }
+
     Driver driver(calc);
+
+
 
     std::stringstream istr(code_src);
 

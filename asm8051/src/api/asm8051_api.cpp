@@ -105,8 +105,8 @@ std::string dis_compile_str(std::string hex_str,int is_out_to_cout, int is_debug
 
 int translate_asm_to_hex(std::vector<std::string> &input_file, std::string parse_str, std::string output_file, bool is_debug)
 {
-#if 0
-    asm8051 m_8051;
+#if 1
+    asm_to m_8051;
 
     m_8051.m_is_debug = is_debug;
 

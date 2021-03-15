@@ -67,7 +67,7 @@ typedef NS_AMS8051HEX::Parser::token_type token_type;
 /* The following paragraph suffices to track locations accurately. Each time
 * yylex is invoked, the begin position is moved onto the end position. */
 %{
-#define YY_USER_ACTION  yylloc->columns(yyleng);
+#define YY_USER_ACTION  {yylloc->step();yylloc->columns(yyleng);}
 %}
 
 /* code to place at the beginning of yylex() */
@@ -81,8 +81,9 @@ typedef NS_AMS8051HEX::Parser::token_type token_type;
 %% /*** Regular Expressions Part ***/
 
             
-";"         { skip_comment(yylloc); TKEY_DEF( token::EOL,1,0);}
-"\n" {TKEY_DEF( token::EOL,1,0);}
+"//"         { skip_comment(yylloc); yylloc->lines(1); TKEY_DEF( token::EOL,1,0);}
+";"         { skip_comment(yylloc); yylloc->lines(1); TKEY_DEF( token::EOL,1,0);}
+"\n" {yylloc->lines(1); TKEY_DEF( token::EOL,1,0);}
 
 "A"         { TKEY_DEF(token::TK_ACC,1,0);}
 "C"         { TKEY_DEF( token::TK_C,1,0);}
@@ -149,6 +150,58 @@ typedef NS_AMS8051HEX::Parser::token_type token_type;
 "XRL"  {TKEY_DEF( token::TK_CMD,1,0);}
 "CALL" {TKEY_DEF( token::TK_CMD,1,0);}
 "SIMTRAP"        {TKEY_DEF( token::TK_CMD,1,0);}
+
+
+
+
+"acall" {TKEY_DEF( token::TK_CMD,1,0);}
+"add"   {TKEY_DEF( token::TK_CMD,1,0);}
+"addc"  {TKEY_DEF( token::TK_CMD,1,0);}
+"ajmp"  {TKEY_DEF( token::TK_CMD,1,0);}
+"anl"  {TKEY_DEF( token::TK_CMD,1,0);}
+"cjne"  {TKEY_DEF( token::TK_CMD,1,0);}
+"clr"  {TKEY_DEF( token::TK_CMD,1,0);}
+"cpl"  {TKEY_DEF( token::TK_CMD,1,0);}
+"da"  {TKEY_DEF( token::TK_CMD,1,0);}
+"dec"  {TKEY_DEF( token::TK_CMD,1,0);}
+"div"  {TKEY_DEF( token::TK_CMD,1,0);}
+"djnz"  {TKEY_DEF( token::TK_CMD,1,0);}
+"inc"  {TKEY_DEF( token::TK_CMD,1,0);}
+"jb"  {TKEY_DEF( token::TK_CMD,1,0);}
+"jbc"  {TKEY_DEF( token::TK_CMD,1,0);}
+"jc"  {TKEY_DEF( token::TK_CMD,1,0);}
+"jmp"  {TKEY_DEF( token::TK_CMD,1,0);}
+"jnb"  {TKEY_DEF( token::TK_CMD,1,0);}
+"jnc"  {TKEY_DEF( token::TK_CMD,1,0);}
+"jnz"  {TKEY_DEF( token::TK_CMD,1,0);}
+"jz"  {TKEY_DEF( token::TK_CMD,1,0);}
+"lcall"  {TKEY_DEF( token::TK_CMD,1,0);}
+"ljmp"  {TKEY_DEF( token::TK_CMD,1,0);}
+"mov"  {TKEY_DEF( token::TK_CMD,1,0);}
+"movc"  {TKEY_DEF( token::TK_CMD,1,0);}
+"movx"  {TKEY_DEF( token::TK_CMD,1,0);}
+"mul"  {TKEY_DEF( token::TK_CMD,1,0);}
+"nop"  {TKEY_DEF( token::TK_CMD,1,0);}
+"orl"  {TKEY_DEF( token::TK_CMD,1,0);}
+"pop"  {TKEY_DEF( token::TK_CMD,1,0);}
+"push"  {TKEY_DEF( token::TK_CMD,1,0);}
+"ret"  {TKEY_DEF( token::TK_CMD,1,0);}
+"reti"  {TKEY_DEF( token::TK_CMD,1,0);}
+"rl"  {TKEY_DEF( token::TK_CMD,1,0);}
+"rlc"  {TKEY_DEF( token::TK_CMD,1,0);}
+"rr"  {TKEY_DEF( token::TK_CMD,1,0);}
+"rrc"  {TKEY_DEF( token::TK_CMD,1,0);}
+"setb"  {TKEY_DEF( token::TK_CMD,1,0);}
+"sjmp"  {TKEY_DEF( token::TK_CMD,1,0);}
+"subb"  {TKEY_DEF( token::TK_CMD,1,0);}
+"swap"  {TKEY_DEF( token::TK_CMD,1,0);}
+"xch"  {TKEY_DEF( token::TK_CMD,1,0);}
+"xchd"  {TKEY_DEF( token::TK_CMD,1,0);}
+"xrl"  {TKEY_DEF( token::TK_CMD,1,0);}
+"call" {TKEY_DEF( token::TK_CMD,1,0);}
+"simtrap"        {TKEY_DEF( token::TK_CMD,1,0);}
+
+
 
 "DB" {TKEY_DEF( token::TK_DB,1,0);}
 "USING" {TKEY_DEF( token::TK_MACRO,1,0);}

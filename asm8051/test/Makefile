@@ -2,6 +2,8 @@ BUILD_DIR=../../../build/asm8051/
 PROG=$(BUILD_DIR)asm8051.exe
 PROG_LIB=$(BUILD_DIR)asm8051.a
 
+SRCS_A51 += test_zhushi1.a51
+
 SRCS_A51 += test_jb_ext1.a51 test_jb_ext2.a51 test_jc_ext1.a51 test_jc_ext2.a51
 SRCS_A51 += test_sjmp_ext1.a51 test_sjmp_ext2.a51 test_sjmp_ext3.a51 test_sjmp_ext4.a51
 SRCS_A51 += test_predefined1.a51
