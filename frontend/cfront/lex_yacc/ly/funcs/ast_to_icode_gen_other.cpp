@@ -202,17 +202,18 @@ class icode *  func_IAN_PARAMETER_TYPE_LIST_1(class comp_context* pcompi, class 
     // direct_abstract_declarator--> '(' parameter_type_list ')'
     // direct_abstract_declarator--> direct_abstract_declarator '(' parameter_type_list ')'
     icode *a = pcompi->new_icode();
-    a->m_type=ICODE_TYPE_BLOCK;
-    //token_defs *parameter_list=tdefs->m_tk_elems[0];
+    a->m_type = ICODE_TYPE_BLOCK;
+    token_defs *parameter_list=tdefs->m_tk_elems[0];
     //token_defs *','=tdefs->m_tk_elems[1];
-    //token_defs *ELLIPSIS=tdefs->m_tk_elems[2];
-    //icode *parameter_list_ic=pcompi->ast_to_icode(parameter_list);
+    token_defs *ELLIPSIS=tdefs->m_tk_elems[2];
+    icode *parameter_list_ic=pcompi->ast_to_icode(parameter_list);
     //icode *','_ic=pcompi->ast_to_icode(',');
-    //icode *ELLIPSIS_ic=pcompi->ast_to_icode(ELLIPSIS);
-    //a->merge_icode(parameter_list_ic);
+    icode *ELLIPSIS_ic=pcompi->ast_to_icode(ELLIPSIS);
+    a->merge_icode(parameter_list_ic);
     //a->merge_icode(','_ic);
-    //a->merge_icode(ELLIPSIS_ic);
-    assert(0);
+    a->merge_icode(ELLIPSIS_ic);
+
+
     return a;
 }
 class icode *  func_IAN_PARAMETER_TYPE_LIST_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
@@ -1696,8 +1697,10 @@ class icode *func_token_ELLIPSIS(class comp_context* pcompi, class token_defs* t
     //parent:
     // parameter_type_list--> parameter_list ',' ELLIPSIS
     icode *a = pcompi->new_icode();
-    a->m_type=ICODE_TYPE_BLOCK;
-    assert(0);
+    a->m_type=ICODE_TYPE_FUNC_DEF_ARG;
+    a->name="ellipsis";
+    a->m_bit_width = 8;
+    //assert(0);
     return a;
 }
 class icode *func_token_CASE(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)

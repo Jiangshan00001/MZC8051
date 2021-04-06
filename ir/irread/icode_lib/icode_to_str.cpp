@@ -126,7 +126,7 @@ std::string icode::to_str(int is_one_line, int is_dbg)
         {ret_str<<"\n";}
         for(i=0;i<this->sub_icode.size();++i)
         {
-            ret_str<<"\t"<< this->sub_icode[i]->to_str();;
+            ret_str<<"\t"<< this->sub_icode[i]->to_str(is_one_line);;
         }
         ret_str<<"func_end:%" <<this->get_name()<<";";
         if(!is_one_line)
@@ -135,12 +135,15 @@ std::string icode::to_str(int is_one_line, int is_dbg)
 
     case ICODE_TYPE_FUNC_RET_TYPE: //函数返回值
 
-        ret_str<<icode::get_type_str(this->m_type)  <<": $"<<this->get_name()<<","<<this->get_var_type()<<";\n";
+        ret_str<<icode::get_type_str(this->m_type)  <<": $"<<this->get_name()<<","<<this->get_var_type()<<";";
+        if(!is_one_line)
+        {ret_str<<"\n";}
 
         break;
     case ICODE_TYPE_FUNC_DEF_ARG:   //函数参数
-        ret_str<<icode::get_type_str(this->m_type)  <<": $"<<this->get_name()<<","<<this->get_var_type()<<";\n";
-
+        ret_str<<icode::get_type_str(this->m_type)  <<": $"<<this->get_name()<<","<<this->get_var_type()<<";";
+        if(!is_one_line)
+        {ret_str<<"\n";}
 
         break;
     case ICODE_TYPE_EXP_OP:        //算符
@@ -250,6 +253,10 @@ std::string icode::to_str(int is_one_line, int is_dbg)
         /// @todo : asm此处转为ir时，如何转回？
         ret_str<<icode::get_type_str(this->m_type)<< ":\"" << string_to_printf(this->name)<<"\";\n";
     }
+        break;
+
+    case ICODE_TYPE_ELLIPSIS:
+        ret_str<<icode::get_type_str(this->m_type)<<";\n";
         break;
 
     case ICODE_TYPE_UNKNOWN:

@@ -52,7 +52,6 @@ namespace NS_C512IR{
         /// 用户定义函数，用于在start标记符时，处理所有的token_defs
         void parse_start_token(token_defs & start_tk);
 
-        void clearExpressions();
 
 
 		
@@ -77,7 +76,6 @@ public:
     int correct_initializer_width_from_declarator(icode *var, icode *initializer);
     icode *new_copy_icode_gen(icode *from, icode *to);
     icode *release_tmp_if_need(icode *c);
-    std::string get_func_ret_var_name(std::string func_name);
     icode *new_temp_ptr_var(icode *in_ptr_type);
     icode *mov_icode(icode *left, icode *result);
     icode *new_var_in_var_icode(icode *to_ref);
@@ -86,16 +84,18 @@ public:
     icode *new_jmp_icode(icode *labeled_block, ICODE_TYPE label_start_end_ref=ICODE_TYPE_LABELED_BLOCK_START_REF);
     icode *ast_to_icode_func_definition(token_defs *tdefs, bool need_result_icode, icode *ret);
 
-    public://function from yy
-        int add_function(token_defs *func);
-        int add_declaration(token_defs *declaration);
+public://function from yy
+    int add_function(token_defs *func);
+    int add_declaration(token_defs *declaration);
 
 
-        ///如果此变量被设置，则只生成语法树
-        int m_just_ret_tree;
-        std::string m_yy_tree;
+    ///如果此变量被设置，则只生成语法树
+    int m_just_ret_tree;
+    std::string m_yy_tree;
 
-        std::string token_to_tree(token_defs *tdefs);
+    std::string token_to_tree(token_defs *tdefs);
+private:
+    int add_to_top_icodes(icode* ic);
 
 
     };

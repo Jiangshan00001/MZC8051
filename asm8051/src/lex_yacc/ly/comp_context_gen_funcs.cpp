@@ -901,7 +901,7 @@ icode *  func_IAN_MACRO_TEXT_LINE_3(comp_context* pcompi, token_defs* tdefs, boo
 	//token_defs *EOL=tdefs->m_tk_elems[3];
     icode *TK_MACRO_ic=pcompi->ast_to_icode(TK_MACRO);
     icode *expr_elem_ic=pcompi->ast_to_icode(expr_elem);
-    icode *expr_elem2_ic=pcompi->ast_to_icode(expr_elem);
+    icode *expr_elem2_ic=pcompi->ast_to_icode(expr_elem2);
 	//icode *EOL_ic=pcompi->ast_to_icode(EOL);
     a->merge_icode(TK_MACRO_ic);
     a->merge_icode(expr_elem_ic);

@@ -304,6 +304,12 @@ namespace NS_AMS8051HEX{
 	// cmd_text_line--> TK_CMD opand ',' opand ',' opand ',' opand EOL
     icode *a = pcompi->new_icode(ICODE_TOKEN_CMD);
     a->name = tdefs->val_str;
+    ///2021.3.15 命令行只有大写
+    ///
+
+
+    std::transform(a->name.begin(), a->name.end(), a->name.begin(), ::toupper);
+
     return a;
 }
  icode *func_token_TK_MACRO(comp_context* pcompi, token_defs* tdefs, bool need_result_icode, icode* result_ic)

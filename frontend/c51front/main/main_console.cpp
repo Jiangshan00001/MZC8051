@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
 	   std::getline(std::cin, line) &&
 	   !line.empty() )
     {
-        calc.clearExpressions();
         bool result = driver.parse_string(line, "input");
 
         if (result)

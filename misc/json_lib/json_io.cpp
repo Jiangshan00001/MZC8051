@@ -27,7 +27,7 @@ nlohmann::json json_io::to_json_in(int skip_ptr)
 
     //skip_ptr=skip_ptr+skip_ptr;
 
-    for(int i=0;i<m_property_name.size();++i)
+    for(unsigned i=0;i<m_property_name.size();++i)
     {
         switch(m_property_type[i])
         {
@@ -178,7 +178,7 @@ bool json_io::from_json_in(nlohmann::json &j)
       case JSON_IO_TYPE_VECTOR_INT:
       {
           std::vector<int>& c_val = * (std::vector<int> *)((void*)this+m_property_addr[index]);
-          for(int i=0;i<it.value().size();++i)
+          for(unsigned i=0;i<it.value().size();++i)
           {
           c_val.push_back(it.value()[i]);
           }

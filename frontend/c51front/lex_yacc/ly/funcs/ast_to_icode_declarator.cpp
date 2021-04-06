@@ -109,7 +109,7 @@ class icode *  func_IAN_DECLARATOR_1(class comp_context* pcompi, class token_def
 
 
     //变量引用
-    /// 20208.23 此处不能添加：pcompi->new_ref_icode。 否则会导致错误
+    /// 2020.8.23 此处不能添加：pcompi->new_ref_icode。 否则会导致错误
     /// 因为变量没有还定义，此处使用了ref内容保存变量内容
     a->result = direct->result;
     a->merge_icode(direct);
@@ -256,7 +256,12 @@ class icode *  func_IAN_DIRECT_DECLARATOR_BASE_1(class comp_context* pcompi, cla
     //0x3101-direct_declarator_base->identifier
     //parent:
     // direct_declarator_array--> direct_declarator_base
-    return pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
+
+
+    //return pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
+    icode * ic = pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
+    return ic;
+
 }
 class icode *  func_IAN_DIRECT_DECLARATOR_BASE_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
@@ -266,15 +271,17 @@ class icode *  func_IAN_DIRECT_DECLARATOR_BASE_2(class comp_context* pcompi, cla
     icode *a = pcompi->new_icode();
     a->m_type=ICODE_TYPE_BLOCK;
     //token_defs *'('=tdefs->m_tk_elems[0];
-    //token_defs *declarator=tdefs->m_tk_elems[1];
+    token_defs *declarator=tdefs->m_tk_elems[1];
     //token_defs *')'=tdefs->m_tk_elems[2];
     //icode *'('_ic=pcompi->ast_to_icode('(');
-    //icode *declarator_ic=pcompi->ast_to_icode(declarator);
+    icode *declarator_ic=pcompi->ast_to_icode(declarator);
     //icode *')'_ic=pcompi->ast_to_icode(')');
     //a->merge_icode('('_ic);
     //a->merge_icode(declarator_ic);
     //a->merge_icode(')'_ic);
-    assert(0);
+    //assert(0);
+    a->result = declarator_ic->result;
+    a->merge_icode(declarator_ic);
     return a;
 }
 class icode *  func_IAN_DIRECT_DECLARATOR_ARRAY_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)

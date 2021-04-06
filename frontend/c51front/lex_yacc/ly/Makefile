@@ -1,4 +1,4 @@
-CTOOL=/d/tsdx/compiler/editor8051_v2/build/ctools/ctool.exe
+CTOOL=/d/tsdx/compiler/editor8051_v2/build/yacc_to_front_code.exe
 
 all:
 	$(CTOOL) -t test parser_no_code.yy  parser_test.yy NS_C512IR

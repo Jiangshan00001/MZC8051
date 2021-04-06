@@ -152,4 +152,5 @@ int icode_high_to_low::execute(icodes *ics)
         icode_dead_func dead_func;
         dead_func.execute(ics);
     }
+    return 0;
 }

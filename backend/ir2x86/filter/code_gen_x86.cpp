@@ -4,6 +4,11 @@
 #include "var_manage_x86.h"
 #include "string_eval.h"
 
+#include "mylog.h"
+
+using mylog::cerr;
+
+
 code_gen_x86::code_gen_x86()
 {
     m_ebp = 0;
@@ -14,6 +19,7 @@ code_gen_x86::code_gen_x86()
     m_Reg.add_reg("ecx");
     m_Reg.add_reg("edx");
 
+    m_label_tmp_cnt = 0;
 
 
 
@@ -386,6 +392,24 @@ int code_gen_x86::get_stack_pos(icode *var)
 
 }
 
+std::string code_gen_x86::creat_lb()
+{
+    std::stringstream istr;
+    m_label_tmp_cnt++;
+    istr<<"tmp_lb_"<<m_label_tmp_cnt;
+    return istr.str();
+}
+
+std::string code_gen_x86::get_eax(icode *var_bitwidth)
+{
+    int bit_width = get_bitwidth(var_bitwidth);
+    if(bit_width==8)return " AL ";
+    if(bit_width==16)return " AX ";
+    if(bit_width==32)return " EAX ";
+    assert(0);
+    return "EAX";
+}
+
 
 
 std::string code_gen_x86::opr_get(icode *ic, std::stringstream &istr, bool add_size_quali)
@@ -589,32 +613,18 @@ int code_gen_x86::process_one_icode_start(icode *ic, void *user_data, icode *ipa
         {
             std::string opr1 = opr_get(ic->right, istr);
             std::string opr2 = opr_get(ic->result, istr);
-            istr<<"mov eax, "<< opr1<<";\n";
-            istr<<"mov "<< opr2 <<", eax;\n";
+            istr<<"mov "<< get_eax(ic->result) <<" , "<< opr1<<";\n";
+            istr<<"mov "<< opr2 <<", "<<get_eax(ic->result) <<";\n";
             return 0;
         }
         else if(ic->name=="=")
         {
             std::string right_str = opr_get(ic->right, istr);
             std::string result_str = opr_get(ic->result, istr);
-            istr<<"mov eax, "<< right_str<<";\n";
+            istr<<"mov "<<get_eax(ic->right)<<", "<< right_str<<";\n";
 
-            if(get_bitwidth(ic->result)==32)
-            {
-                istr<<"mov "<< result_str<<", eax;\n";
-            }
-            else if(get_bitwidth(ic->result)==16)
-            {
-                istr<<"mov "<< result_str<<", ax;\n";
-            }
-            else if(get_bitwidth(ic->result)==8)
-            {
-                istr<<"mov "<< result_str<<", al;\n";
-            }
-            else
-            {
-                assert(0);
-            }
+            istr<<"mov "<< result_str<<", "<<get_eax(ic->result) <<";\n";
+
             return 0;
         }
         else if(ic->name=="+")
@@ -623,9 +633,36 @@ int code_gen_x86::process_one_icode_start(icode *ic, void *user_data, icode *ipa
             std::string left_str = opr_get(ic->left, istr);
             std::string result_str = opr_get(ic->result, istr);
 
-            istr<<"mov eax,"<<right_str<<"\n";
-            istr<<"add eax,"<<left_str<<"\n";
-            istr<<"mov "<<result_str<<",eax\n";
+            istr<<"mov "<< get_eax(ic->right)<< ","<<right_str<<"\n";
+            istr<<"add "<< get_eax(ic->left)<<","<<left_str<<"\n";
+            istr<<"mov "<<result_str<<","<<get_eax(ic->result) <<"\n";
+        }
+        else if(ic->name=="-")
+        {
+            std::string left_str = opr_get(ic->left, istr);
+            std::string right_str = opr_get(ic->right, istr);
+
+            istr<<"mov eax,"<<left_str <<"\n";
+            istr<<"sub eax,"<<right_str<<"\n";
+            std::string result_str = opr_get(ic->result, istr);
+
+            istr<<"mov "<<result_str<<", eax\n";
+            //printf("mov eax,%s\n",mod(it->s2).c_str());
+            //printf("sub eax,%s\n",mod(it->s3).c_str());
+            //pintf("mov [%s],eax\n",it->s4.c_str());
+        }
+        else if(ic->name=="*")
+        {
+            std::string left_str = opr_get(ic->left, istr);
+
+            istr<<"mov eax, "<< left_str<< "\n";
+            std::string right_str = opr_get(ic->right, istr);
+            istr<< "mov ecx,"<<right_str << "\n";
+            istr<<"mov edx,0\n";
+            istr<<"imul ecx\n";
+            std::string result_str = opr_get(ic->result, istr);
+
+            istr<<"mov "<< result_str<<",eax\n";
         }
         else if(ic->name=="!=")
         {
@@ -694,7 +731,6 @@ int code_gen_x86::process_one_icode_start(icode *ic, void *user_data, icode *ipa
                 istr<<"mov "<<rx<<","<<left_str<<"\n";
                 istr<<"cmp "<<rx<<",0\n";
                 istr<<"je "<<result_str<<"\n";
-
         }
         else if(ic->name=="JMP")
         {
@@ -709,8 +745,44 @@ int code_gen_x86::process_one_icode_start(icode *ic, void *user_data, icode *ipa
             istr<<"add eax, 1\n";
             istr<<"mov "<< result_str<<", eax\n";
         }
+        else if(ic->name=="<")
+        {
+
+
+
+            std::string result_str = opr_get(ic->result, istr);
+            istr<<"XOR eax,eax\n";
+            istr<<"MOV "<< result_str<<", "<<get_eax(ic->result) <<"\n";
+
+            std::string left_str = opr_get(ic->left, istr);
+            istr<<"MOV "<<get_eax(ic->left) <<", " << left_str<<";\n";
+
+            std::string right_str = opr_get(ic->right, istr);
+            istr<<"CMP "<< get_eax(ic->right)<<", " << right_str<<";\n";
+
+            //printf("mov eax,%s\n",mod(it->s2).c_str());
+            //printf("cmp eax,%s\n",mod(it->s3).c_str());
+            std::string lb1=creat_lb();
+            istr<< "JGE "<<lb1<<";\n";
+            istr<< "MOV eax,1\n";
+            istr<< "MOV "<< result_str<<  " ,"<< get_eax(ic->result)<<"\n";
+            istr<<lb1<< ":\n";
+        }
         else
         {
+            cerr<<";opr:"<<ic->name<<";\n";
+            if(ic->left!=NULL)
+            {
+                cerr<<"left_type:"<<ic->left->m_type<<"\n";
+            }
+            if(ic->right!=NULL)
+            {
+                cerr<<"right_type:"<<ic->right->m_type<<"\n";
+            }
+            if(ic->result!=NULL)
+            {
+                cerr<<"result_type:"<<ic->result->m_type<<"\n";
+            }
             assert(0);
         }
     }

@@ -275,7 +275,7 @@ return a;
 break;
 
 }//switch end. case_cnt=43
-
+    return NULL;
 }
 icode * comp_context::ast_to_icode_ast(token_defs* tdefs, bool need_result_icode, icode *result_ic)
 {
@@ -645,6 +645,7 @@ break;
 
 }//switch end. case_cnt=3b
 
+return NULL;
 }
 
 icode * comp_context::ast_to_icode(token_defs* tdefs, bool need_result_icode, icode *result_ic)

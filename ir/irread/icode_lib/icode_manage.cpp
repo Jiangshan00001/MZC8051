@@ -144,32 +144,76 @@ icode *icode_manage::new_var(icode *def_ic, icode *typedec, int &is_already_exis
 
     ///============================
     ///
+    /// 定义新变量
 
+    /// typedec(int) def_ic(a)
+    /// typedec(int) def_ic(*a)
+    /// typedef(typedef int) def_ic(a)
+    /// typedef(typedef int) def_ic(*a)
     icode *a= new_icode();
 
     a->m_type = ICODE_TYPE_DEF_VAR;
     a->name = def_ic->name;
     this->add_symbol(a->name, a);
 
-    if((! def_ic->is_array)&&(!def_ic->is_ptr))
+    if(def_ic->m_type==ICODE_TYPE_FUNC)
     {
-        //复制所有的，除了id号和name
+        ///函数声明。 def_ic中包含函数名称，函数参数等信息
+        ///         typecdec中是返回值的类型信息
         int aid = a->m_icode_number;
-        *a = *typedec;
+        *a = *def_ic;
         a->m_icode_number = aid;
         a->name = def_ic->name;
 
+
+        assert(a->sub_icode.size()>0);
+        //正常函数
+        a->m_type=ICODE_TYPE_FUNC;
+        a->is_extern = 1;
+
+        ///函数返回值
+        int sid = a->sub_icode[0]->m_icode_number;
+        *a->sub_icode[0] = *typedec;
+        a->sub_icode[0]->m_icode_number = sid;
+
+        a->sub_icode[0]->m_type = ICODE_TYPE_FUNC_RET_TYPE;
+        a->sub_icode[0]->name = this->get_func_ret_var_name(def_ic->name);
+        a->sub_icode[0]->is_typedef = 0;
+
+        for(int i=1;i<a->sub_icode.size();++i)
+        {
+            a->sub_icode[i]->m_type = ICODE_TYPE_FUNC_DEF_ARG;
+        }
+
+
+
+    }
+
+
+    if((! def_ic->is_array)&&(!def_ic->is_ptr))
+    {
+        if(a->m_type!=ICODE_TYPE_FUNC)
+        {
+            //复制所有的，除了id号和name
+            int aid = a->m_icode_number;
+            *a = *typedec;
+            a->m_icode_number = aid;
+            a->name = def_ic->name;
+        }
     }
     else if(def_ic->is_array)
     {
-
-
         ///数组定义 int a[]; 数组is_array属性在后面def_ic，而不是typedec
         a->m_in_ptr_type = new_icode(*typedec);
+
+
+        ///2021.3.19 解决typedef char [10] A;的问题
+        a->is_typedef = typedec->is_typedef;
+        a->m_in_ptr_type->is_typedef = 0;//内部的不能是typedef?????
+
         //数组
         a->is_array = def_ic->is_array;
         a->array_cnt=def_ic->array_cnt;
-
 
 
         //数组元素，总体无符号
@@ -191,9 +235,29 @@ icode *icode_manage::new_var(icode *def_ic, icode *typedec, int &is_already_exis
     }
     else if(def_ic->is_ptr)
     {
-        ///指针定义 int *a; is_ptr属性在后面def_ic，而不是typedec
-        a->m_type=ICODE_TYPE_DEF_VAR;
-        a->m_in_ptr_type = new_icode(*typedec);
+
+        if(def_ic->m_type==ICODE_TYPE_FUNC)
+        {
+            ///是函数指针
+            ///函数至少有一个返回值
+            a->m_in_ptr_type = new_icode(*a);
+            a->m_in_ptr_type->is_ptr = 0;//函数指针，指向的类型是函数，而不是函数指针
+            a->m_type=ICODE_TYPE_DEF_VAR;
+            a->is_extern = 0;//函数指针，默认不再是extern类型
+        }
+        else
+        {
+            a->m_type=ICODE_TYPE_DEF_VAR;
+            ///指针定义 int *a; is_ptr属性在后面def_ic，而不是typedec
+            a->m_in_ptr_type = new_icode(*typedec);
+        }
+
+
+        ///2021.3.19 解决typedef char * A;的问题
+        /// typedec(typedef char) def_ic(*A)
+        ///
+        a->is_typedef = typedec->is_typedef;
+        a->m_in_ptr_type->is_typedef = 0;//内部的不能是typedef?????
         //a->m_in_ptr_bit_width = a->m_bit_width;
         //a->m_in_ptr_is_float32 = a->is_float32;
         //a->m_in_ptr_is_signed = a->is_signed;
@@ -202,9 +266,13 @@ icode *icode_manage::new_var(icode *def_ic, icode *typedec, int &is_already_exis
         a->is_signed = 0;
         a->m_bit_width = this->m_top_icodes->m_target->get_basic_type_bit_width("GENERIC_PTR");
         a->is_ptr = def_ic->is_ptr;
+
     }
 
 
+
+
+    ///-----------------
     if(a->is_typedef)
     {
         m_typedef.push_back(a);
@@ -297,4 +365,12 @@ icode *icode_manage::get_def_var(icode *ic)
 {
     return m_top_icodes->get_def_var(ic);
 
+}
+
+
+
+
+std::string icode_manage::get_func_ret_var_name(std::string func_name)
+{
+    return "__"+func_name+"_ret";
 }

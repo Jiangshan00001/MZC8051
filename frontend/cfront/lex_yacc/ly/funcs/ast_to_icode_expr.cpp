@@ -1298,7 +1298,7 @@ class icode *  func_IAN_UNARY_EXPRESSION_4(class comp_context* pcompi, class tok
 }
 
 
-
+#if 0
 icode *func_opr_sizeof(comp_context* pcompi, token_defs *unary_expression, bool need_result_icode, icode *result_ic)
 {
     icode *a = pcompi->new_icode();
@@ -1343,7 +1343,30 @@ icode *func_opr_sizeof(comp_context* pcompi, token_defs *unary_expression, bool 
 
     return a;
 }
+#else
 
+icode *func_opr_sizeof(comp_context* pcompi, token_defs *unary_expression, bool need_result_icode, icode *result_ic)
+{
+    icode *a = pcompi->new_icode();
+    a->m_type=ICODE_TYPE_BLOCK;
+
+
+    icode *b = pcompi->new_icode();
+    b->m_type = ICODE_TYPE_I_CONST;
+    b->name = "sizeof";
+
+    icode *c = pcompi->ast_to_icode(unary_expression, 1);
+
+    a->merge_icode(c);
+
+    b->num = (c->result->get_bit_width()+7)/8;
+    b->const_refresh_width();
+    a->result = b;
+
+    return a;
+}
+
+#endif
 
 class icode *  func_IAN_UNARY_EXPRESSION_5(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {

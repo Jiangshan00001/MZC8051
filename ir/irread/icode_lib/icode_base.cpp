@@ -47,6 +47,8 @@ void load_icode_debug_info()
         {ICODE_TYPE_CONST_LIST, "clist"},
         {ICODE_TYPE_ASM, "asm"},
         {ICODE_TYPE_SCOPE, "{"},
+        {ICODE_TYPE_RELEASE, "release"},
+        {ICODE_TYPE_ELLIPSIS, "ellipsis"},
     };
 
     for(unsigned i=0;i<sizeof(a)/sizeof(a[0]);i++)

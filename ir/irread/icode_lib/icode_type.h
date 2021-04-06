@@ -57,6 +57,7 @@ typedef enum ICODE_TYPE_TAG
     ICODE_TYPE_SCOPE=25,//作用域，现在为c语言中的大括号: {}
 
     ICODE_TYPE_RELEASE=26,//变量释放位置
+    ICODE_TYPE_ELLIPSIS,/// ellipsis func params
 
 }ICODE_TYPE;
 

@@ -47,7 +47,8 @@ int myexecute_ansi(std::string cmd_ansi, std::string param_ansi, int wait_for_fi
                                 NULL );
     assert ( hConsoleRedirect!=INVALID_HANDLE_VALUE );
 
-    unsigned dwSize = GetFileSize (hConsoleRedirect, NULL) ;
+    //unsigned dwSize =
+            GetFileSize (hConsoleRedirect, NULL) ;
     SetFilePointer (hConsoleRedirect, 0, NULL, FILE_END);
 
 
@@ -68,7 +69,7 @@ int myexecute_ansi(std::string cmd_ansi, std::string param_ansi, int wait_for_fi
                         NULL,//process handle not inheritable
                         NULL,//thread handle not inheritable
                         TRUE,// set handle inheritance to ?
-                        NULL,// no creation flags
+                        0,// no creation flags
                         NULL,// use parent's environment block
                         NULL,// use parent's starting directory
                         &s, //pointer to startup info struct

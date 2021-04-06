@@ -433,6 +433,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <assert.h>
 
 #include "icode.h"
 #include "ast_base.h"
@@ -677,9 +678,16 @@ std::string string_to_printf(std::string strA)
 
 
 
-std::string icode::get_var_type()
+std::string icode::get_var_type(int one_line)
 {
     std::stringstream ss1;
+
+    if(this->m_type==ICODE_TYPE_FUNC)
+    {
+        return this->to_str(1);
+    }
+
+
 
 
     {
@@ -710,7 +718,7 @@ std::string icode::get_var_type()
     if(this->is_ptr)
     {
         ss1<<"*"<< this->is_ptr<<"*[" ;
-        ss1<<this->m_in_ptr_type->get_var_type()<<"]";
+        ss1<<this->m_in_ptr_type->get_var_type(1)<<"]";
     }
 
 
@@ -1087,7 +1095,22 @@ std::ostream &operator<<(std::ostream &out, const icode &s)
 
 int icode::get_bit_width()
 {
-    if((m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||
+    if(m_type==ICODE_TYPE_SYMBOL_REF)
+    {
+        if(this->result==NULL)
+        {
+            ///FIXME 此处是异常？？？
+            ///
+
+            assert(0);
+            return 32;
+        }
+
+        return this->result->get_bit_width();
+
+
+    }
+    else if((m_type==ICODE_TYPE_DEF_VAR_IN_VAR)||
             (m_type==ICODE_TYPE_DEF_VAR_IN_VAR_TMP) )
     {
         return this->result->m_in_ptr_type->m_bit_width;

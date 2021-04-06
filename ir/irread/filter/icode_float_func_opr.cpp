@@ -620,9 +620,9 @@ int icode_float_func_opr::process_imod(icode *ic, std::vector<icode *> &parent, 
 
 
 
-    icode *right = ic->right;
-    icode *left = ic->left;
-    icode *result = ic->result;
+    //icode *right = ic->right;
+    //icode *left = ic->left;
+    //icode *result = ic->result;
 
 
     icode *right_def = pcompi->get_def_var(ic->right);

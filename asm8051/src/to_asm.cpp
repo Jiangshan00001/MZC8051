@@ -23,7 +23,7 @@ int to_asm::hex_to_code1(std::string &hex_format_str)
 
     cdbg<<ihex_block.size()<<"\n";
 
-    for(int i=0;i<ihex_block.size();++i)
+    for(unsigned i=0;i<ihex_block.size();++i)
     {
         std::vector<T_HEX_TEXT_BLOCK> mm;
         m_blocks.push_back(mm);
@@ -64,12 +64,12 @@ int to_asm::hex_to_code1(std::string &hex_format_str)
 std::string to_asm::hex_to_code2()
 {
     std::stringstream istr;
-    for(int i=0;i<m_blocks.size();++i)
+    for(unsigned i=0;i<m_blocks.size();++i)
     {
         if(m_blocks[i].empty())continue;
 
         istr<<"ORG "<<std::hex<<"0"<< m_blocks[i][0].m_address<<"H;\n";
-        for(int j=0;j<m_blocks[i].size();++j)
+        for(unsigned j=0;j<m_blocks[i].size();++j)
         {
             ///汇编代码
             if(m_label_code_address.find(m_blocks[i][j].m_address)!=m_label_code_address.end())
@@ -79,7 +79,7 @@ std::string to_asm::hex_to_code2()
             istr<<m_blocks[i][j].m_source<<"\t\t";
             /// hex数据
             istr<<std::hex<<m_blocks[i][j].m_address<<"H\t";
-            for(int k=0;k<m_blocks[i][j].m_hex_text.size();++k)
+            for(unsigned k=0;k<m_blocks[i][j].m_hex_text.size();++k)
             {
                 istr<<ByteToStr(m_blocks[i][j].m_hex_text[k])<<" ";
             }

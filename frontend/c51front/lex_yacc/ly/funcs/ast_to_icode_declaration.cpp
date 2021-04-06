@@ -149,6 +149,9 @@ class icode *  func_IAN_DECLARATION_2(class comp_context* pcompi, class token_de
     type_ic->m_dir_source = declaration_specifiers->m_file_name;
     type_ic->m_source = pcompi->mp_driver->streamname;
     type_ic->m_line_no = type_ic->m_dir_line_no;
+
+#if 0
+    ///2021.3.30 此处去掉对于函数的单独处理，在ast_to_icode中处理
     ///--------------------------
 
     if((init_declarator_list->m_tk_type_int==IAN_DIRECT_DECLARATOR_FUNCTION1_2)||
@@ -161,6 +164,7 @@ class icode *  func_IAN_DECLARATION_2(class comp_context* pcompi, class token_de
         pcompi->ast_to_icode_func_decl(declaration_specifiers, init_declarator_list, a, func_name);
         return a;
     }
+#endif
 
 
     pcompi->m_curr_var_type  = type_ic;
@@ -520,13 +524,15 @@ class icode *  func_IAN_INIT_DECLARATOR_2(class comp_context* pcompi, class toke
     // init_declarator_list--> init_declarator_list ',' init_declarator
 
     icode *b = pcompi->ast_to_icode(tdefs, 1);
-
+#if 0
     if(b->result->m_type==ICODE_TYPE_FUNC)
     {
         /// 函数不在此处处理
-        return b;
+        {
+            return b;
+        }
     }
-
+#endif
     //此处进行变量声明
 
     icode *a = pcompi->new_icode();

@@ -26,10 +26,7 @@ comp_context::~comp_context()
 {
 }
 
-void comp_context::clearExpressions()
-{
 
-}
 
 void comp_context::parse_start_token(token_defs &start_tk)
 {
@@ -39,6 +36,74 @@ void comp_context::parse_start_token(token_defs &start_tk)
 }
 
 
+
+int comp_context::add_function(token_defs *func)
+{
+    if(m_just_ret_tree)
+    {
+        m_yy_tree = m_yy_tree +"============\n"+ token_to_tree(func);
+
+        //此处生成tree
+        return 0;
+    }
+
+    icode* funci = ast_to_icode(func);
+    add_to_top_icodes(funci);
+
+    /// add_symbol 函数symbol 在ast-to-icode时已经加入符号表
+    return 0;
+}
+
+int comp_context::add_declaration(token_defs *declaration)
+{
+    if(m_just_ret_tree)
+    {
+        m_yy_tree = m_yy_tree +"============\n"+ token_to_tree(declaration);
+
+        //此处生成tree
+        return 0;
+    }
+
+    icode *a = ast_to_icode(declaration);
+
+    add_to_top_icodes(a);
+
+
+    return 0;
+}
+
+
+int comp_context::add_to_top_icodes(icode *ic)
+{
+    if(ic->m_type==ICODE_TYPE_BLOCK)
+    {
+        for(unsigned i=0;i<ic->sub_icode.size();++i)
+        {
+            add_to_top_icodes(ic->sub_icode[i]);
+        }
+        return 0;
+    }
+    ///检查是否已经存在，如果已经存在，则不再重复添加
+    if(std::find(m_top_icodes->m_top_icodes->sub_icode.begin(), m_top_icodes->m_top_icodes->sub_icode.end(), ic)==m_top_icodes->m_top_icodes->sub_icode.end())
+    {
+        ///FIXME此处如果变量已经生命过，则不再重复填入top_icodes.
+        /// 函数无此问题，因为函数声明如果已经声明过，则不再返回声明的icode
+        /// 函数声明应该和此采用一致的行为，但是暂时没有，理论上应该可以工作
+        /// 不一致的原因是： 变量的new_var需要一直返回正确的变量，如果已经定义过了，则返回之前icode，方便后期操作
+        /// function的ast_to_icode_func_decl 当时定义的是不返回icode，需要后面自己查找icode
+        /// 后期可以统一定义为返回icode，这样不用再次查找了!
+        /// 如果要修改，需要修改  function的ast_to_icode_func_decl 和相关的调用
+        /// 通过添加 is_already_defined 解决
+
+        m_top_icodes->m_top_icodes->sub_icode.push_back(ic);
+        if(ic->m_type==ICODE_TYPE_FUNC)
+        {
+            m_functions[ic->name] = ic;
+        }
+    }
+
+    return 0;
+}
 
 
 int comp_context::check_type(std::string text1)
@@ -164,7 +229,7 @@ icode* comp_context::ast_to_icode_func_definition(token_defs *tdefs, bool need_r
 
     return ret;
 }
-
+///此函数后期会废弃，改为icode_manage::new_var函数
 int comp_context::ast_to_icode_func_decl(token_defs *declaration_specifiers, token_defs *declarator, icode *ret, std::string &func_name)
 {
     //IAN_FUNCTION_DEFINITION_2 -0x4d02-function_definition->declaration_specifiers declarator compound_statement
@@ -242,6 +307,7 @@ int comp_context::ast_to_icode_func_decl(token_defs *declaration_specifiers, tok
     func->name = decl_ic->result->name;
     func->is_extern = 1;
 
+
     if(type_ic->is_inline)
     {
         //声明时是否是inline
@@ -292,6 +358,31 @@ int comp_context::ast_to_icode_func_decl(token_defs *declaration_specifiers, tok
 
     //函数返回值的引用
     func->result = new_ref_icode(func->sub_icode[0]);
+
+
+
+    //2021.3.20 添加函数指针的支持
+    func->is_ptr = decl_ic->result->is_ptr;
+    func->is_typedef = type_ic->is_typedef;
+
+    /// TODO: 函数指针的处理--待添加
+    if(func->is_ptr)
+    {
+        //函数指针，则是变量或者typedef类型???
+        // 定义一个变量，类型是函数指针
+
+
+    }
+
+    if(func->is_typedef)
+    {
+        //typdef必须是函数指针
+        assert(func->is_ptr);
+        //定义一个变量，类型是函数指针。typdef名称是func->name
+
+    }
+
+
 
     return 0;
 }
@@ -400,6 +491,7 @@ int comp_context::correct_initializer_width_from_declarator(icode *var, icode *i
 
         if(initializer->m_type==ICODE_TYPE_SCOPE)
         {
+            ///TODO: 此处代码对于 char a[]={"abcdedf"};没有处理。需要处理
 
             ///内部元素的宽度
             int elem_bit_width = var->m_in_ptr_type->m_bit_width;
@@ -592,14 +684,6 @@ icode * comp_context::new_copy_icode_gen(icode *from, icode *to)
 }
 
 
-
-
-std::string comp_context::get_func_ret_var_name(std::string func_name)
-{
-    return "__"+func_name+"_ret";
-}
-
-
 icode *comp_context::new_temp_ptr_var(icode *in_ptr_type)
 {
     return m_top_icodes->new_temp_ptr_var(in_ptr_type);
@@ -731,64 +815,6 @@ icode *comp_context::new_jnz_icode(icode *result, icode *labeled_block, std::str
     return jmp_code;
 }
 
-
-int comp_context::add_function(token_defs *func)
-{
-    if(m_just_ret_tree)
-    {
-        m_yy_tree = m_yy_tree +"============\n"+ token_to_tree(func);
-
-        //此处生成tree
-        return 0;
-    }
-
-    icode* funci = ast_to_icode(func);
-
-
-    if(std::find(m_top_icodes->m_top_icodes->sub_icode.begin(), m_top_icodes->m_top_icodes->sub_icode.end(), funci)==m_top_icodes->m_top_icodes->sub_icode.end())
-    {
-        m_top_icodes->m_top_icodes->sub_icode.push_back(funci);
-        m_functions[funci->name] = funci;
-    }
-
-
-
-    /// add_symbol 函数symbol 在ast-to-icode时已经加入符号表
-
-
-    return 0;
-}
-
-int comp_context::add_declaration(token_defs *declaration)
-{
-    if(m_just_ret_tree)
-    {
-        m_yy_tree = m_yy_tree +"============\n"+ token_to_tree(declaration);
-
-        //此处生成tree
-        return 0;
-    }
-
-    icode *a = ast_to_icode(declaration);
-
-
-    ///此if语句应该可以去掉，但是需要测试，暂时不去掉
-    if(std::find(m_top_icodes->m_top_icodes->sub_icode.begin(), m_top_icodes->m_top_icodes->sub_icode.end(), a)==m_top_icodes->m_top_icodes->sub_icode.end())
-    {
-        ///FIXME此处如果变量已经生命过，则不再重复填入top_icodes.
-        /// 函数无此问题，因为函数声明如果已经声明过，则不再返回声明的icode
-        /// 函数声明应该和此采用一致的行为，但是暂时没有，理论上应该可以工作
-        /// 不一致的原因是： 变量的new_var需要一直返回正确的变量，如果已经定义过了，则返回之前icode，方便后期操作
-        /// function的ast_to_icode_func_decl 当时定义的是不返回icode，需要后面自己查找icode
-        /// 后期可以统一定义为返回icode，这样不用再次查找了!
-        /// 如果要修改，需要修改  function的ast_to_icode_func_decl 和相关的调用
-        /// 通过添加 is_already_defined 解决
-
-        m_top_icodes->m_top_icodes->sub_icode.push_back(a);
-    }
-
-    return 0;
-}
 
 std::string comp_context::token_to_tree(token_defs *tdefs)
 {

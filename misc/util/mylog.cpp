@@ -99,6 +99,7 @@ int mylog::MyLog::close_log_file()
 int mylog::MyLog::set_cout_output(int is_out)
 {
     is_c_cout = is_out;
+    return 0;
 }
 
 mylog::MyLog &mylog::MyLog::print_hex(std::string istr, int num_of_one_line)
@@ -120,6 +121,7 @@ mylog::MyLog &mylog::MyLog::print_hex(std::string istr, int num_of_one_line)
         foo(char_to_hex_disp(AB));
     }
     foo('\n');
+    return *this;
 
 }
 

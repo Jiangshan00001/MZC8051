@@ -28,8 +28,8 @@ IS  (((u|U)(l|L|ll|LL)?)|((l|L|ll|LL)(u|U)?))
 CP  (u|U|L)
 SP  (u8|u|U|L)
 ES  (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
-WS  [ \t\v\n\f]
-
+WS  [ \t\v\f]
+/*remove \n from WS-2021.3.20 */
 %{ /*** C/C++ Declarations ***/
 
 #include <string>
@@ -45,6 +45,7 @@ WS  [ \t\v\n\f]
 #include "mylog.h"
 
 using mylog::cerr;
+using mylog::cdbg;
 
 /* import the parser's token type into a local typedef */
 typedef NS_C512IR::Parser::token token;
@@ -167,27 +168,28 @@ typedef NS_C512IR::Parser::token_type token_type;
 
 
 "#line".*                           { /*reset line and file_name here*/
-                                        // #line 6 "C:/Program Files (x86)/Notepad++/plugins/MZC8051/inc/c8051/reg52.h"
-                                        std::string yytext_str = yytext;
-                                        replace(yytext_str, "#line ", "");
+                        // #line 6 "C:/Program Files (x86)/Notepad++/plugins/MZC8051/inc/c8051/reg52.h"
+                        std::string yytext_str = yytext;
+                        replace(yytext_str, "#line ", "");
 
-                                        std::string line_num_str = yytext_str.substr(0,yytext_str.find(' '));
+                        std::string line_num_str = yytext_str.substr(0,yytext_str.find(' '));
 
 
-                                        unsigned lineNum = StrToNumber(line_num_str);
-                                        yytext_str = yytext_str.substr(yytext_str.find(' ')+1);
+                        unsigned lineNum = StrToNumber(line_num_str);
+                        yytext_str = yytext_str.substr(yytext_str.find(' ')+1);
 
-                                        //int file_start=5;
-                                        //while((yytext[file_start]!=0)&&(yytext[file_start]!='\"')&&(file_start<20))file_start++;
+                        //int file_start=5;
+                        //while((yytext[file_start]!=0)&&(yytext[file_start]!='\"')&&(file_start<20))file_start++;
 
-                                        static std::string s_filename;
-                                        s_filename= yytext_str;
+                        static std::string s_filename;
+                        s_filename= yytext_str;
 
-                                        yylloc->initialize(&s_filename);
-                                        yylloc->lines(lineNum);
-                                        yylloc->step();
-                                        //2020.6.30 去掉LINE_NUM的token。此处后期change_line_num函数就没用了
-                                        //TKEY_DEF( token::LINE_NUM ,1, 0   );
+                        yylloc->initialize(&s_filename);
+                        yylloc->lines(lineNum-1);/// 因为#line宏本身占一行，所以此处去掉一行
+                        yylloc->step();
+                        //cerr<<"change file to :"<<s_filename<<". line:"<<lineNum<<"\n";
+                        //2020.6.30 去掉LINE_NUM的token。此处后期change_line_num函数就没用了
+                        //TKEY_DEF( token::LINE_NUM ,1, 0   );
                                         }
 
 {L}{A}*					{ /*各种标识符，修饰符等*/ TKEY_DEF( static_cast<token_type> (driver.calc.check_type(std::string(yytext, yyleng))), 0, 0);}

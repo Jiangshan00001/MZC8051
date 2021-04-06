@@ -302,6 +302,7 @@ class icode *func_token_TYPEDEF_NAME(class comp_context* pcompi, class token_def
 
     *result_ic = *s->def_icode;
     result_ic->m_icode_number = tmp;
+    result_ic->is_typedef = 0;//复制后，将is_typedef=0
     //result_ic->m_bit_width = s->def_icode->m_bit_width;
     result_ic->m_type_str = tmp_type_name + s->def_icode->name;
     //result_ic->name = s->def_icode->name;

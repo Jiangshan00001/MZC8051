@@ -304,6 +304,6 @@ int icode_ptr_calc::process_one_icode(icode *ic, std::vector<icode *> &parent, i
     }
 
 
-
+    return 0;
 }
 

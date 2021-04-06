@@ -51,7 +51,8 @@ int asm_to::add_src(std::string code_src, std::string file_name)
 
     //driver.trace_parsing = 1;
     //driver.trace_scanning = 1;
-    bool result = driver.parse_stream(istr, file_name);
+    //bool result =
+            driver.parse_stream(istr, file_name);
 
     m_top_icode = calc.m_top_icode;
 
@@ -102,7 +103,7 @@ int asm_to::visitor_ic(icode *ic)
     {
     case ICODE_TYPE_BLOCK:
         cdbg<<"ICODE_TYPE_BLOCK\n";
-        for(int j=0;j<ic->sub_icode.size();++j)
+        for(unsigned j=0;j<ic->sub_icode.size();++j)
         {
             ret_val+=visitor_ic(ic->sub_icode[j]);
         }
@@ -119,7 +120,7 @@ int asm_to::visitor_ic(icode *ic)
         int opr_cnt = ic->sub_icode.size()-1;
         int opr_type[3]={0};
         unsigned opr_val[3]={0};
-        for(int i=1;i<ic->sub_icode.size();++i)
+        for(unsigned i=1;i<ic->sub_icode.size();++i)
         {
             opr_type[i-1] =  calc_icode_type(ic->sub_icode[i]);
             opr_val[i-1] = calc_icode_val(ic->sub_icode[i]);
@@ -412,7 +413,7 @@ int asm_to::process_macro(icode *ic)
         mhb.m_address = m_address;
         int db_size = ic->sub_icode.size()-1;
         mhb.m_bin.resize(db_size);
-        for(int i=1;i<ic->sub_icode.size();++i)
+        for(unsigned i=1;i<ic->sub_icode.size();++i)
         {
             mhb.m_bin[i-1] = (unsigned char)(unsigned)calc_icode_val(ic->sub_icode[i]);
         }

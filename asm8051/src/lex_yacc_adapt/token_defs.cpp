@@ -10,7 +10,7 @@ token_defs::token_defs()
 void token_defs::print()
 {
     print_self();
-    for(int i=0;i<m_tk_elems.size();++i)
+    for(unsigned i=0;i<m_tk_elems.size();++i)
     {
         m_tk_elems[i]->print();
     }

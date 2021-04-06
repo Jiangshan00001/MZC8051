@@ -36,12 +36,12 @@ test: $(OBJ_DIR)/$(EXE_FILE)
 
 $(OBJ_DIR)/$(EXE_FILE): $(OBJ_FILES)
 	@echo "Linking $@"
-	@g++  $^  $(LD_FLAGS)  $(IMPORT_LIB)  $(LD_LIBS) -o $@ 
+	g++  $^  $(LD_FLAGS)  $(IMPORT_LIB)  $(LD_LIBS) -o $@ 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@echo "Compiling $<"
 	@mkdir -p $(OBJ_DIR)
-	@g++ $(CC_FLAGS) -c -o $@ $<
+	g++ $(CC_FLAGS) -c -o $@ $<
 
 CC_FLAGS += -MMD -MP
 -include $(OBJ_FILES:.o=.d)

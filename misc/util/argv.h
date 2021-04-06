@@ -118,7 +118,7 @@ public:
         }
         std::vector<std::string> ret;
 
-        int cnt = m_mapArgs.count(cOption);
+        unsigned cnt = m_mapArgs.count(cOption);
         auto iter = m_mapArgs.find(cOption);
 
         for(unsigned i=0;i<cnt;++i)

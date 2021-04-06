@@ -139,6 +139,8 @@ icode *icodes::new_ref_icode(icode *to_ref)
     else
     {
         e_ref->result = to_ref;
+        if(to_ref!=NULL)e_ref->name = to_ref->name;
+
     }
 
     return e_ref;
@@ -260,6 +262,7 @@ icode *icodes::new_var_in_var_tmp_icode(icode *to_ref)
 
     return e_ref;
 }
+
 
 icode *icodes::new_temp_ptr_var(icode *in_ptr_type)
 {

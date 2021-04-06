@@ -17,7 +17,8 @@ void main_t1()
 	driver.trace_scanning = true;
 	//driver.parse_stream("file_name_in", "somethin string");
 	
-	bool result = driver.parse_string("string context", "input");
+    //bool result =
+    driver.parse_string("string context", "input");
 	
 }
 
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
 
     NS_IR2ICODE::comp_context calc(E_8051_TARGET);
     NS_IR2ICODE::Driver driver(calc);
-    bool readfile = false;
+    //bool readfile = false;
 
 
     if(args.HaveOption('p'))

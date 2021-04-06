@@ -56,6 +56,7 @@ public:
 public:
     /// 用户自定义类型表
     /// 内部的icode是dev_var 定义变量的类型
+    /// 类型定义表，不放入m_top_icodes中
     std::vector<class icode*> m_typedef;
 
 public:
@@ -71,7 +72,6 @@ public:
     sym* find_symbol(const std::string &name)
     {
         return m_top_icodes->m_sym_manage.find_symbol(name);
-
     }
 
     unsigned get_symbol_list_size()
@@ -169,6 +169,11 @@ public:
     std::map<std::string, int> m_struct_union_bitwidth;
 
     std::string m_curr_struct_union_name;
+public:
+    ///函数返回值的命名方式
+    std::string get_func_ret_var_name(std::string func_name);
+
+
 
 };
 

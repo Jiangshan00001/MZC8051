@@ -38,7 +38,7 @@ public:
 private:
 
     /// 根据数据类型，输出 i32 u64 f32 i8 等字符串
-    std::string get_var_type();
+    std::string get_var_type(int one_line=0);
 
     ///  将vector<icode*>类型的变量，转为str
     std::string vector_icode_ptr_cont(std::vector<icode *> vec1);

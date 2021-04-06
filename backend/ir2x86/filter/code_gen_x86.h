@@ -40,6 +40,9 @@ private:
 
     reg_alloc2<std::string> m_Reg;
 
+    int m_label_tmp_cnt;
+    std::string creat_lb();
+    std::string get_eax(icode *var_bitwidth);
 
 };
 

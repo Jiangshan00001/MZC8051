@@ -7,6 +7,10 @@
 #include "driver.h"
 #include "scanner.h"
 #include "comp_context.h"
+#include "mylog.h"
+using mylog::cerr;
+using mylog::cdbg;
+
 
 namespace NS_C2IR {
 
@@ -16,6 +20,8 @@ Driver::Driver(comp_context &_calc)
       calc(_calc)
 {
     calc.mp_driver = this;
+    this->lexer = NULL;
+    this->parser = NULL;
 }
 
 bool Driver::parse_stream(std::istream& in, const std::string& sname)
@@ -27,6 +33,7 @@ bool Driver::parse_stream(std::istream& in, const std::string& sname)
     this->lexer = &scanner;
 
     Parser parser(*this);
+    this->parser = &parser;
     parser.set_debug_level(trace_parsing);
     return (parser.parse() == 0);
 }
@@ -47,7 +54,18 @@ bool Driver::parse_string(const std::string &input, const std::string& sname)
 void Driver::error(const class location& l,
 		   const std::string& m)
 {
-    std::cerr << l << ": " << m << std::endl;
+    cerr << l << ": " << m << std::endl;
+#if 0
+    if(parser!=NULL)
+    {
+        for(unsigned i=0;i<parser->semantic_stack_type.height();++i)
+        {
+            cerr<<parser->semantic_stack_type[i]    <<" ";
+        }
+    }
+    cerr<<"\n";
+#endif
+
 }
 
 void Driver::error(const std::string& m)

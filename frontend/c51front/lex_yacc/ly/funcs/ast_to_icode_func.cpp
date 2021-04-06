@@ -220,20 +220,62 @@ class icode *  func_IAN_DIRECT_DECLARATOR_FUNCTION1_2(class comp_context* pcompi
     icode *a = pcompi->new_icode();
     a->m_type=ICODE_TYPE_BLOCK;
 
-    a->name = tdefs->m_tk_elems[0]->val_str;
+    /// TODO: 此处需要添加函数指针的支持
+    ///
+    icode *direct_declarator_function1_ic = pcompi->ast_to_icode(tdefs->m_tk_elems[0]);
 
-    a->result = pcompi->new_icode();
-    a->result->m_type=ICODE_TYPE_FUNC;
-    a->result->name = a->name;
 
-    ///添加返回值
-    /// 现在无法确定返回值类型，所以只是放一个空的站位
-    a->result->sub_icode.push_back(pcompi->new_icode());
-    a->result->merge_icode(pcompi->ast_to_icode(tdefs->m_tk_elems[2]));
+    a->merge_icode(direct_declarator_function1_ic);
 
-    ///2020.7.30 返回值类型修改：
-    /// 原来是a中直接是sub_ic包含参数。现在改为添加到result中
+    a->name = direct_declarator_function1_ic->result->name;
+    a->is_ptr = direct_declarator_function1_ic->result->is_ptr;
 
+    ///此处函数和函数指针都有，唯一的不同就是a->is_ptr是否为0
+    //if(direct_declarator_function1_ic->result->is_ptr==0)
+    {
+        //函数，不是函数指针
+        a->result = pcompi->new_icode();
+        a->result->m_type=ICODE_TYPE_FUNC;
+        a->result->name = a->name;
+        a->result->is_ptr  = a->is_ptr;
+
+        ///添加返回值
+        /// 现在无法确定返回值类型，所以只是放一个空的站位
+        a->result->sub_icode.push_back(pcompi->new_icode());
+
+        //函数，进入和退出时
+        pcompi->level_enter();
+
+        a->result->merge_icode(pcompi->ast_to_icode(tdefs->m_tk_elems[2]));
+
+        pcompi->level_leave();
+
+        ///2020.7.30 返回值类型修改：
+        /// 原来是a中直接是sub_ic包含参数。现在改为添加到result中
+
+    }
+#if 0
+    else
+    {
+        //函数指针
+        a->result = pcompi->new_icode();
+        a->result->m_type=ICODE_TYPE_DEF_VAR;
+        a->result->name = a->name;
+        a->result->is_ptr = direct_declarator_function1_ic->result->is_ptr;
+
+        a->result->m_in_ptr_type = pcompi->new_icode();
+        a->result->m_in_ptr_type->m_type=ICODE_TYPE_FUNC;
+        a->result->m_in_ptr_type->name = a->name;
+        ///添加返回值
+        /// 现在无法确定返回值类型，所以只是放一个空的站位
+        a->result->m_in_ptr_type->sub_icode.push_back(pcompi->new_icode());
+        a->result->m_in_ptr_type->merge_icode(pcompi->ast_to_icode(tdefs->m_tk_elems[2]));
+
+        ///2020.7.30 返回值类型修改：
+        /// 原来是a中直接是sub_ic包含参数。现在改为添加到result中
+
+    }
+#endif
 
     return a;
 }
@@ -269,12 +311,21 @@ class icode *  func_IAN_DIRECT_DECLARATOR_FUNCTION1_3(class comp_context* pcompi
     //extern?
 
 
+    icode *direct_declarator_function1_ic = pcompi->ast_to_icode(tdefs->m_tk_elems[0]);
 
-    a->name = tdefs->m_tk_elems[0]->val_str;
+
+    a->merge_icode(direct_declarator_function1_ic);
+
+    a->name = direct_declarator_function1_ic->result->name;
+    a->is_ptr = direct_declarator_function1_ic->result->is_ptr;
+
+    //a->name = tdefs->m_tk_elems[0]->val_str;
 
     a->result = pcompi->new_icode();
     a->result->m_type=ICODE_TYPE_FUNC;
     a->result->name = a->name;
+    a->result->is_ptr  = a->is_ptr;
+
     ///添加返回值
     /// 现在无法确定返回值类型，所以只是放一个空的站位
     a->result->sub_icode.push_back(pcompi->new_icode());
