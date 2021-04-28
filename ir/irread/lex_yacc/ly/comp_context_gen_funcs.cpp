@@ -115,6 +115,12 @@ class icode *  func_function_definition_i(class comp_context* pcompi, class toke
                                           token_defs *func_attrib,token_defs *ret_type,token_defs *function_arg,token_defs *compound_statement,
                                           bool need_result_icode, class icode* result_ic)
 {
+    /// 此处返回一个block。
+    /// 如果是function第一次定义，则返回的block中包含此函数。
+    /// 如果是之前声明过，这里定义，则修改之前的声明，此处函数返回空block。
+    ///
+
+
     //0x304-function_definition->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg compound_statement FUNC_END VAR_REF ';'
     //parent:
     // external_declaration--> function_definition
@@ -240,6 +246,87 @@ class icode *  func_function_definition_i(class comp_context* pcompi, class toke
     return a;
 }
 
+
+icode *  func_IAN_FUNCTION_DECL_1(comp_context* pcompi, token_defs* tdefs, bool need_result_icode, icode* result_ic)
+{
+    //0x301-function_decl->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type FUNC_END VAR_REF ';'
+    //parent:
+    // function_definition--> function_decl
+    // type_specifier--> function_decl
+    icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
+    token_defs *FUNC_START=tdefs->m_tk_elems[0];
+    token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
+    //token_defs *';'=tdefs->m_tk_elems[2];
+    token_defs *ret_type=tdefs->m_tk_elems[3];
+    //token_defs *FUNC_END=tdefs->m_tk_elems[4];
+    //token_defs *VAR_REF=tdefs->m_tk_elems[5];
+    //token_defs *';'=tdefs->m_tk_elems[6];
+
+    return func_function_definition_i(pcompi, FUNC_START, VAR_NAME_IDENTIFIER,NULL, ret_type, NULL, NULL, need_result_icode, result_ic);
+}
+
+icode *  func_IAN_FUNCTION_DECL_2(comp_context* pcompi, token_defs* tdefs, bool need_result_icode, icode* result_ic)
+{
+    //0x302-function_decl->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type FUNC_END VAR_REF ';'
+    //parent:
+    // function_definition--> function_decl
+    // type_specifier--> function_decl
+    icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
+    token_defs *FUNC_START=tdefs->m_tk_elems[0];
+    token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
+    //token_defs *','=tdefs->m_tk_elems[2];
+    token_defs *func_attrib=tdefs->m_tk_elems[3];
+    //token_defs *';'=tdefs->m_tk_elems[4];
+    token_defs *ret_type=tdefs->m_tk_elems[5];
+    //token_defs *FUNC_END=tdefs->m_tk_elems[6];
+    //token_defs *VAR_REF=tdefs->m_tk_elems[7];
+    //token_defs *';'=tdefs->m_tk_elems[8];
+    return func_function_definition_i(pcompi, FUNC_START, VAR_NAME_IDENTIFIER,func_attrib, ret_type, NULL, NULL,need_result_icode,result_ic);
+}
+
+
+icode *  func_IAN_FUNCTION_DECL_3(comp_context* pcompi, token_defs* tdefs, bool need_result_icode, icode* result_ic)
+{
+    //0x303-function_decl->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg FUNC_END VAR_REF ';'
+    //parent:
+    // function_definition--> function_decl
+    // type_specifier--> function_decl
+    icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
+    token_defs *FUNC_START=tdefs->m_tk_elems[0];
+    token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
+    //token_defs *';'=tdefs->m_tk_elems[2];
+    token_defs *ret_type=tdefs->m_tk_elems[3];
+    token_defs *function_arg=tdefs->m_tk_elems[4];
+    //token_defs *FUNC_END=tdefs->m_tk_elems[5];
+    //token_defs *VAR_REF=tdefs->m_tk_elems[6];
+    //token_defs *';'=tdefs->m_tk_elems[7];
+
+    return func_function_definition_i(pcompi, FUNC_START, VAR_NAME_IDENTIFIER,NULL, ret_type, function_arg, NULL, need_result_icode,result_ic);
+
+}
+
+
+icode *  func_IAN_FUNCTION_DECL_4(comp_context* pcompi, token_defs* tdefs, bool need_result_icode, icode* result_ic)
+{
+    //0x304-function_decl->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg FUNC_END VAR_REF ';'
+    //parent:
+    // function_definition--> function_decl
+    // type_specifier--> function_decl
+    icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
+    token_defs *FUNC_START=tdefs->m_tk_elems[0];
+    token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
+    //token_defs *','=tdefs->m_tk_elems[2];
+    token_defs *func_attrib=tdefs->m_tk_elems[3];
+    //token_defs *';'=tdefs->m_tk_elems[4];
+    token_defs *ret_type=tdefs->m_tk_elems[5];
+    token_defs *function_arg=tdefs->m_tk_elems[6];
+    //token_defs *FUNC_END=tdefs->m_tk_elems[7];
+    //token_defs *VAR_REF=tdefs->m_tk_elems[8];
+    //token_defs *';'=tdefs->m_tk_elems[9];
+    return func_function_definition_i(pcompi, FUNC_START, VAR_NAME_IDENTIFIER,func_attrib, ret_type, function_arg,
+                                      NULL,need_result_icode,result_ic);
+}
+
 class icode *  func_IAN_FUNCTION_DEFINITION_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
 ///函数的定义 返回block
@@ -319,77 +406,14 @@ class icode *  func_IAN_FUNCTION_DEFINITION_4(class comp_context* pcompi, class 
                                       compound_statement,need_result_icode,result_ic);
 
 }
-class icode *  func_IAN_FUNCTION_DEFINITION_5(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
+icode *  func_IAN_FUNCTION_DEFINITION_5(comp_context* pcompi, token_defs* tdefs, bool need_result_icode, icode* result_ic)
 {
-	//0x305-function_definition->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type FUNC_END VAR_REF ';' 
-	//parent:
-	// external_declaration--> function_definition
-	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
-    token_defs *FUNC_START=tdefs->m_tk_elems[0];
-    token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
-	//token_defs *';'=tdefs->m_tk_elems[2];
-    token_defs *ret_type=tdefs->m_tk_elems[3];
-	//token_defs *FUNC_END=tdefs->m_tk_elems[4];
-	//token_defs *VAR_REF=tdefs->m_tk_elems[5];
-	//token_defs *';'=tdefs->m_tk_elems[6];
-
-    return func_function_definition_i(pcompi, FUNC_START, VAR_NAME_IDENTIFIER,NULL, ret_type, NULL, NULL, need_result_icode, result_ic);
-
+    //0x405-function_definition->function_decl
+    //parent:
+    // external_declaration--> function_definition
+return pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
 }
-class icode *  func_IAN_FUNCTION_DEFINITION_6(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
-{
-	//0x306-function_definition->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type FUNC_END VAR_REF ';' 
-	//parent:
-	// external_declaration--> function_definition
-	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
-    token_defs *FUNC_START=tdefs->m_tk_elems[0];
-    token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
-	//token_defs *','=tdefs->m_tk_elems[2];
-    token_defs *func_attrib=tdefs->m_tk_elems[3];
-	//token_defs *';'=tdefs->m_tk_elems[4];
-    token_defs *ret_type=tdefs->m_tk_elems[5];
-	//token_defs *FUNC_END=tdefs->m_tk_elems[6];
-	//token_defs *VAR_REF=tdefs->m_tk_elems[7];
-    //token_defs *';'=tdefs->m_tk_elems[8];
-    return func_function_definition_i(pcompi, FUNC_START, VAR_NAME_IDENTIFIER,func_attrib, ret_type, NULL, NULL,need_result_icode,result_ic);
-}
-class icode *  func_IAN_FUNCTION_DEFINITION_7(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
-{
-	//0x307-function_definition->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg FUNC_END VAR_REF ';' 
-	//parent:
-	// external_declaration--> function_definition
-	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
-    token_defs *FUNC_START=tdefs->m_tk_elems[0];
-    token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
-	//token_defs *';'=tdefs->m_tk_elems[2];
-    token_defs *ret_type=tdefs->m_tk_elems[3];
-    token_defs *function_arg=tdefs->m_tk_elems[4];
-	//token_defs *FUNC_END=tdefs->m_tk_elems[5];
-	//token_defs *VAR_REF=tdefs->m_tk_elems[6];
-	//token_defs *';'=tdefs->m_tk_elems[7];
 
-    return func_function_definition_i(pcompi, FUNC_START, VAR_NAME_IDENTIFIER,NULL, ret_type, function_arg, NULL, need_result_icode,result_ic);
-
-}
-class icode *  func_IAN_FUNCTION_DEFINITION_8(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
-{
-	//0x308-function_definition->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg FUNC_END VAR_REF ';' 
-	//parent:
-	// external_declaration--> function_definition
-	icode *a = pcompi->new_icode(ICODE_TYPE_BLOCK);
-    token_defs *FUNC_START=tdefs->m_tk_elems[0];
-    token_defs *VAR_NAME_IDENTIFIER=tdefs->m_tk_elems[1];
-	//token_defs *','=tdefs->m_tk_elems[2];
-    token_defs *func_attrib=tdefs->m_tk_elems[3];
-	//token_defs *';'=tdefs->m_tk_elems[4];
-    token_defs *ret_type=tdefs->m_tk_elems[5];
-    token_defs *function_arg=tdefs->m_tk_elems[6];
-	//token_defs *FUNC_END=tdefs->m_tk_elems[7];
-	//token_defs *VAR_REF=tdefs->m_tk_elems[8];
-	//token_defs *';'=tdefs->m_tk_elems[9];
-    return func_function_definition_i(pcompi, FUNC_START, VAR_NAME_IDENTIFIER,func_attrib, ret_type, function_arg,
-                                      NULL,need_result_icode,result_ic);
-}
 
 class icode *  func_IAN_FUNC_ATTRIB_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
@@ -1083,6 +1107,33 @@ class icode *  func_IAN_TYPE_SPECIFIER_7(class comp_context* pcompi, class token
 	//a->merge_icode(func_attrib_ic);
     return NULL;
 }
+
+icode *  func_IAN_TYPE_SPECIFIER_8(comp_context* pcompi, token_defs* tdefs, bool need_result_icode, icode* result_ic)
+{
+    ///变量/函数类型属性值，没有返回值，将属性值直接填入result_ic中
+
+    //0xd08-type_specifier->function_decl
+    //parent:
+    // ret_type--> RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';'
+    // def_arg--> DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';'
+    // def_one_var--> def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';'
+    // type_specifier--> type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']'
+    // type_specifier--> type_specifier '[' type_specifier ']'
+    // type_specifier--> type_specifier '[' opr_elem ']'
+    // type_specifier--> type_specifier ',' func_attrib
+
+    icode *a = pcompi->ast_to_icode(tdefs,need_result_icode, result_ic);
+
+    if(a==NULL)return NULL;
+    if(a->sub_icode.size()==0)return NULL;
+    if(result_ic==NULL)return NULL;
+    unsigned long icn = result_ic->m_icode_number;
+    *result_ic = * a->sub_icode[0];
+    result_ic->m_icode_number = icn;
+
+    return NULL;
+}
+
 class icode *  func_IAN_TYPE_SPECIFIER_BASIC_1(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
     ///变量/函数类型属性值，没有返回值，将属性值直接填入result_ic中
@@ -1100,6 +1151,7 @@ class icode *  func_IAN_TYPE_SPECIFIER_BASIC_1(class comp_context* pcompi, class
 }
 class icode *  func_IAN_TYPE_SPECIFIER_BASIC_2(class comp_context* pcompi, class token_defs* tdefs, bool need_result_icode, class icode* result_ic)
 {
+
     ///变量/函数类型属性值，没有返回值，将属性值直接填入result_ic中
 
 	//0xd02-type_specifier_basic->U1 

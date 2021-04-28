@@ -311,6 +311,8 @@ return a;
 break;
 
 }//switch end. case_cnt=49
+assert(0);
+return NULL;//this is just for compiler waning. should never be here 
 
 }
 icode * comp_context::ast_to_icode_ast(token_defs* tdefs, bool need_result_icode, icode *result_ic)
@@ -366,560 +368,574 @@ case IAN_EXTERNAL_DECLARATION_2: //0x202-external_declaration->function_definiti
 	return a;
 }
 break;
-case IAN_FUNCTION_DEFINITION_1: //0x301-function_definition->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type compound_statement FUNC_END VAR_REF ';' 
+case IAN_FUNCTION_DECL_1: //0x301-function_decl->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type FUNC_END VAR_REF ';' 
+{
+	icode *a= func_IAN_FUNCTION_DECL_1(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_FUNCTION_DECL_2: //0x302-function_decl->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type FUNC_END VAR_REF ';' 
+{
+	icode *a= func_IAN_FUNCTION_DECL_2(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_FUNCTION_DECL_3: //0x303-function_decl->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg FUNC_END VAR_REF ';' 
+{
+	icode *a= func_IAN_FUNCTION_DECL_3(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_FUNCTION_DECL_4: //0x304-function_decl->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg FUNC_END VAR_REF ';' 
+{
+	icode *a= func_IAN_FUNCTION_DECL_4(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_FUNCTION_DEFINITION_1: //0x401-function_definition->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type compound_statement FUNC_END VAR_REF ';' 
 {
 	icode *a= func_IAN_FUNCTION_DEFINITION_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNCTION_DEFINITION_2: //0x302-function_definition->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type compound_statement FUNC_END VAR_REF ';' 
+case IAN_FUNCTION_DEFINITION_2: //0x402-function_definition->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type compound_statement FUNC_END VAR_REF ';' 
 {
 	icode *a= func_IAN_FUNCTION_DEFINITION_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNCTION_DEFINITION_3: //0x303-function_definition->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg compound_statement FUNC_END VAR_REF ';' 
+case IAN_FUNCTION_DEFINITION_3: //0x403-function_definition->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg compound_statement FUNC_END VAR_REF ';' 
 {
 	icode *a= func_IAN_FUNCTION_DEFINITION_3(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNCTION_DEFINITION_4: //0x304-function_definition->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg compound_statement FUNC_END VAR_REF ';' 
+case IAN_FUNCTION_DEFINITION_4: //0x404-function_definition->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg compound_statement FUNC_END VAR_REF ';' 
 {
 	icode *a= func_IAN_FUNCTION_DEFINITION_4(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNCTION_DEFINITION_5: //0x305-function_definition->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type FUNC_END VAR_REF ';' 
+case IAN_FUNCTION_DEFINITION_5: //0x405-function_definition->function_decl 
 {
 	icode *a= func_IAN_FUNCTION_DEFINITION_5(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNCTION_DEFINITION_6: //0x306-function_definition->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type FUNC_END VAR_REF ';' 
-{
-	icode *a= func_IAN_FUNCTION_DEFINITION_6(this, tdefs, need_result_icode, result_ic);
-	return a;
-}
-break;
-case IAN_FUNCTION_DEFINITION_7: //0x307-function_definition->FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg FUNC_END VAR_REF ';' 
-{
-	icode *a= func_IAN_FUNCTION_DEFINITION_7(this, tdefs, need_result_icode, result_ic);
-	return a;
-}
-break;
-case IAN_FUNCTION_DEFINITION_8: //0x308-function_definition->FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib ';' ret_type function_arg FUNC_END VAR_REF ';' 
-{
-	icode *a= func_IAN_FUNCTION_DEFINITION_8(this, tdefs, need_result_icode, result_ic);
-	return a;
-}
-break;
-case IAN_FUNC_ATTRIB_1: //0x401-func_attrib->func_attrib1 
+case IAN_FUNC_ATTRIB_1: //0x501-func_attrib->func_attrib1 
 {
 	icode *a= func_IAN_FUNC_ATTRIB_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNC_ATTRIB_2: //0x402-func_attrib->func_attrib ',' func_attrib1 
+case IAN_FUNC_ATTRIB_2: //0x502-func_attrib->func_attrib ',' func_attrib1 
 {
 	icode *a= func_IAN_FUNC_ATTRIB_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNC_ATTRIB1_1: //0x501-func_attrib1->IDENTIFIER '(' STRING_LITERAL ')' 
+case IAN_FUNC_ATTRIB1_1: //0x601-func_attrib1->IDENTIFIER '(' STRING_LITERAL ')' 
 {
 	icode *a= func_IAN_FUNC_ATTRIB1_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNC_ATTRIB1_2: //0x502-func_attrib1->IDENTIFIER '(' I_CONSTANT ')' 
+case IAN_FUNC_ATTRIB1_2: //0x602-func_attrib1->IDENTIFIER '(' I_CONSTANT ')' 
 {
 	icode *a= func_IAN_FUNC_ATTRIB1_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_DECLARATIONS_1: //0x601-declarations->def_one_var 
+case IAN_DECLARATIONS_1: //0x701-declarations->def_one_var 
 {
 	icode *a= func_IAN_DECLARATIONS_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_DECLARATIONS_2: //0x602-declarations->declarations def_one_var 
+case IAN_DECLARATIONS_2: //0x702-declarations->declarations def_one_var 
 {
 	icode *a= func_IAN_DECLARATIONS_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNCTION_ARG_1: //0x701-function_arg->def_arg 
+case IAN_FUNCTION_ARG_1: //0x801-function_arg->def_arg 
 {
 	icode *a= func_IAN_FUNCTION_ARG_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_FUNCTION_ARG_2: //0x702-function_arg->function_arg def_arg 
+case IAN_FUNCTION_ARG_2: //0x802-function_arg->function_arg def_arg 
 {
 	icode *a= func_IAN_FUNCTION_ARG_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_RET_TYPE_1: //0x801-ret_type->RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';' 
+case IAN_RET_TYPE_1: //0x901-ret_type->RET_TYPE VAR_NAME_IDENTIFIER ',' type_specifier ';' 
 {
 	icode *a= func_IAN_RET_TYPE_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_DEF_ARG_1: //0x901-def_arg->DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';' 
+case IAN_DEF_ARG_1: //0xa01-def_arg->DEF_ARG VAR_NAME_IDENTIFIER ',' type_specifier ';' 
 {
 	icode *a= func_IAN_DEF_ARG_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_DEF_ONE_VAR_1: //0xa01-def_one_var->def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';' 
+case IAN_DEF_ONE_VAR_1: //0xb01-def_one_var->def_var_start VAR_NAME_IDENTIFIER ',' type_specifier ';' 
 {
 	icode *a= func_IAN_DEF_ONE_VAR_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_DEF_VAR_START_1: //0xb01-def_var_start->DEF_VAR 
+case IAN_DEF_VAR_START_1: //0xc01-def_var_start->DEF_VAR 
 {
 	icode *a= func_IAN_DEF_VAR_START_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_DEF_VAR_START_2: //0xb02-def_var_start->DEF_VAR_TMP 
+case IAN_DEF_VAR_START_2: //0xc02-def_var_start->DEF_VAR_TMP 
 {
 	icode *a= func_IAN_DEF_VAR_START_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_1: //0xc01-type_specifier->type_specifier_basic 
+case IAN_TYPE_SPECIFIER_1: //0xd01-type_specifier->type_specifier_basic 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_2: //0xc02-type_specifier->type_specifier_basic '(' declarations ')' 
+case IAN_TYPE_SPECIFIER_2: //0xd02-type_specifier->type_specifier_basic '(' declarations ')' 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_3: //0xc03-type_specifier->type_specifier_basic '(' '(' declarations ')' ')' 
+case IAN_TYPE_SPECIFIER_3: //0xd03-type_specifier->type_specifier_basic '(' '(' declarations ')' ')' 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_3(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_4: //0xc04-type_specifier->type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']' 
+case IAN_TYPE_SPECIFIER_4: //0xd04-type_specifier->type_specifier_basic '*' I_CONSTANT '*' '[' type_specifier ']' 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_4(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_5: //0xc05-type_specifier->type_specifier '[' type_specifier ']' 
+case IAN_TYPE_SPECIFIER_5: //0xd05-type_specifier->type_specifier '[' type_specifier ']' 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_5(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_6: //0xc06-type_specifier->type_specifier '[' opr_elem ']' 
+case IAN_TYPE_SPECIFIER_6: //0xd06-type_specifier->type_specifier '[' opr_elem ']' 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_6(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_7: //0xc07-type_specifier->type_specifier ',' func_attrib 
+case IAN_TYPE_SPECIFIER_7: //0xd07-type_specifier->type_specifier ',' func_attrib 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_7(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_1: //0xd01-type_specifier_basic->VOID 
+case IAN_TYPE_SPECIFIER_8: //0xd08-type_specifier->function_decl 
+{
+	icode *a= func_IAN_TYPE_SPECIFIER_8(this, tdefs, need_result_icode, result_ic);
+	return a;
+}
+break;
+case IAN_TYPE_SPECIFIER_BASIC_1: //0xe01-type_specifier_basic->VOID 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_2: //0xd02-type_specifier_basic->U1 
+case IAN_TYPE_SPECIFIER_BASIC_2: //0xe02-type_specifier_basic->U1 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_3: //0xd03-type_specifier_basic->U8 
+case IAN_TYPE_SPECIFIER_BASIC_3: //0xe03-type_specifier_basic->U8 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_3(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_4: //0xd04-type_specifier_basic->U16 
+case IAN_TYPE_SPECIFIER_BASIC_4: //0xe04-type_specifier_basic->U16 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_4(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_5: //0xd05-type_specifier_basic->U24 
+case IAN_TYPE_SPECIFIER_BASIC_5: //0xe05-type_specifier_basic->U24 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_5(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_6: //0xd06-type_specifier_basic->U32 
+case IAN_TYPE_SPECIFIER_BASIC_6: //0xe06-type_specifier_basic->U32 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_6(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_7: //0xd07-type_specifier_basic->U64 
+case IAN_TYPE_SPECIFIER_BASIC_7: //0xe07-type_specifier_basic->U64 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_7(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_8: //0xd08-type_specifier_basic->F16 
+case IAN_TYPE_SPECIFIER_BASIC_8: //0xe08-type_specifier_basic->F16 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_8(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_9: //0xd09-type_specifier_basic->F32 
+case IAN_TYPE_SPECIFIER_BASIC_9: //0xe09-type_specifier_basic->F32 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_9(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_10: //0xd0a-type_specifier_basic->F64 
+case IAN_TYPE_SPECIFIER_BASIC_10: //0xe0a-type_specifier_basic->F64 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_10(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_11: //0xd0b-type_specifier_basic->I1 
+case IAN_TYPE_SPECIFIER_BASIC_11: //0xe0b-type_specifier_basic->I1 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_11(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_12: //0xd0c-type_specifier_basic->I8 
+case IAN_TYPE_SPECIFIER_BASIC_12: //0xe0c-type_specifier_basic->I8 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_12(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_13: //0xd0d-type_specifier_basic->I16 
+case IAN_TYPE_SPECIFIER_BASIC_13: //0xe0d-type_specifier_basic->I16 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_13(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_14: //0xd0e-type_specifier_basic->I24 
+case IAN_TYPE_SPECIFIER_BASIC_14: //0xe0e-type_specifier_basic->I24 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_14(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_15: //0xd0f-type_specifier_basic->I32 
+case IAN_TYPE_SPECIFIER_BASIC_15: //0xe0f-type_specifier_basic->I32 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_15(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_16: //0xd10-type_specifier_basic->I64 
+case IAN_TYPE_SPECIFIER_BASIC_16: //0xe10-type_specifier_basic->I64 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_16(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_TYPE_SPECIFIER_BASIC_17: //0xd11-type_specifier_basic->U_NUM 
+case IAN_TYPE_SPECIFIER_BASIC_17: //0xe11-type_specifier_basic->U_NUM 
 {
 	icode *a= func_IAN_TYPE_SPECIFIER_BASIC_17(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_COMPOUND_STATEMENT_1: //0xe01-compound_statement->SCOPES SCOPEE 
+case IAN_COMPOUND_STATEMENT_1: //0xf01-compound_statement->SCOPES SCOPEE 
 {
 	icode *a= func_IAN_COMPOUND_STATEMENT_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_COMPOUND_STATEMENT_2: //0xe02-compound_statement->SCOPES block_item_list SCOPEE 
+case IAN_COMPOUND_STATEMENT_2: //0xf02-compound_statement->SCOPES block_item_list SCOPEE 
 {
 	icode *a= func_IAN_COMPOUND_STATEMENT_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_BLOCK_ITEM_LIST_1: //0xf01-block_item_list->block_item 
+case IAN_BLOCK_ITEM_LIST_1: //0x1001-block_item_list->block_item 
 {
 	icode *a= func_IAN_BLOCK_ITEM_LIST_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_BLOCK_ITEM_LIST_2: //0xf02-block_item_list->block_item_list block_item 
+case IAN_BLOCK_ITEM_LIST_2: //0x1002-block_item_list->block_item_list block_item 
 {
 	icode *a= func_IAN_BLOCK_ITEM_LIST_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_BLOCK_ITEM_1: //0x1001-block_item->def_one_var 
+case IAN_BLOCK_ITEM_1: //0x1101-block_item->def_one_var 
 {
 	icode *a= func_IAN_BLOCK_ITEM_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_BLOCK_ITEM_2: //0x1002-block_item->statement 
+case IAN_BLOCK_ITEM_2: //0x1102-block_item->statement 
 {
 	icode *a= func_IAN_BLOCK_ITEM_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_STATEMENT_1: //0x1101-statement->opr_statement 
+case IAN_STATEMENT_1: //0x1201-statement->opr_statement 
 {
 	icode *a= func_IAN_STATEMENT_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_STATEMENT_2: //0x1102-statement->call_statement 
+case IAN_STATEMENT_2: //0x1202-statement->call_statement 
 {
 	icode *a= func_IAN_STATEMENT_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_STATEMENT_3: //0x1103-statement->FUNC_RETURN 
+case IAN_STATEMENT_3: //0x1203-statement->FUNC_RETURN 
 {
 	icode *a= func_IAN_STATEMENT_3(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_STATEMENT_4: //0x1104-statement->label_def 
+case IAN_STATEMENT_4: //0x1204-statement->label_def 
 {
 	icode *a= func_IAN_STATEMENT_4(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_STATEMENT_5: //0x1105-statement->inline_asm 
+case IAN_STATEMENT_5: //0x1205-statement->inline_asm 
 {
 	icode *a= func_IAN_STATEMENT_5(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_STATEMENT_6: //0x1106-statement->compound_statement 
+case IAN_STATEMENT_6: //0x1206-statement->compound_statement 
 {
 	icode *a= func_IAN_STATEMENT_6(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_OPR_STATEMENT_1: //0x1201-opr_statement->OPR_START STRING_LITERAL ',' opr_elem ';' ',' opr_elem ';' ',' opr_elem ';' 
+case IAN_OPR_STATEMENT_1: //0x1301-opr_statement->OPR_START STRING_LITERAL ',' opr_elem ';' ',' opr_elem ';' ',' opr_elem ';' 
 {
 	icode *a= func_IAN_OPR_STATEMENT_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_OPR_ELEM_1: //0x1301-opr_elem->VAR_NULL 
+case IAN_OPR_ELEM_1: //0x1401-opr_elem->VAR_NULL 
 {
 	icode *a= func_IAN_OPR_ELEM_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_OPR_ELEM_2: //0x1302-opr_elem->VAR_REF 
+case IAN_OPR_ELEM_2: //0x1402-opr_elem->VAR_REF 
 {
 	icode *a= func_IAN_OPR_ELEM_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_OPR_ELEM_3: //0x1303-opr_elem->constant 
+case IAN_OPR_ELEM_3: //0x1403-opr_elem->constant 
 {
 	icode *a= func_IAN_OPR_ELEM_3(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_OPR_ELEM_4: //0x1304-opr_elem->var_in_ref 
+case IAN_OPR_ELEM_4: //0x1404-opr_elem->var_in_ref 
 {
 	icode *a= func_IAN_OPR_ELEM_4(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_OPR_ELEM_5: //0x1305-opr_elem->label_ref 
+case IAN_OPR_ELEM_5: //0x1405-opr_elem->label_ref 
 {
 	icode *a= func_IAN_OPR_ELEM_5(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_CONSTANT_1: //0x1401-constant->i_const 
+case IAN_CONSTANT_1: //0x1501-constant->i_const 
 {
 	icode *a= func_IAN_CONSTANT_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_CONSTANT_2: //0x1402-constant->f_const 
+case IAN_CONSTANT_2: //0x1502-constant->f_const 
 {
 	icode *a= func_IAN_CONSTANT_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_CONSTANT_3: //0x1403-constant->string 
+case IAN_CONSTANT_3: //0x1503-constant->string 
 {
 	icode *a= func_IAN_CONSTANT_3(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_CONSTANT_4: //0x1404-constant->const_list 
+case IAN_CONSTANT_4: //0x1504-constant->const_list 
 {
 	icode *a= func_IAN_CONSTANT_4(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_I_CONST_1: //0x1501-i_const->I_CONST_ID I_CONSTANT 
+case IAN_I_CONST_1: //0x1601-i_const->I_CONST_ID I_CONSTANT 
 {
 	icode *a= func_IAN_I_CONST_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_I_CONST_2: //0x1502-i_const->I_CONST_ID I_CONSTANT ':' I_CONSTANT 
+case IAN_I_CONST_2: //0x1602-i_const->I_CONST_ID I_CONSTANT ':' I_CONSTANT 
 {
 	icode *a= func_IAN_I_CONST_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_I_CONST_3: //0x1503-i_const->I_CONST_ID '-' I_CONSTANT ':' I_CONSTANT 
+case IAN_I_CONST_3: //0x1603-i_const->I_CONST_ID '-' I_CONSTANT ':' I_CONSTANT 
 {
 	icode *a= func_IAN_I_CONST_3(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_F_CONST_1: //0x1601-f_const->F_CONST_ID F_CONSTANT 
+case IAN_F_CONST_1: //0x1701-f_const->F_CONST_ID F_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_F_CONST_2: //0x1602-f_const->F_CONST_ID I_CONSTANT 
+case IAN_F_CONST_2: //0x1702-f_const->F_CONST_ID I_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_F_CONST_3: //0x1603-f_const->F_CONST_ID I_CONSTANT ':' I_CONSTANT 
+case IAN_F_CONST_3: //0x1703-f_const->F_CONST_ID I_CONSTANT ':' I_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_3(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_F_CONST_4: //0x1604-f_const->F_CONST_ID F_CONSTANT ':' I_CONSTANT 
+case IAN_F_CONST_4: //0x1704-f_const->F_CONST_ID F_CONSTANT ':' I_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_4(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_F_CONST_5: //0x1605-f_const->F_CONST_ID '-' I_CONSTANT ':' I_CONSTANT 
+case IAN_F_CONST_5: //0x1705-f_const->F_CONST_ID '-' I_CONSTANT ':' I_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_5(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_F_CONST_6: //0x1606-f_const->F_CONST_ID '-' F_CONSTANT ':' I_CONSTANT 
+case IAN_F_CONST_6: //0x1706-f_const->F_CONST_ID '-' F_CONSTANT ':' I_CONSTANT 
 {
 	icode *a= func_IAN_F_CONST_6(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_STRING_1: //0x1701-string->STRING_ID STRING_LITERAL 
+case IAN_STRING_1: //0x1801-string->STRING_ID STRING_LITERAL 
 {
 	icode *a= func_IAN_STRING_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_VAR_IN_REF_1: //0x1801-var_in_ref->var_in_ref_ptr 
+case IAN_VAR_IN_REF_1: //0x1901-var_in_ref->var_in_ref_ptr 
 {
 	icode *a= func_IAN_VAR_IN_REF_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_VAR_IN_REF_2: //0x1802-var_in_ref->var_in_ref_array 
+case IAN_VAR_IN_REF_2: //0x1902-var_in_ref->var_in_ref_array 
 {
 	icode *a= func_IAN_VAR_IN_REF_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_VAR_IN_REF_PTR_1: //0x1901-var_in_ref_ptr->var_in_start VAR_REF '*' I_CONSTANT 
+case IAN_VAR_IN_REF_PTR_1: //0x1a01-var_in_ref_ptr->var_in_start VAR_REF '*' I_CONSTANT 
 {
 	icode *a= func_IAN_VAR_IN_REF_PTR_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_VAR_IN_REF_ARRAY_1: //0x1a01-var_in_ref_array->var_in_start VAR_REF '[' opr_elem ']' 
+case IAN_VAR_IN_REF_ARRAY_1: //0x1b01-var_in_ref_array->var_in_start VAR_REF '[' opr_elem ']' 
 {
 	icode *a= func_IAN_VAR_IN_REF_ARRAY_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_VAR_IN_REF_ARRAY_2: //0x1a02-var_in_ref_array->var_in_ref_array '[' opr_elem ']' 
+case IAN_VAR_IN_REF_ARRAY_2: //0x1b02-var_in_ref_array->var_in_ref_array '[' opr_elem ']' 
 {
 	icode *a= func_IAN_VAR_IN_REF_ARRAY_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_CONST_LIST_1: //0x1b01-const_list->CONST_LIST_ID '[' opr_elem_seq ']' 
+case IAN_CONST_LIST_1: //0x1c01-const_list->CONST_LIST_ID '[' opr_elem_seq ']' 
 {
 	icode *a= func_IAN_CONST_LIST_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_VAR_IN_START_1: //0x1c01-var_in_start->VAR_IN 
+case IAN_VAR_IN_START_1: //0x1d01-var_in_start->VAR_IN 
 {
 	icode *a= func_IAN_VAR_IN_START_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_VAR_IN_START_2: //0x1c02-var_in_start->VAR_IN_TMP 
+case IAN_VAR_IN_START_2: //0x1d02-var_in_start->VAR_IN_TMP 
 {
 	icode *a= func_IAN_VAR_IN_START_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_CALL_STATEMENT_1: //0x1d01-call_statement->CALL_START VAR_REF ';' opr_elem_seq CALL_END VAR_REF ';' 
+case IAN_CALL_STATEMENT_1: //0x1e01-call_statement->CALL_START VAR_REF ';' opr_elem_seq CALL_END VAR_REF ';' 
 {
 	icode *a= func_IAN_CALL_STATEMENT_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_CALL_STATEMENT_2: //0x1d02-call_statement->CALL_START VAR_REF ';' CALL_END VAR_REF ';' 
+case IAN_CALL_STATEMENT_2: //0x1e02-call_statement->CALL_START VAR_REF ';' CALL_END VAR_REF ';' 
 {
 	icode *a= func_IAN_CALL_STATEMENT_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_OPR_ELEM_SEQ_1: //0x1e01-opr_elem_seq->opr_elem ';' 
+case IAN_OPR_ELEM_SEQ_1: //0x1f01-opr_elem_seq->opr_elem ';' 
 {
 	icode *a= func_IAN_OPR_ELEM_SEQ_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_OPR_ELEM_SEQ_2: //0x1e02-opr_elem_seq->opr_elem_seq opr_elem ';' 
+case IAN_OPR_ELEM_SEQ_2: //0x1f02-opr_elem_seq->opr_elem_seq opr_elem ';' 
 {
 	icode *a= func_IAN_OPR_ELEM_SEQ_2(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_LABEL_DEF_1: //0x1f01-label_def->LABEL_START IDENTIFIER ';' 
+case IAN_LABEL_DEF_1: //0x2001-label_def->LABEL_START IDENTIFIER ';' 
 {
 	icode *a= func_IAN_LABEL_DEF_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_LABEL_REF_1: //0x2001-label_ref->LABEL_REF IDENTIFIER 
+case IAN_LABEL_REF_1: //0x2101-label_ref->LABEL_REF IDENTIFIER 
 {
 	icode *a= func_IAN_LABEL_REF_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
-case IAN_INLINE_ASM_1: //0x2101-inline_asm->INLINE_ASM STRING_LITERAL ';' 
+case IAN_INLINE_ASM_1: //0x2201-inline_asm->INLINE_ASM STRING_LITERAL ';' 
 {
 	icode *a= func_IAN_INLINE_ASM_1(this, tdefs, need_result_icode, result_ic);
 	return a;
 }
 break;
 
-}//switch end. case_cnt=63
+}//switch end. case_cnt=65
+assert(0);
+return NULL;//this is just for compiler waning. should never be here 
 
 }
 

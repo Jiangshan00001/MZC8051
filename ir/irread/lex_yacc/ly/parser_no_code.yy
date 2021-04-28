@@ -63,16 +63,22 @@ external_declaration
         | function_definition
         ;
 
+
+
+function_decl
+        : FUNC_START VAR_NAME_IDENTIFIER ';' ret_type   FUNC_END VAR_REF ';'
+        | FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib  ';' ret_type   FUNC_END VAR_REF ';'
+        | FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg    FUNC_END VAR_REF ';'
+        | FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib  ';' ret_type function_arg   FUNC_END VAR_REF ';'
+        ;
+
 /* first4 is function definition. last4 is function declaration*/
 function_definition
         : FUNC_START VAR_NAME_IDENTIFIER ';' ret_type compound_statement  FUNC_END VAR_REF ';'
         | FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib  ';' ret_type compound_statement  FUNC_END VAR_REF ';'
         | FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg  compound_statement  FUNC_END VAR_REF ';'
         | FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib  ';' ret_type function_arg  compound_statement  FUNC_END VAR_REF ';'
-        | FUNC_START VAR_NAME_IDENTIFIER ';' ret_type   FUNC_END VAR_REF ';'
-        | FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib  ';' ret_type   FUNC_END VAR_REF ';'
-        | FUNC_START VAR_NAME_IDENTIFIER ';' ret_type function_arg    FUNC_END VAR_REF ';'
-        | FUNC_START VAR_NAME_IDENTIFIER ',' func_attrib  ';' ret_type function_arg   FUNC_END VAR_REF ';'
+        | function_decl
         ;
 
 /* func_attrib 和 var_attrib 合并为1个*/
@@ -112,12 +118,13 @@ def_var_start : DEF_VAR
 
 
 type_specifier : type_specifier_basic
-                | type_specifier_basic '(' declarations   ')'
-                | type_specifier_basic '(' '(' declarations   ')' ')'
-                |  type_specifier_basic '*' I_CONSTANT '*' '['  type_specifier ']'
-                |  type_specifier  '['  type_specifier ']'
+                | type_specifier_basic '(' declarations   ')' /* struct: def_var: $c,u24(def_var: $c.a,i16;def_var: $c.b,u8;); */
+                | type_specifier_basic '(' '(' declarations   ')' ')'  /* union */
+                |  type_specifier_basic '*' I_CONSTANT '*' '['  type_specifier ']'   /* ptr */
+                |  type_specifier  '['  type_specifier ']'   /* array: def_var: $a,u80[i16][iconst:0x5:0x8]; */
                 |  type_specifier   '['  opr_elem ']'
                 | type_specifier ','  func_attrib
+                | function_decl
                 ;
 
 type_specifier_basic : VOID
