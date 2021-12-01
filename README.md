@@ -1,5 +1,16 @@
 # MZC8051
 
+
+code will be changed to this rep:
+
+
+https://github.com/Jiangshan00001/llvm-mcs51-backend
+
+
+
+-------------
+
+
 https://jiangshan00001.github.io/
 
 ![Build Status](https://github.com/Jiangshan00001/MZC8051/workflows/mzc8051_ubuntu_build/badge.svg)
